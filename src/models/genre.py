@@ -31,26 +31,3 @@ class Genre(Base):
 
 # create a table in database
 Base.metadata.create_all(bind=engine)
-
-
-# genre = Genre()
-# genre.genre = "Comedy"
-
-# genre_list = [
-#                 'Comedy',
-#                 'Tragedy',
-#                 'Sci-fi',
-#                 'Thriller',
-#                 'Romance',
-#                 'Love'
-# ]
-
-
-# with Session(engine) as session:
-#     # genre= session.query(Genre).filter(Genre.genre=='Comedy').first()
-#     # genre.genre = "Horror"
-#     for genre in genre_list:
-#         genre_model = Genre()
-#         genre_model.genre = genre
-#         session.add(genre_model)
-#     session.commit()

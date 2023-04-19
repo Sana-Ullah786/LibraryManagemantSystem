@@ -40,10 +40,3 @@ class Books(Base):
 
 # create a table in database
 Base.metadata.create_all(bind=engine)
-
-
-# with Session(engine) as session:
-#     book= session.query(Books).filter(Books.title=='Second Book').first()
-#     book.isbn = 121
-#     session.add(book)
-#     session.commit()

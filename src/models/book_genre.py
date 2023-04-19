@@ -29,11 +29,3 @@ class Book_Genre(Base):
 
 # create table in database
 Base.metadata.create_all(bind=engine)
-
-
-# with Session(engine) as session:
-#     bg = Book_Genre()
-#     bg.book_id = 2
-#     bg.genre_id = 3
-#     session.add(bg)
-#     session.commit()
