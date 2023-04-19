@@ -6,6 +6,8 @@ name = "pypi"
 [packages]
 fastapi = "==0.95.1"
 pre-commit = "==3.2.2"
+sqlalchemy = "==2.0.9"
+psycopg2-binary = "==2.9.6"
 
 [dev-packages]
 
