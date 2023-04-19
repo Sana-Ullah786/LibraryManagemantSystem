@@ -1,0 +1,27 @@
+from datetime import datetime
+
+from database import Base
+from sqlalchemy import DateTime, ForeignKey, Integer, func, mapped_column
+from sqlalchemy.orm import Mapped
+
+
+class Borrowed(Base):
+    """
+    This is the borrowed model that will be used to create the borrowed table.
+    Also, this will be used to create the borrowed object.
+    """
+
+    __tablename__ = "borrowed"
+    id: int = mapped_column(Integer(), primary_key=True, index=True)
+    copy_id: int = mapped_column(Integer(), ForeignKey("copies.id"))
+    user_id: int = mapped_column(Integer(), ForeignKey("users.id"))
+    issue_date: datetime = mapped_column(DateTime)
+    due_date: datetime = mapped_column(DateTime)
+    return_date: datetime = mapped_column(DateTime, nullable=True)
+    created_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), server_default=func.now()
+    )
+    updated_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), onupdate=func.now(), nullable=True
+    )
+    # TODO: Relationship with copies and users
