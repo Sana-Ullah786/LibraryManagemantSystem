@@ -2,7 +2,7 @@ from datetime import datetime
 
 from database import Base
 from sqlalchemy import DateTime, ForeignKey, Integer, func, mapped_column
-from sqlalchemy.orm import Mapped
+from sqlalchemy.orm import Mapped, relationship
 
 
 class Borrowed(Base):
@@ -24,4 +24,6 @@ class Borrowed(Base):
     updated_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True), onupdate=func.now(), nullable=True
     )
-    # TODO: Relationship with copies and users
+    # Relationship with the user model
+    user = relationship("Users", back_populates="borrowed")
+    # TODO: Relationship with copies
