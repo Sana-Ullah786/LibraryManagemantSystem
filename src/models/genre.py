@@ -20,9 +20,9 @@ class Genre(Base):
     __tablename__ = "genre"
 
     id: Mapped[int] = mapped_column(primary_key=True)
-    genre: Mapped[str] = mapped_column(String(32), unique=True)
+    genre: Mapped[str] = mapped_column(String(), unique=True)
     created_at: Mapped[datetime] = mapped_column(
-        DateTime(timezone=True), server_default=func.now()
+        DateTime(timezone=True), server_default=func.now()  # noqa
     )
     updated_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True), onupdate=func.now(), nullable=True
