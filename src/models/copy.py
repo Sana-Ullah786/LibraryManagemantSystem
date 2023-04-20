@@ -7,8 +7,15 @@ from sqlalchemy.orm import Mapped, mapped_column
 
 class Copy(Base):
     """
-    Database model to store copies of a specific book available and there \n
-    status.
+    A class representing a copies of all the available books in libraray.
+    Attributes:
+        id (int): The primary key ID of the book.
+        book_id (int): Reference to book whose copy is it.
+        language_id (int): The language of that certain copy.
+        status (str): Borrowed status of the copy \n
+            (Available, Loaned out, Reserved, Maintenance)
+        created_at (datetime): The date and time the copy was created.
+        updated_at (datetime): The date and time the copy was last updated.
     """
 
     __tablename__ = "Copies"

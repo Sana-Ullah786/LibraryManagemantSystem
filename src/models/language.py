@@ -7,8 +7,13 @@ from sqlalchemy.orm import Mapped, mapped_column
 
 class Language(Base):
     """
-    Database model for table languages that will store all\n
-    available languages in a library.
+    A class representing a Languages available in the database.
+
+    Attributes:
+        id (int): The primary key ID.
+        language (str): The string representing language.
+        created_at (datetime): The date and time the language was created.
+        updated_at (datetime): The date and time the language was last updated.
     """
 
     __tablename__ = "Languages"
