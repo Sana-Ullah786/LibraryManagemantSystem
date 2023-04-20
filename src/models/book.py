@@ -23,11 +23,11 @@ class Books(Base):
     __tablename__ = "books"
 
     id: Mapped[int] = mapped_column(primary_key=True)
-    title: Mapped[str] = mapped_column(String(32), unique=True, nullable=False)
+    title: Mapped[str] = mapped_column(String(), unique=True, nullable=False)
     date_of_publication: Mapped[datetime] = mapped_column(
         DateTime(), nullable=False
     )  # noqa
-    isbn: Mapped[str] = mapped_column(Integer)
+    isbn: Mapped[str] = mapped_column(String())
     description: Mapped[str] = mapped_column(String(200), nullable=False)
     language_id: Mapped[int] = mapped_column(Integer, nullable=False)
     created_at: Mapped[datetime] = mapped_column(
