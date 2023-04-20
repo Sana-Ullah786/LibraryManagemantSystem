@@ -12,12 +12,12 @@ class Borrowed(Base):
     """
 
     __tablename__ = "borrowed"
-    id: int = mapped_column(Integer(), primary_key=True, index=True)
-    copy_id: int = mapped_column(Integer(), ForeignKey("copies.id"))
-    user_id: int = mapped_column(Integer(), ForeignKey("users.id"))
-    issue_date: datetime = mapped_column(DateTime)
-    due_date: datetime = mapped_column(DateTime)
-    return_date: datetime = mapped_column(DateTime, nullable=True)
+    id: Mapped[int] = mapped_column(Integer(), primary_key=True, index=True)
+    copy_id: Mapped[int] = mapped_column(Integer(), ForeignKey("copies.id"))
+    user_id: Mapped[int] = mapped_column(Integer(), ForeignKey("users.id"))
+    issue_date: Mapped[datetime] = mapped_column(DateTime)
+    due_date: Mapped[datetime] = mapped_column(DateTime)
+    return_date: Mapped[datetime] = mapped_column(DateTime, nullable=True)
     created_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True), server_default=func.now()
     )
