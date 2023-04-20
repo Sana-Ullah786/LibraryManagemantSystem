@@ -2,7 +2,7 @@ from datetime import datetime
 
 from database import Base
 from sqlalchemy import Boolean, DateTime, Integer, String, func, mapped_column
-from sqlalchemy.orm import Mapped
+from sqlalchemy.orm import Mapped, relationship
 
 
 class Users(Base):
@@ -22,6 +22,8 @@ class Users(Base):
     contact_number: Mapped[str] = mapped_column(String(32))
     address: Mapped[str] = mapped_column(String(200))
     is_librarian: Mapped[bool] = mapped_column(Boolean, default=False)
+    is_active: Mapped[bool] = mapped_column(Boolean, default=False)
+    borrowed = relationship("borrowed", back_populates="user")
     created_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True), server_default=func.now()
     )
