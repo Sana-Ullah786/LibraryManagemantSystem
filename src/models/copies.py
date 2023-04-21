@@ -1,5 +1,6 @@
 from datetime import datetime
 
+from book import Books
 from database import Base
 from sqlalchemy import DateTime, ForeignKey, Integer, String, func
 from sqlalchemy.orm import Mapped, mapped_column
@@ -22,7 +23,7 @@ class Copy(Base):
 
     id: Mapped[int] = mapped_column(primary_key=True)
     book_id: Mapped[int] = mapped_column(
-        Integer(), ForeignKey("Books.id"), nullable=False
+        Integer(), ForeignKey(Books.id), nullable=False
     )
     language_id: Mapped[int] = mapped_column(
         Integer(), ForeignKey("Languages.id"), nullable=False
