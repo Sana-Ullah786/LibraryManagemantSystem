@@ -1,0 +1,9 @@
+from .author import *  # noqa
+from .book import *  # noqa
+from .book_author import *  # noqa
+from .book_genre import *  # noqa
+from .borrowed import *  # noqa
+from .copy import *  # noqa
+from .genre import *  # noqa
+from .language import *  # noqa
+from .user import *  # noqa
