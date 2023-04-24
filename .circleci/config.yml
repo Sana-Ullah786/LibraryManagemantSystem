@@ -12,6 +12,9 @@ jobs:
       - run:
           name: Run tests
           command: python -m pytest
+          environment:
+            SQLALCHEMY_DATABASE_URL: sqlite:///test.db
+            SQLALCHEMY_DATABASE_URL_TEST: sqlite:///test.db
       - persist_to_workspace:
           root: ~/project
           paths:
