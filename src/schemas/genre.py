@@ -5,7 +5,7 @@ from pydantic import BaseModel, Field
 
 class GenreSchema(BaseModel):
     id: Optional[int] = None
-    genre: str = Field()  # mapped_column(String(), unique=True)
+    genre: str = Field()
 
     class Config:
         schema_extra = {
