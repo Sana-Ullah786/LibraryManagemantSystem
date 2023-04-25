@@ -3,6 +3,11 @@ from typing import Optional
 
 from pydantic import BaseModel, Field
 
+"""
+Pydantic models for Author model
+
+"""
+
 
 class UserModel(BaseModel):
     user_id: Optional[int] = None

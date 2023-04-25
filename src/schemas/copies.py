@@ -2,6 +2,11 @@ from typing import Optional
 
 from pydantic import BaseModel, Field
 
+"""
+Pydantic models for Copies model
+
+"""
+
 
 class CopiesModel(BaseModel):
     book_id: Optional[int] = None
