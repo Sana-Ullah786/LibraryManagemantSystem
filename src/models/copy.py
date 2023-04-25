@@ -1,8 +1,9 @@
 from datetime import datetime
 
-from database import Base
 from sqlalchemy import DateTime, ForeignKey, Integer, String, func
-from sqlalchemy.orm import Mapped, mapped_column
+from sqlalchemy.orm import Mapped, mapped_column, relationship
+
+from .database import Base
 
 
 class Copy(Base):
@@ -18,21 +19,23 @@ class Copy(Base):
         updated_at (datetime): The date and time the copy was last updated.
     """
 
-    __tablename__ = "Copies"
+    __tablename__ = "copy"
 
     id: Mapped[int] = mapped_column(primary_key=True)
     book_id: Mapped[int] = mapped_column(
-        Integer(), ForeignKey("Books.id"), nullable=False
+        Integer(), ForeignKey("book.id"), nullable=False
     )
     language_id: Mapped[int] = mapped_column(
-        Integer(), ForeignKey("Languages.id"), nullable=False
+        Integer(), ForeignKey("language.id"), nullable=False
     )
     status: Mapped[str] = mapped_column(String(32), nullable=False)
     created_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True), server_default=func.now()
     )
     updated_at: Mapped[datetime] = mapped_column(
-        DateTime(timezone=True), onupdate=func.now()
+        DateTime(timezone=True), onupdate=func.now(), nullable=True
     )
 
-    # This table has 2 relations (with Books and Languages) that must be made.
+    book = relationship("Book", back_populates="copies")
+    language = relationship("Language", back_populates="copies")
+    borrowed = relationship("Borrowed", back_populates="copy")

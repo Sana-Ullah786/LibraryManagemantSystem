@@ -1,8 +1,9 @@
 from datetime import datetime
 
-from database import Base
 from sqlalchemy import DateTime, String, func
-from sqlalchemy.orm import Mapped, mapped_column
+from sqlalchemy.orm import Mapped, mapped_column, relationship
+
+from .database import Base
 
 
 class Language(Base):
@@ -16,13 +17,16 @@ class Language(Base):
         updated_at (datetime): The date and time the language was last updated.
     """
 
-    __tablename__ = "Languages"
+    __tablename__ = "language"
 
     id: Mapped[int] = mapped_column(primary_key=True)
-    language: Mapped[str] = mapped_column(String(32), nullable=False)
+    language: Mapped[str] = mapped_column(String(32), nullable=False, unique=True)
     created_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True), server_default=func.now()
     )
     updated_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True), onupdate=func.now(), nullable=True
     )
+
+    books = relationship("Book", back_populates="language")
+    copies = relationship("Copy", back_populates="language")
