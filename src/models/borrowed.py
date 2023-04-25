@@ -1,8 +1,9 @@
 from datetime import datetime
 
-from database import Base
-from sqlalchemy import DateTime, ForeignKey, Integer, func, mapped_column
-from sqlalchemy.orm import Mapped, relationship
+from sqlalchemy import DateTime, ForeignKey, Integer, func
+from sqlalchemy.orm import Mapped, mapped_column, relationship
+
+from .database import Base
 
 
 class Borrowed(Base):
@@ -13,8 +14,8 @@ class Borrowed(Base):
 
     __tablename__ = "borrowed"
     id: Mapped[int] = mapped_column(Integer(), primary_key=True, index=True)
-    copy_id: Mapped[int] = mapped_column(Integer(), ForeignKey("copies.id"))
-    user_id: Mapped[int] = mapped_column(Integer(), ForeignKey("users.id"))
+    copy_id: Mapped[int] = mapped_column(Integer(), ForeignKey("copy.id"))
+    user_id: Mapped[int] = mapped_column(Integer(), ForeignKey("user.id"))
     issue_date: Mapped[datetime] = mapped_column(DateTime)
     due_date: Mapped[datetime] = mapped_column(DateTime)
     return_date: Mapped[datetime] = mapped_column(DateTime, nullable=True)
@@ -24,6 +25,6 @@ class Borrowed(Base):
     updated_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True), onupdate=func.now(), nullable=True
     )
-    # Relationship with the user model
-    user = relationship("Users", back_populates="borrowed")
-    # TODO: Relationship with copies
+
+    user = relationship("User", back_populates="borrowed")
+    copy = relationship("Copy", back_populates="borrowed")

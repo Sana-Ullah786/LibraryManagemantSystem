@@ -1,11 +1,12 @@
 from datetime import datetime
 
-from database import Base
-from sqlalchemy import DateTime, Integer, String, func
-from sqlalchemy.orm import Mapped, mapped_column
+from sqlalchemy import DateTime, ForeignKey, String, func
+from sqlalchemy.orm import Mapped, mapped_column, relationship
+
+from .database import Base
 
 
-class Books(Base):
+class Book(Base):
     """
     A class representing a book in the database.
 
@@ -20,19 +21,27 @@ class Books(Base):
         updated_at (datetime): The date and time the book was last updated.
     """
 
-    __tablename__ = "books"
+    __tablename__ = "book"
 
     id: Mapped[int] = mapped_column(primary_key=True)
-    title: Mapped[str] = mapped_column(String(), unique=True, nullable=False)
+    title: Mapped[str] = mapped_column(String(), nullable=False)
     date_of_publication: Mapped[datetime] = mapped_column(
         DateTime(), nullable=False
     )  # noqa
-    isbn: Mapped[str] = mapped_column(String())
+    isbn: Mapped[str] = mapped_column(String(), unique=True)
     description: Mapped[str] = mapped_column(String(200), nullable=False)
-    language_id: Mapped[int] = mapped_column(Integer, nullable=False)
+    language_id: Mapped[int] = mapped_column(ForeignKey("language.id"))
     created_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True), server_default=func.now()
     )
     updated_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True), onupdate=func.now(), nullable=True
     )
+
+    authors = relationship("Author", secondary="book_author", back_populates="books")
+    genres = relationship("Genre", secondary="book_genre", back_populates="books")
+    copies = relationship("Copy", back_populates="book")
+    language = relationship("Language", back_populates="books")
+
+    # author_associations = relationship("BookAuthor", back_populates="book")
+    # genre_associations = relationship("BookGenre", back_populates="book")

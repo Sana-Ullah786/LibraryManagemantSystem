@@ -1,8 +1,9 @@
 from datetime import datetime
 
-from database import Base
 from sqlalchemy import DateTime, String, func
-from sqlalchemy.orm import Mapped, mapped_column
+from sqlalchemy.orm import Mapped, mapped_column, relationship
+
+from .database import Base
 
 
 class Genre(Base):
@@ -27,3 +28,5 @@ class Genre(Base):
     updated_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True), onupdate=func.now(), nullable=True
     )
+
+    books = relationship("Book", secondary="book_genre", back_populates="genres")
