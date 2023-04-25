@@ -16,7 +16,7 @@ class UserSchema(BaseModel):
     password: str = Field(min_length=0, max_length=8)
     first_name: str = Field(min_length=0, max_length=32)
     last_name: str = Field(min_length=0, max_length=32)
-    date_of_joining: datetime = Field()
+    date_of_joining: Optional[datetime] = Field()
     contact_number: str = Field(min_length=0, max_length=32)
     address: str = Field(min_length=0, max_length=200)
 
