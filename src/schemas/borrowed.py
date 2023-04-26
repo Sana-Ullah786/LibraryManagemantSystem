@@ -4,7 +4,7 @@ from typing import Optional
 from pydantic import BaseModel, Field, validator
 
 
-class Borrowed(BaseModel):
+class BorrowedSchema(BaseModel):
     """
     The Pydantic Schema model for the Borrowed model
     """
