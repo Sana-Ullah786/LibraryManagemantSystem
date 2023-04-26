@@ -1,5 +1,5 @@
 from datetime import date, datetime
-from typing import Optional
+from typing import List, Optional
 
 from pydantic import BaseModel, Field, validator
 
@@ -11,6 +11,8 @@ class BookSchema(BaseModel):
     isbn: str = Field()
     description: str = Field(min_length=0, max_length=200)
     language_id: int = Field()
+    author_id: List[int] = Field()
+    genre_id: List[int] = Field()
 
     @validator("date_of_publication")
     def pub_date_greater_than_current(cls, v):
