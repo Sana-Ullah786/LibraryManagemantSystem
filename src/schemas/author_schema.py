@@ -22,13 +22,12 @@ class AuthorSchema(BaseModel):
         if "birth_date" in values and values["death_date"] >= values["birth_date"]:
             raise ValueError("Death Date must be greater than Birth Date")
 
-
-class Config:
-    schema_extra = {
-        "example": {
-            "first_name": "John",
-            "last_name": "Doe",
-            "birth_date": "11/8/1981",
-            "death_date": "21/12/2022",
+    class Config:
+        schema_extra = {
+            "example": {
+                "first_name": "John",
+                "last_name": "Doe",
+                "birth_date": "11/8/1981",
+                "death_date": "21/12/2022",
+            }
         }
-    }

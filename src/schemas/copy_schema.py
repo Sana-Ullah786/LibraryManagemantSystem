@@ -16,12 +16,11 @@ class CopySchema(BaseModel):
     )
     status: str = Field(title="Specify book status")
 
-
-class Config:
-    schema_extra = {
-        "example": {
-            "book_id": "Book Title Id",
-            "language_id": "Laguage Id",
-            "status": " Available",
+    class Config:
+        schema_extra = {
+            "example": {
+                "book_id": "Book Title Id",
+                "language_id": "Laguage Id",
+                "status": " Available",
+            }
         }
-    }
