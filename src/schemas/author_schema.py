@@ -3,13 +3,14 @@ from typing import Optional
 
 from pydantic import BaseModel, Field
 
-"""
-Pydantic models for Author model
 
-"""
+class AuthorSchema(BaseModel):
 
+    """
+    Pydantic models for Author model
 
-class UserModel(BaseModel):
+    """
+
     user_id: Optional[int] = None
     first_name: str = Field(title="First name of Author ")
     last_name: str = Field(title="Last name of Author ")
