@@ -14,3 +14,13 @@ class CopiesModel(BaseModel):
         None, title="Enter Language Id for book language"
     )
     status: str = Field(title="Specify book status")
+
+
+class Config:
+    schema_extra = {
+        "example": {
+            "book_id": "Book Title Id",
+            "language_id": "Laguage Id",
+            "status": " Available",
+        }
+    }
