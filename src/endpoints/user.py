@@ -15,15 +15,16 @@ router = APIRouter(
 )
 
 
-@router.get("/", status_code=status.HTTP_200_OK)
+@router.get("/", status_code=status.HTTP_200_OK, response_model=None)
 def get_all_user(
     librarian: dict = Depends(get_current_librarian), db: Session = Depends(get_db)
-) -> List[UserSchema]:
+) -> List[User]:
     """
     Returns the list of all the users registered in a library.
     Param
     -----
     JWT token of a librarian.
+    Throws an exception if JWT is not of librarian
     """
-    users = db.scalar(select(User).all())
+    users = db.execute(select(User).where(True)).scalars().all()
     return users
