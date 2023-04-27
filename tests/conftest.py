@@ -1,17 +1,11 @@
-import os
 from typing import Generator
 
 import pytest
-from dotenv import load_dotenv
-from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 
-from ..src.models.all_models import Base
+from src.models.all_models import Base
 
-load_dotenv()
-
-engine = create_engine(os.getenv("SQLALCHEMY_DATABASE_URL_TEST"))
-TestingSessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
+from .client import TestingSessionLocal, engine
 
 
 @pytest.fixture()
