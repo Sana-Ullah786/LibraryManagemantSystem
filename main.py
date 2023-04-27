@@ -6,5 +6,6 @@ from src.models.database import engine
 
 all_models.Base.metadata.create_all(engine)
 
+
 app = FastAPI()
 app.include_router(router)
