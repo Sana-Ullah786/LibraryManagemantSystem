@@ -68,7 +68,9 @@ def get_current_librarian(
 
 
 @router.post("/register", status_code=status.HTTP_201_CREATED)
-async def create_new_user(user: UserSchema, db: Session = Depends(get_db)):
+async def create_new_user(
+    user: UserSchema, db: Session = Depends(get_db)
+) -> dict[str, str]:
     """
     Creates a new user
     """
@@ -81,7 +83,7 @@ async def create_new_librarian(
     user: UserSchema,
     db: Session = Depends(get_db),
     librarian: dict = Depends(get_current_librarian),
-):
+) -> dict[str, str]:
     """
     Creates a new librarian (requires authentication by another librarian)
     """
@@ -92,7 +94,7 @@ async def create_new_librarian(
 @router.post("/token", status_code=status.HTTP_200_OK)
 async def login_for_access_token(
     form_data: OAuth2PasswordRequestForm = Depends(), db: Session = Depends(get_db)
-):
+) -> dict[str, str | bool]:
     """
     Logs in a user using username and password and returns the access token and a boolean indicating whether the user is a librarian
     """
@@ -107,7 +109,7 @@ async def login_for_access_token(
 # Helper functions
 
 
-def create_user(user: UserSchema, is_librarian: bool, db: Session):
+def create_user(user: UserSchema, is_librarian: bool, db: Session) -> None:
     """
     Helper function that creates a user based on the parameters provided. It also checks if the user already exists. Raises an exception if it does.
     """
