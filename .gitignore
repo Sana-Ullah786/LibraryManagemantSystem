@@ -131,3 +131,5 @@ dmypy.json
 
 # test database
 test.db
+# logging
+logs/
