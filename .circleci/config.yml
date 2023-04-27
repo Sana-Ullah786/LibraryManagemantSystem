@@ -4,12 +4,13 @@ orbs:
 
 jobs:
   build_and_test:
-    executor: python/default
+    executor:
+      name: python/default
+      tag: "3.11"
     steps:
       - checkout
       - python/install-packages:
           pkg-manager: pip
-          version: "3.11"
       - run:
           name: Run tests
           command: python -m pytest
