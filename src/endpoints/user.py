@@ -57,11 +57,14 @@ def get_user_by_id(
     """
     try:
         user = db.execute(select(User).where(User.id == user_id)).scalars().first()
-        logging.info(f"Returning a single user. -- {__name__}.get_user_by_id")
-        return user
     except Exception:
         logging.exception(f"Exception occured -- {__name__}.get_user_by_id")
         raise db_not_available()
+    logging.info(f"Returning a single user. -- {__name__}.get_user_by_id")
+    if user:
+        return user
+    else:
+        raise user_not_exist()
 
 
 # Exceptions
@@ -77,4 +80,17 @@ def db_not_available() -> HTTPException:
     return HTTPException(
         status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
         detail="Database is down. Try again later.",
+    )
+
+
+def user_not_exist() -> HTTPException:
+    """
+    Custom exception that can be raised user does not exist.\n
+    Returns
+    -------
+    Custom HTTPException object
+    """
+    return HTTPException(
+        status_code=status.HTTP_404_NOT_FOUND,
+        detail="No such user exists",
     )
