@@ -1,7 +1,7 @@
 import logging
 from typing import List
 
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, Path
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 from starlette import status
@@ -24,7 +24,10 @@ def get_all_user(
     Param
     -----
     JWT token of a librarian.
-    Throws an exception if JWT is not of librarian
+    Throws an exception if JWT is not of librarian\n
+    Returns
+    ------
+    List of users: List[User]
     """
     try:
         users = db.execute(select(User).where(True)).scalars().all()
@@ -35,10 +38,42 @@ def get_all_user(
         raise db_not_available()
 
 
+@router.get("/{user_id}", status_code=status.HTTP_200_OK, response_model=None)
+def get_user_by_id(
+    librarian: dict = Depends(get_current_librarian),
+    db: Session = Depends(get_db),
+    user_id: int = Path(gt=0),
+) -> User:
+    """
+    Returns a single user.\n
+    Param
+    -----
+    user_id: int\n
+    JWT token of a librarian.
+    Throws an exception if JWT is not of librarian\n
+    Returns
+    ------
+    user: User
+    """
+    try:
+        user = db.execute(select(User).where(User.id == user_id)).scalars().first()
+        logging.info(f"Returning a single user. -- {__name__}.get_user_by_id")
+        return user
+    except Exception:
+        logging.exception(f"Exception occured -- {__name__}.get_user_by_id")
+        raise db_not_available()
+
+
 # Exceptions
 
 
 def db_not_available() -> HTTPException:
+    """
+    Custom exception that can be raised if query execution fails.\n
+    Returns
+    -------
+    Custom HTTPException object
+    """
     return HTTPException(
         status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
         detail="Database is down. Try again later.",
