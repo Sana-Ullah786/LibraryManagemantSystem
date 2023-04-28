@@ -1,7 +1,7 @@
 import logging
 from typing import List
 
-from fastapi import APIRouter, Depends, HTTPException, Path
+from fastapi import APIRouter, Depends, HTTPException, Path, Query
 from sqlalchemy import delete, select
 from sqlalchemy.orm import Session
 from starlette import status
@@ -23,8 +23,40 @@ router = APIRouter(
 )
 
 
+@router.get("", status_code=status.HTTP_200_OK, response_model=None)
+async def filter_user(
+    email: str | None = None,
+    username: str | None = None,
+    first_name: str | None = None,
+    last_name: str | None = None,
+    contact_number: str | None = None,
+    address: str | None = None,
+    librarian: dict = Depends(get_current_librarian),
+    db: Session = Depends(get_db),
+) -> None:
+    """
+    Filters the users list based on param provided. If None given then it will
+    return the complete list.
+    """
+    params = {
+        "email": email,
+        "username": username,
+        "first_name": first_name,
+        "last_name": last_name,
+        "contact_number": contact_number,
+        "address": address,
+    }
+    filters = {key: value for key, value in params.items() if value}
+    try:
+        users = db.query(User).filter_by(**filters).all()
+        return users
+    except Exception:
+        logging.exception(f"Exception occured -- {__name__}.filter_user")
+        raise db_not_available()
+
+
 @router.get("/", status_code=status.HTTP_200_OK, response_model=None)
-def get_all_users(
+async def get_all_users(
     librarian: dict = Depends(get_current_librarian), db: Session = Depends(get_db)
 ) -> List[User]:
     """
@@ -47,7 +79,7 @@ def get_all_users(
 
 
 @router.get("/{user_id}", status_code=status.HTTP_200_OK, response_model=None)
-def get_user_by_id(
+async def get_user_by_id(
     librarian: dict = Depends(get_current_librarian),
     db: Session = Depends(get_db),
     user_id: int = Path(gt=0),
@@ -77,7 +109,7 @@ def get_user_by_id(
 
 
 @router.delete("/delete_user", status_code=status.HTTP_204_NO_CONTENT)
-def delete_current_user(
+async def delete_current_user(
     user: dict = Depends(get_current_user), db: Session = Depends(get_db)
 ) -> None:
     """
@@ -101,7 +133,7 @@ def delete_current_user(
 
 
 @router.delete("/delete_user/{user_id}", status_code=status.HTTP_204_NO_CONTENT)
-def delete_user_by_id(
+async def delete_user_by_id(
     librarian: dict = Depends(get_current_librarian),
     db: Session = Depends(get_db),
     user_id: int = Path(gt=0),
@@ -130,11 +162,20 @@ def delete_user_by_id(
 
 
 @router.put("/update_user", status_code=status.HTTP_200_OK, response_model=None)
-def update_current_user(
+async def update_current_user(
     new_user: UpdateUserSchema,
     user: dict = Depends(get_current_user),
     db: Session = Depends(get_db),
 ) -> UpdateUserSchema:
+    """
+    Updates the current logged in user.\n
+    Params
+    ------
+    Requires user to be logged in using JWT\n
+    Returns
+    ------
+    HTTP_STATUS_CODE_200
+    """
     try:
         current_user = db.scalar(select(User).where(User.id == user.get("id")))
         if not verify_password(new_user.old_password, current_user.password):
@@ -150,12 +191,21 @@ def update_current_user(
 @router.put(
     "/update_user/{user_id}", status_code=status.HTTP_200_OK, response_model=None
 )
-def update_current_user_by_id(
+async def update_current_user_by_id(
     new_user: UpdateUserSchema,
     user_id: int = Path(gt=0),
     librarian: dict = Depends(get_current_librarian),
     db: Session = Depends(get_db),
 ) -> UpdateUserSchema:
+    """
+    Updates the user whose id is given\n
+    Params
+    ------
+    Requires user to be logged in using JWT as librarian\n
+    Returns
+    ------
+    HTTP_STATUS_CODE_200
+    """
     try:
         current_lib = db.scalar(select(User).where(User.id == librarian.get("id")))
         if not verify_password(new_user.old_password, current_lib.password):
