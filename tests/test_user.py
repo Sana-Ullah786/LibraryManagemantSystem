@@ -97,6 +97,39 @@ def test_delete_user_by_id(test_db: sessionmaker) -> None:
     assert response.status_code == status.HTTP_404_NOT_FOUND
 
 
+def test_update_current_user(test_db: sessionmaker) -> None:
+    check_no_auth("/user/update_user", client.put)
+    token = get_fresh_token(test_db, TEST_USER_CRED)
+    updated_user = TEST_USER.copy()
+    del updated_user["date_of_joining"]
+    updated_user["password"] = "12345678"
+    updated_user["old_password"] = "1234567"
+    response = client.put(
+        "/user/update_user",
+        headers={"Authorization": f"Bearer {token}"},
+        json=updated_user,
+    )
+    assert response.status_code == status.HTTP_401_UNAUTHORIZED
+
+    updated_user["old_password"] = "12345678"
+    updated_user["email"] = LIB_USER["email"]
+    response = client.put(
+        "/user/update_user",
+        headers={"Authorization": f"Bearer {token}"},
+        json=updated_user,
+    )
+    assert response.status_code == status.HTTP_400_BAD_REQUEST
+
+    updated_user["email"] = "user2@gmail.com"
+    response = client.put(
+        "/user/update_user",
+        headers={"Authorization": f"Bearer {token}"},
+        json=updated_user,
+    )
+    assert response.status_code == status.HTTP_200_OK
+    assert response.json().get("email") == "user2@gmail.com"
+
+
 # Helper functions
 
 

@@ -8,8 +8,15 @@ from starlette import status
 
 from ..models.database import get_db
 from ..models.user import User
+from ..schemas.update_user import UpdateUserSchema
 from ..schemas.user import UserSchema
-from .auth import get_current_librarian, get_current_user, get_password_hash
+
+from .auth import (  # isort: skip
+    get_current_librarian,  # isort: skip
+    get_current_user,  # isort: skip
+    get_password_hash,  # isort: skip
+    verify_password,  # isort: skip
+)  # isort: skip
 
 router = APIRouter(
     prefix="/user", tags=["user"], responses={401: {"user": "Not authorized"}}
@@ -124,12 +131,14 @@ def delete_user_by_id(
 
 @router.put("/update_user", status_code=status.HTTP_200_OK, response_model=None)
 def update_current_user(
-    new_user: UserSchema,
+    new_user: UpdateUserSchema,
     user: dict = Depends(get_current_user),
     db: Session = Depends(get_db),
-) -> UserSchema:
+) -> UpdateUserSchema:
     try:
         current_user = db.scalar(select(User).where(User.id == user.get("id")))
+        if not verify_password(new_user.old_password, current_user.password):
+            raise old_pass_not_matched()
         current_user.email = new_user.email
         current_user.username = new_user.username
         current_user.password = get_password_hash(new_user.password)
@@ -143,6 +152,8 @@ def update_current_user(
         db.commit()
         new_user.id = current_user.id
         return new_user
+    except HTTPException:
+        raise old_pass_not_matched()
     except Exception:
         logging.exception(f"Exception occured -- {__name__}.update_current_user")
         raise invalid_data()
@@ -185,4 +196,15 @@ def invalid_data() -> HTTPException:
     return HTTPException(
         status_code=status.HTTP_400_BAD_REQUEST,
         detail="username/email not unique",
+    )
+
+
+def old_pass_not_matched() -> HTTPException:
+    """
+    Custom exception that can be raised while updating user\n
+    if old password didn't match current pass.
+    """
+    return HTTPException(
+        status_code=status.HTTP_401_UNAUTHORIZED,
+        detail="Old pass didn't matched",
     )
