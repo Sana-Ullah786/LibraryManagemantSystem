@@ -1,5 +1,6 @@
 import logging
 from datetime import datetime
+from typing import Callable
 
 import pytz
 from sqlalchemy import delete, insert, select
@@ -36,12 +37,13 @@ TEST_USER = {
     "date_of_joining": datetime.now(pytz.UTC),
 }
 
+SUPER_USER_CRED = {"username": "super_user", "password": "12345678"}
+TEST_USER_CRED = {"username": "user1", "password": "12345678"}
+
 
 def test_get_all_users(test_db: sessionmaker) -> None:
-    check_no_auth()
-    token = get_fresh_token(test_db)
-    new_user = User(**TEST_USER)
-    insert_user(test_db, new_user)
+    check_no_auth("/user/", client.get)
+    token = get_fresh_token(test_db, SUPER_USER_CRED)
     response = client.get("/user/", headers={"Authorization": f"Bearer {token}"})
     assert response.status_code == status.HTTP_200_OK
     assert len(response.json()) == 2
@@ -50,10 +52,8 @@ def test_get_all_users(test_db: sessionmaker) -> None:
 
 
 def test_get_user_by_id(test_db: sessionmaker) -> None:
-    check_no_auth()
-    token = get_fresh_token(test_db)
-    new_user = User(**TEST_USER)
-    insert_user(test_db, new_user)
+    check_no_auth("/user/", client.get)
+    token = get_fresh_token(test_db, SUPER_USER_CRED)
     response = client.get("/user/2", headers={"Authorization": f"Bearer {token}"})
     assert response.status_code == status.HTTP_200_OK
     assert response.json().get("username") == "user1"
@@ -62,14 +62,53 @@ def test_get_user_by_id(test_db: sessionmaker) -> None:
     assert response.status_code == status.HTTP_404_NOT_FOUND
 
 
+def test_delete_current_user(test_db: sessionmaker) -> None:
+    check_no_auth("/user/delete_user", client.delete)
+    token = get_fresh_token(test_db, TEST_USER_CRED)
+    response = client.delete(
+        "/user/delete_user", headers={"Authorization": f"Bearer {token}"}
+    )
+    assert response.status_code == status.HTTP_204_NO_CONTENT
+
+    token = get_fresh_token(test_db, SUPER_USER_CRED)
+    response = client.delete(
+        "/user/delete_user", headers={"Authorization": f"Bearer {token}"}
+    )
+    assert response.status_code == status.HTTP_204_NO_CONTENT
+
+
+def test_delete_user_by_id(test_db: sessionmaker) -> None:
+    check_no_auth("/user/delete_user/2", client.delete)
+    token = get_fresh_token(test_db, TEST_USER_CRED)
+    response = client.delete(
+        "/user/delete_user/2", headers={"Authorization": f"Bearer {token}"}
+    )
+    assert response.status_code == status.HTTP_401_UNAUTHORIZED
+
+    token = get_fresh_token(test_db, SUPER_USER_CRED)
+    response = client.delete(
+        "/user/delete_user/2", headers={"Authorization": f"Bearer {token}"}
+    )
+    assert response.status_code == status.HTTP_204_NO_CONTENT
+
+    response = client.delete(
+        "/user/delete_user/2", headers={"Authorization": f"Bearer {token}"}
+    )
+    assert response.status_code == status.HTTP_404_NOT_FOUND
+
+
 # Helper functions
 
 
-def check_no_auth() -> None:
+def check_no_auth(url: str, client_method: Callable) -> None:
     """
-    Hit the url with no token to check response
+    Hit the url with no token to check response\n
+    Param
+    -----
+    url: str to fetch from
+    client_method: Function methods to call with like post | get
     """
-    response = client.get("/user/")
+    response = client_method(url)
     assert response.json() == NOT_AUTH
     assert response.status_code == status.HTTP_401_UNAUTHORIZED
 
@@ -92,17 +131,19 @@ def insert_user(test_db: sessionmaker, user: User) -> None:
         db.commit()
 
 
-def get_fresh_token(db: sessionmaker) -> str:
+def get_fresh_token(db: sessionmaker, data) -> str:
     """
     Clears the db, create new librarian and returns its jwt token
     """
     remove_all_users(db)
     new_user = User(**LIB_USER)
     insert_user(db, new_user)
+    new_user = User(**TEST_USER)
+    insert_user(db, new_user)
     jwt_token = (
         client.post(
             "/auth/token",
-            data={"username": "super_user", "password": "12345678"},
+            data=data,
         )
         .json()
         .get("token")
