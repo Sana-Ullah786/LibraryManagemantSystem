@@ -1,7 +1,7 @@
 from datetime import datetime
 
 import pytz
-from fastapi import Response
+from fastapi import Response, status
 from sqlalchemy import select
 from sqlalchemy.orm import sessionmaker
 
@@ -29,7 +29,7 @@ def test_register_user_valid(test_db: sessionmaker) -> None:
     Tests a valid user registration
     """
     response = register_user(TEST_USER)
-    assert response.status_code == 201
+    assert response.status_code == status.HTTP_201_CREATED
 
     with test_db() as db:
         user = db.scalar(
@@ -48,7 +48,7 @@ def test_register_user_invalid(test_db: sessionmaker) -> None:
     new_user = TEST_USER.copy()
     new_user.pop("username")
     response = register_user(new_user)
-    assert response.status_code == 422
+    assert response.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY
 
 
 def test_register_user_already_exists(test_db: sessionmaker) -> None:
@@ -59,7 +59,7 @@ def test_register_user_already_exists(test_db: sessionmaker) -> None:
     register_user(TEST_USER)
     response = register_user(TEST_USER)
 
-    assert response.status_code == 400
+    assert response.status_code == status.HTTP_400_BAD_REQUEST
 
 
 ## Token Tests
@@ -73,7 +73,7 @@ def test_token_valid(test_db: sessionmaker) -> None:
     register_user(TEST_USER)
     response = login(TEST_USER_AUTH)
 
-    assert response.status_code == 200
+    assert response.status_code == status.HTTP_200_OK
     data = response.json()
     assert "token" in data
     assert "is_librarian" in data
@@ -90,13 +90,13 @@ def test_token_invalid(test_db: sessionmaker) -> None:
     new_test_user_auth["username"] = "an incorrect username"
     response = login(new_test_user_auth)
 
-    assert response.status_code == 401
+    assert response.status_code == status.HTTP_401_UNAUTHORIZED
 
     new_test_user_auth = TEST_USER_AUTH.copy()
     new_test_user_auth["password"] = "an incorrect password"
     response = login(new_test_user_auth)
 
-    assert response.status_code == 401
+    assert response.status_code == status.HTTP_401_UNAUTHORIZED
 
 
 ## Register Librarian Tests
@@ -113,7 +113,7 @@ def test_register_librarian_valid(test_db: sessionmaker) -> None:
     librarian["email"] = "librarian_og@gmail.com"
     librarian["username"] = "librarian_og"
     response = register_librarian(librarian, token)
-    assert response.status_code == 201
+    assert response.status_code == status.HTTP_201_CREATED
 
     with test_db() as db:
         librarian = db.scalar(
@@ -135,7 +135,7 @@ def test_register_librarian_invalid(test_db: sessionmaker) -> None:
     librarian["email"] = "librarian_og@gmail.com"
     librarian.pop("username")
     response = register_librarian(librarian, token)
-    assert response.status_code == 422
+    assert response.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY
 
 
 def test_register_librarian_already_exists(test_db: sessionmaker) -> None:
@@ -146,7 +146,7 @@ def test_register_librarian_already_exists(test_db: sessionmaker) -> None:
     token = create_librarian_and_get_token(test_db)
 
     response = register_librarian(TEST_USER, token)
-    assert response.status_code == 400
+    assert response.status_code == status.HTTP_400_BAD_REQUEST
 
 
 def test_register_librarian_without_librarian_token(test_db: sessionmaker) -> None:
@@ -155,7 +155,7 @@ def test_register_librarian_without_librarian_token(test_db: sessionmaker) -> No
     """
 
     response = register_librarian(TEST_USER, None)
-    assert response.status_code == 401
+    assert response.status_code == status.HTTP_401_UNAUTHORIZED
 
 
 # Helper functions
