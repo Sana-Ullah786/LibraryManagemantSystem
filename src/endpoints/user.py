@@ -60,10 +60,11 @@ def get_user_by_id(
     except Exception:
         logging.exception(f"Exception occured -- {__name__}.get_user_by_id")
         raise db_not_available()
-    logging.info(f"Returning a single user. -- {__name__}.get_user_by_id")
     if user:
+        logging.info(f"Returning a single user. -- {__name__}.get_user_by_id")
         return user
     else:
+        logging.error(f"User not found -- {__name__}.get_user_by_id")
         raise user_not_exist()
 
 
@@ -86,6 +87,35 @@ def delete_current_user(
             f"Deleting user {user.get('username')} -- {__name__}.delete_current_user"
         )
         db.commit()
+    except Exception:
+        logging.exception(f"Exception occured -- {__name__}.delete_current_user")
+        raise db_not_available()
+
+
+@router.delete("/delete_user/{user_id}", status_code=status.HTTP_204_NO_CONTENT)
+def delete_user_by_id(
+    librarian: dict = Depends(get_current_librarian),
+    db: Session = Depends(get_db),
+    user_id: int = Path(gt=0),
+) -> None:
+    """
+    Deletes the user provided by id.\n
+    Params
+    ------
+    Requires user to be logged in using JWT of librarian.\n
+    Returns
+    ------
+    HTTP_STATUS_CODE_204
+    """
+    try:
+        if db.execute(delete(User).where(User.id == user_id)).rowcount > 0:
+            logging.info(f"Deleting user {user_id} -- {__name__}.delete_user_by_id")
+            db.commit()
+        else:
+            logging.error("User not found -- {__name__}.delete_user_by_id")
+            raise user_not_exist()
+    except HTTPException:
+        raise user_not_exist()
     except Exception:
         logging.exception(f"Exception occured -- {__name__}.delete_current_user")
         raise db_not_available()
