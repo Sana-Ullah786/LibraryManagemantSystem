@@ -1,7 +1,4 @@
-from datetime import date, datetime
-from typing import Optional
-
-from pydantic import Field, validator
+from pydantic import Field
 
 from .user import UserSchema
 
