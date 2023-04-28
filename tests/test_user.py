@@ -130,6 +130,45 @@ def test_update_current_user(test_db: sessionmaker) -> None:
     assert response.json().get("email") == "user2@gmail.com"
 
 
+def test_update_user_by_id(test_db: sessionmaker) -> None:
+    check_no_auth("/user/update_user/2", client.put)
+    token = get_fresh_token(test_db, TEST_USER_CRED)
+    updated_user = TEST_USER.copy()
+    del updated_user["date_of_joining"]
+    updated_user["password"] = "12345678"
+    updated_user["old_password"] = "12345678"
+    response = client.put(
+        "/user/update_user/2",
+        headers={"Authorization": f"Bearer {token}"},
+        json=updated_user,
+    )
+    assert response.status_code == status.HTTP_401_UNAUTHORIZED  # user must be lib
+    token = get_fresh_token(test_db, SUPER_USER_CRED)
+    updated_user["old_password"] = "1234567"
+    updated_user["email"] = "user3@gmail.com"
+    response = client.put(
+        "/user/update_user/2",
+        headers={"Authorization": f"Bearer {token}"},
+        json=updated_user,
+    )
+    assert response.status_code == status.HTTP_401_UNAUTHORIZED  # old pass not equal
+    updated_user["old_password"] = "12345678"
+    updated_user["email"] = "user2@gmail.com"
+    response = client.put(
+        "/user/update_user/6",
+        headers={"Authorization": f"Bearer {token}"},
+        json=updated_user,
+    )
+    assert response.status_code == status.HTTP_404_NOT_FOUND  # invalid id
+    response = client.put(
+        "/user/update_user/2",
+        headers={"Authorization": f"Bearer {token}"},
+        json=updated_user,
+    )
+    assert response.status_code == status.HTTP_200_OK
+    assert response.json().get("email") == "user2@gmail.com"  # success
+
+
 # Helper functions
 
 

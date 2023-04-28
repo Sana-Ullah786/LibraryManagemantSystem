@@ -139,19 +139,7 @@ def update_current_user(
         current_user = db.scalar(select(User).where(User.id == user.get("id")))
         if not verify_password(new_user.old_password, current_user.password):
             raise old_pass_not_matched()
-        current_user.email = new_user.email
-        current_user.username = new_user.username
-        current_user.password = get_password_hash(new_user.password)
-        current_user.first_name = new_user.first_name
-        current_user.last_name = new_user.last_name
-        current_user.contact_number = new_user.contact_number
-        current_user.address = new_user.address
-        logging.info(
-            f"Updating user {user.get('username')} -- {__name__}.udpate_current_user"
-        )
-        db.commit()
-        new_user.id = current_user.id
-        return new_user
+        return update_user(new_user, user.get("id"), db)
     except HTTPException:
         raise old_pass_not_matched()
     except Exception:
@@ -159,7 +147,57 @@ def update_current_user(
         raise invalid_data()
 
 
+@router.put(
+    "/update_user/{user_id}", status_code=status.HTTP_200_OK, response_model=None
+)
+def update_current_user_by_id(
+    new_user: UpdateUserSchema,
+    user_id: int = Path(gt=0),
+    librarian: dict = Depends(get_current_librarian),
+    db: Session = Depends(get_db),
+) -> UpdateUserSchema:
+    try:
+        current_lib = db.scalar(select(User).where(User.id == librarian.get("id")))
+        if not verify_password(new_user.old_password, current_lib.password):
+            raise old_pass_not_matched()
+        return update_user(new_user, user_id, db)
+    except HTTPException as e:
+        if e.status_code == status.HTTP_401_UNAUTHORIZED:
+            raise old_pass_not_matched()
+        elif e.status_code == status.HTTP_404_NOT_FOUND:
+            raise user_not_exist()
+    except Exception:
+        logging.exception(f"Exception occured -- {__name__}.update_current_user")
+        raise invalid_data()
+
+
 # Exceptions
+
+
+def update_user(
+    new_user: UpdateUserSchema, user_id: int, db: Session
+) -> UpdateUserSchema:
+    """
+    Updates the db with new user data.\n
+    Params
+    ------
+    new_user: New user data
+    user_id: int id of the user to update the data of.
+    """
+    current_user = db.scalar(select(User).where(User.id == user_id))
+    if not current_user:
+        raise user_not_exist()
+    current_user.email = new_user.email
+    current_user.username = new_user.username
+    current_user.password = get_password_hash(new_user.password)
+    current_user.first_name = new_user.first_name
+    current_user.last_name = new_user.last_name
+    current_user.contact_number = new_user.contact_number
+    current_user.address = new_user.address
+    logging.info(f"Updating user {user_id} -- {__name__}.udpate_current_user")
+    db.commit()
+    new_user.id = current_user.id
+    return new_user
 
 
 def db_not_available() -> HTTPException:
