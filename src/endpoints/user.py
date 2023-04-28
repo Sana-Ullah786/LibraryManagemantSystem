@@ -2,13 +2,13 @@ import logging
 from typing import List
 
 from fastapi import APIRouter, Depends, HTTPException, Path
-from sqlalchemy import select
+from sqlalchemy import delete, select
 from sqlalchemy.orm import Session
 from starlette import status
 
 from ..models.database import get_db
 from ..models.user import User
-from .auth import get_current_librarian
+from .auth import get_current_librarian, get_current_user
 
 router = APIRouter(
     prefix="/user", tags=["user"], responses={401: {"user": "Not authorized"}}
@@ -16,7 +16,7 @@ router = APIRouter(
 
 
 @router.get("/", status_code=status.HTTP_200_OK, response_model=None)
-def get_all_user(
+def get_all_users(
     librarian: dict = Depends(get_current_librarian), db: Session = Depends(get_db)
 ) -> List[User]:
     """
@@ -65,6 +65,30 @@ def get_user_by_id(
         return user
     else:
         raise user_not_exist()
+
+
+@router.delete("/delete_user", status_code=status.HTTP_204_NO_CONTENT)
+def delete_current_user(
+    user: dict = Depends(get_current_user), db: Session = Depends(get_db)
+) -> None:
+    """
+    Deletes the current logged in user.\n
+    Params
+    ------
+    Requires user to be logged in using JWT.\n
+    Returns
+    ------
+    HTTP_STATUS_CODE_204
+    """
+    try:
+        db.execute(delete(User).where(User.id == user.get("id")))
+        logging.info(
+            f"Deleting user {user.get('username')} -- {__name__}.delete_current_user"
+        )
+        db.commit()
+    except Exception:
+        logging.exception(f"Exception occured -- {__name__}.delete_current_user")
+        raise db_not_available()
 
 
 # Exceptions
