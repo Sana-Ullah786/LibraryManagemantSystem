@@ -17,6 +17,7 @@ pytz = "==2023.3"
 python-multipart = "==0.0.6"
 bcrypt = "==4.0.1"
 httpx = "==0.24.0"
+redis = "*"
 
 [dev-packages]
 

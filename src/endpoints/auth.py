@@ -8,11 +8,10 @@ from fastapi import APIRouter, Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
 from jose import JWTError, jwt
 from passlib.context import CryptContext
+from redis import Redis
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
-from ..models.author import Author
-from ..models.book import Book
 from ..models.database import get_db
 from ..models.user import User
 from ..schemas.user import UserSchema
@@ -27,6 +26,8 @@ ALGORITHM = os.getenv("JWT_ALGORITHM")
 bcryp_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
 oauth2_bearer = OAuth2PasswordBearer(tokenUrl="token")
+
+redis_conn = Redis(host="localhost", port=6379, db=0, decode_responses=True)
 
 router = APIRouter(
     prefix="/auth", tags=["auth"], responses={401: {"user": "Not authorized"}}
