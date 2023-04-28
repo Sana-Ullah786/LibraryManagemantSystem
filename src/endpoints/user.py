@@ -8,7 +8,8 @@ from starlette import status
 
 from ..models.database import get_db
 from ..models.user import User
-from .auth import get_current_librarian, get_current_user
+from ..schemas.user import UserSchema
+from .auth import get_current_librarian, get_current_user, get_password_hash
 
 router = APIRouter(
     prefix="/user", tags=["user"], responses={401: {"user": "Not authorized"}}
@@ -121,6 +122,32 @@ def delete_user_by_id(
         raise db_not_available()
 
 
+@router.put("/update_user", status_code=status.HTTP_200_OK, response_model=None)
+def update_current_user(
+    new_user: UserSchema,
+    user: dict = Depends(get_current_user),
+    db: Session = Depends(get_db),
+) -> UserSchema:
+    try:
+        current_user = db.scalar(select(User).where(User.id == user.get("id")))
+        current_user.email = new_user.email
+        current_user.username = new_user.username
+        current_user.password = get_password_hash(new_user.password)
+        current_user.first_name = new_user.first_name
+        current_user.last_name = new_user.last_name
+        current_user.contact_number = new_user.contact_number
+        current_user.address = new_user.address
+        logging.info(
+            f"Updating user {user.get('username')} -- {__name__}.udpate_current_user"
+        )
+        db.commit()
+        new_user.id = current_user.id
+        return new_user
+    except Exception:
+        logging.exception(f"Exception occured -- {__name__}.update_current_user")
+        raise invalid_data()
+
+
 # Exceptions
 
 
@@ -147,4 +174,15 @@ def user_not_exist() -> HTTPException:
     return HTTPException(
         status_code=status.HTTP_404_NOT_FOUND,
         detail="No such user exists",
+    )
+
+
+def invalid_data() -> HTTPException:
+    """
+    Custom exception that can be raised while updating user\n
+    non unique email/username is provided.
+    """
+    return HTTPException(
+        status_code=status.HTTP_400_BAD_REQUEST,
+        detail="username/email not unique",
     )
