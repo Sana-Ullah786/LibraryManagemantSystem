@@ -19,8 +19,8 @@ class CopySchema(BaseModel):
     class Config:
         schema_extra = {
             "example": {
-                "book_id": "Book Title Id",
-                "language_id": "Laguage Id",
+                "book_id": 1,
+                "language_id": 1,
                 "status": " Available",
             }
         }
