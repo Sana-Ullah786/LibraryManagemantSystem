@@ -4,7 +4,7 @@ from typing import Optional, Tuple
 
 import pytz
 from dotenv import load_dotenv
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException, Request, status
 from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
 from jose import JWTError, jwt
 from passlib.context import CryptContext
@@ -21,6 +21,7 @@ load_dotenv()
 
 SECRET_KEY = os.getenv("JWT_SECRET_KEY")
 ALGORITHM = os.getenv("JWT_ALGORITHM")
+EXPIRE_TIME_IN_MINUTES = int(os.getenv("JWT_EXPIRE_TIME_IN_MINUTES"))
 
 
 bcryp_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
@@ -42,7 +43,7 @@ def get_current_user(token: str = Depends(oauth2_bearer)) -> dict:
     To be used as a dependency by authenticated routes for users
     """
     try:
-        username, user_id = decode_jwt(token)
+        username, user_id = decode_and_verify_jwt(token)
         return {"username": username, "id": user_id}
     except JWTError:
         raise get_user_exception()
@@ -56,7 +57,7 @@ def get_current_librarian(
     To be used as a dependency by authenticated routes for librarians
     """
     try:
-        username, user_id = decode_jwt(token)
+        username, user_id = decode_and_verify_jwt(token)
         user = db.scalar(select(User).where(User.id == user_id))
         if not user.is_librarian:
             raise get_librarian_exception()
@@ -102,9 +103,18 @@ async def login_for_access_token(
     user = authenticate_user(form_data.username, form_data.password, db)
     if not user:
         raise get_token_exception()
-    token_expires = timedelta(minutes=20)
-    token = create_access_token(user.username, user.id, expires_delta=token_expires)
+    token = create_access_token(user.username, user.id)
     return {"token": token, "is_librarian": user.is_librarian}
+
+
+@router.post("/logout", status_code=status.HTTP_200_OK)
+async def logout(
+    request: Request, user: dict = Depends(get_current_user)
+) -> dict[str, str]:
+    token = request.headers.get("authorization").split()[1]
+    redis_conn.setex(f"bl_{token}", timedelta(minutes=EXPIRE_TIME_IN_MINUTES), token)
+
+    return {"status": "success", "message": "user logged out"}
 
 
 # Helper functions
@@ -157,21 +167,25 @@ def authenticate_user(username: str, password: str, db: Session) -> User | bool:
     return user
 
 
-def create_access_token(
-    username: str, user_id: int, expires_delta: Optional[timedelta] = None
-) -> str:
+def create_access_token(username: str, user_id: int) -> str:
     """
-    Takes in a username, id and expire time and returns a JWT access token for the user
+    Takes in a username and id and returns a JWT access token for the user
     """
     encode = {"sub": username, "id": user_id}
-    if expires_delta:
-        expire = datetime.utcnow() + timedelta(minutes=15)
+    expire = datetime.utcnow() + timedelta(minutes=EXPIRE_TIME_IN_MINUTES)
     encode.update({"exp": expire})
     return jwt.encode(encode, SECRET_KEY, algorithm=ALGORITHM)
 
 
-def decode_jwt(token: str) -> Tuple[str | None]:
-    """Decodes a given jwt token and returns the sub (username) and id. Raises an exception if any of these are None"""
+def decode_and_verify_jwt(token: str) -> Tuple[str | None]:
+    """
+    Decodes a given jwt token, verifies that it is active (not in the blacklist) and returns the sub (username) and id.
+    Raises a 401 exception if token is blacklisted or if username or id are None
+    """
+
+    in_black_list = redis_conn.get(f"bl_{token}")
+    if in_black_list:
+        raise get_user_exception()
 
     payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
     username = payload.get("sub")
