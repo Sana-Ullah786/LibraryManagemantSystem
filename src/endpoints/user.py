@@ -55,29 +55,6 @@ async def filter_user(
         raise db_not_available()
 
 
-@router.get("/", status_code=status.HTTP_200_OK, response_model=None)
-async def get_all_users(
-    librarian: dict = Depends(get_current_librarian), db: Session = Depends(get_db)
-) -> List[User]:
-    """
-    Returns the list of all the users registered in a library.
-    Param
-    -----
-    JWT token of a librarian.
-    Throws an exception if JWT is not of librarian\n
-    Returns
-    ------
-    List of users: List[User]
-    """
-    try:
-        users = db.execute(select(User).where(True)).scalars().all()
-        logging.info(f"Returning all users. -- {__name__}.get_all_user")
-        return users
-    except Exception:
-        logging.exception(f"Exception occured -- {__name__}.get_all_user")
-        raise db_not_available()
-
-
 @router.get("/{user_id}", status_code=status.HTTP_200_OK, response_model=None)
 async def get_user_by_id(
     librarian: dict = Depends(get_current_librarian),
@@ -108,7 +85,7 @@ async def get_user_by_id(
         raise user_not_exist()
 
 
-@router.delete("/delete_user", status_code=status.HTTP_204_NO_CONTENT)
+@router.delete("/", status_code=status.HTTP_204_NO_CONTENT)
 async def delete_current_user(
     user: dict = Depends(get_current_user), db: Session = Depends(get_db)
 ) -> None:
@@ -132,7 +109,7 @@ async def delete_current_user(
         raise db_not_available()
 
 
-@router.delete("/delete_user/{user_id}", status_code=status.HTTP_204_NO_CONTENT)
+@router.delete("/{user_id}", status_code=status.HTTP_204_NO_CONTENT)
 async def delete_user_by_id(
     librarian: dict = Depends(get_current_librarian),
     db: Session = Depends(get_db),
@@ -161,7 +138,7 @@ async def delete_user_by_id(
         raise db_not_available()
 
 
-@router.put("/update_user", status_code=status.HTTP_200_OK, response_model=None)
+@router.put("/", status_code=status.HTTP_200_OK, response_model=None)
 async def update_current_user(
     new_user: UpdateUserSchema,
     user: dict = Depends(get_current_user),
@@ -188,9 +165,7 @@ async def update_current_user(
         raise invalid_data()
 
 
-@router.put(
-    "/update_user/{user_id}", status_code=status.HTTP_200_OK, response_model=None
-)
+@router.put("/{user_id}", status_code=status.HTTP_200_OK, response_model=None)
 async def update_current_user_by_id(
     new_user: UpdateUserSchema,
     user_id: int = Path(gt=0),
