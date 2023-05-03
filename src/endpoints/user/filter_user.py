@@ -1,4 +1,5 @@
 import logging
+from typing import List
 
 from fastapi import Depends, HTTPException
 from sqlalchemy.orm import Session
@@ -21,7 +22,7 @@ async def filter_user(
     address: str | None = None,
     librarian: dict = Depends(get_current_librarian),
     db: Session = Depends(get_db),
-) -> None:
+) -> List[User]:
     """
     Filters the users list based on param provided. If None given then it will
     return the complete list.
