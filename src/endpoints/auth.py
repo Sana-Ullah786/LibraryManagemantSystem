@@ -3,6 +3,7 @@ from datetime import datetime, timedelta
 from typing import Optional, Tuple
 
 import pytz
+import redis
 from dotenv import load_dotenv
 from fastapi import APIRouter, Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
@@ -22,7 +23,11 @@ load_dotenv()
 
 SECRET_KEY = os.getenv("JWT_SECRET_KEY")
 ALGORITHM = os.getenv("JWT_ALGORITHM")
+REDIS_HOST = os.getenv("REDIS_HOST")
+REDIS_PORT = os.getenv("REDIS_PORT")
 
+
+redis_conn = redis.Redis(host=REDIS_HOST, port=REDIS_PORT, decode_responses=True)
 
 bcryp_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
