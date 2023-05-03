@@ -1,5 +1,6 @@
 from fastapi import APIRouter
 
+
 from src.endpoints import auth, language
 
 router = APIRouter()

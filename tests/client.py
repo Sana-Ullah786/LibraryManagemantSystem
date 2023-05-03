@@ -13,7 +13,9 @@ load_dotenv()
 
 
 engine = create_engine(os.getenv("SQLALCHEMY_DATABASE_URL_TEST"))
-TestingSessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
+TestingSessionLocal = sessionmaker(
+    autocommit=False, autoflush=False, bind=engine, expire_on_commit=False
+)
 
 
 def override_get_db() -> Generator[Session, None, None]:
