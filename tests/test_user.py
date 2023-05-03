@@ -2,13 +2,11 @@ from sqlalchemy.orm import sessionmaker
 from starlette import status
 
 from .client import client
+# fmt: off
+from .utils import (LIB_USER, SUPER_USER_CRED, TEST_USER, TEST_USER_CRED,
+                    check_no_auth, get_fresh_token)
 
-from .utils import LIB_USER  # isort: skip
-from .utils import SUPER_USER_CRED  # isort: skip
-from .utils import TEST_USER  # isort: skip
-from .utils import TEST_USER_CRED  # isort: skip
-from .utils import check_no_auth  # isort: skip
-from .utils import get_fresh_token  # isort: skip
+# fmt: on
 
 
 def test_get_all_users(test_db: sessionmaker) -> None:
