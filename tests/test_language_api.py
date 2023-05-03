@@ -1,3 +1,4 @@
+import logging
 from datetime import datetime
 
 from src.endpoints.auth import get_password_hash
@@ -16,6 +17,7 @@ def create_user_using_model(test_db, librarian=False) -> None:
     Returns:
         None
     """
+    logging.info("Creating user in database in Test DB")
     user = User()
     user.email = "Test"
     user.username = "Test"
@@ -31,6 +33,7 @@ def create_user_using_model(test_db, librarian=False) -> None:
         db.add(user)
         db.commit()
         db.refresh(user)
+    logging.info("Created user in database in Test DB with id: " + str(user.id))
 
 
 def get_token_for_user(test_db) -> str:
@@ -41,8 +44,12 @@ def get_token_for_user(test_db) -> str:
     Returns:
         str: The token for the user.
     """
+    logging.info(
+        "Getting token for user in Test DB with username: Test and password: Test"
+    )
     data = {"username": "Test", "password": "Test"}
     response = client.post("/auth/token", data=data)
+    logging.info("Got token for user in Test DB with username: Test and password: Test")
     return response.json()["token"]
 
 
@@ -58,9 +65,13 @@ def test_create_language(test_db) -> None:
     Returns:
         None
     """
+    logging.info("Testing create language API")
     token = None
     response = client.post(
         "/language/", json={}, headers={"Authorization": f"Bearer {token}"}
+    )
+    logging.info(
+        "Tested create language API with status code: " + str(response.status_code)
     )
     assert response.status_code == 401
     create_user_using_model(test_db, librarian=True)
@@ -68,6 +79,9 @@ def test_create_language(test_db) -> None:
     data = {"language": "Test"}
     response = client.post(
         "/language/", json=data, headers={"Authorization": f"Bearer {token}"}
+    )
+    logging.info(
+        "Tested create language API with status code: " + str(response.status_code)
     )
     assert response.status_code == 201
 
@@ -81,8 +95,12 @@ def test_get_all_languages(test_db) -> None:
     Returns:
         None
     """
+    logging.info("Testing get all languages API")
     test_create_language(test_db)
     response = client.get("/language/")
+    logging.info(
+        "Tested get all languages API with status code: " + str(response.status_code)
+    )
     assert response.status_code == 200
     assert len(response.json()) == 1
     assert response.json()[0]["language"] == "Test"
@@ -98,9 +116,13 @@ def test_get_language_by_id(test_db) -> None:
     Returns:
         None
     """
+    logging.info("Testing get language by id API")
     test_create_language(test_db)
     token = get_token_for_user(test_db)
     response = client.get("/language/1", headers={"Authorization": f"Bearer {token}"})
+    logging.info(
+        "Tested get language by id API with status code: " + str(response.status_code)
+    )
     assert response.status_code == 200
     assert response.json()["language"] == "Test"
     assert response.json()["id"] == 1
@@ -115,6 +137,7 @@ def test_update_language_by_id(test_db) -> None:
     Returns:
         None
     """
+    logging.info("Testing update language by id API")
     test_create_language(test_db)
     token = get_token_for_user(test_db)
     data = {"language": "Test2"}
@@ -122,14 +145,22 @@ def test_update_language_by_id(test_db) -> None:
     response = client.put(
         "/language/2", json=data, headers={"Authorization": f"Bearer {token}"}
     )
+    logging.info(
+        "Tested update language by id API with status code: "
+        + str(response.status_code)
+    )
     assert response.status_code == 404
     # valid id
     response = client.put(
         "/language/1", json=data, headers={"Authorization": f"Bearer {token}"}
     )
+    logging.info(
+        "Tested update language by id API with status code: "
+        + str(response.status_code)
+    )
     assert response.status_code == 200
     assert response.json()["language"] == "Test2"
-    assert response.json()["id"] == 1
+    assert response.json()["language_id"] == 1
 
 
 # Test case for delete language by id (DELETE /language/{language_id})
@@ -141,16 +172,25 @@ def test_delete_language_by_id(test_db) -> None:
     Returns:
         None
     """
+    logging.info("Testing delete language by id API")
     test_create_language(test_db)
     token = get_token_for_user(test_db)
     # invalid id
     response = client.delete(
         "/language/2", headers={"Authorization": f"Bearer {token}"}
     )
+    logging.info(
+        "Tested delete language by id API with status code: "
+        + str(response.status_code)
+    )
     assert response.status_code == 404
     # valid id
     response = client.delete(
         "/language/1", headers={"Authorization": f"Bearer {token}"}
+    )
+    logging.info(
+        "Tested delete language by id API with status code: "
+        + str(response.status_code)
     )
     assert response.status_code == 200
     assert response.json()["language"] == "Test"

@@ -22,7 +22,7 @@ class UserSchema(BaseModel):
 
     @validator("date_of_joining")
     def join_date_greater_than_current(cls, v):
-        if v > date.today():
+        if v.date() > date.today():
             raise ValueError("joining date can't be greater than today.")
 
     class Config:
