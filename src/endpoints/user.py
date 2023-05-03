@@ -6,16 +6,16 @@ from sqlalchemy import delete, select
 from sqlalchemy.orm import Session
 from starlette import status
 
-from ..models.database import get_db
 from ..models.user import User
 from ..schemas.update_user import UpdateUserSchema
 from ..schemas.user import UserSchema
 
-from .auth import (  # isort: skip
+from ..dependencies import (  # isort: skip
     get_current_librarian,  # isort: skip
     get_current_user,  # isort: skip
     get_password_hash,  # isort: skip
     verify_password,  # isort: skip
+    get_db,
 )  # isort: skip
 
 router = APIRouter(
