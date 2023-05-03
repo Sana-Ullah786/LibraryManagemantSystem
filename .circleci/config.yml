@@ -1,18 +1,22 @@
 version: 2.1
-orbs:
-  python: circleci/python@2.0.3
 
 jobs:
   build_and_test:
-    executor:
-      name: python/default
-      tag: "3.11"
     docker:
-      - image: cimg/redis:6.2.6
+      - image: circleci/python:3.11.2
+      - image: redis:latest
+    working_directory: ~/repo
     steps:
       - checkout
-      - python/install-packages:
-          pkg-manager: pip
+      - run:
+          name: Install dependencies
+          command: |
+            pip install -r requirements.txt
+      - run:
+          name: Start Redis
+          command: |
+            redis-server &
+            sleep 10
       - run:
           name: Run tests
           command: python -m pytest
@@ -23,10 +27,6 @@ jobs:
             JWT_ALGORITHM: "HS256"
             REDIS_HOST: "127.0.0.1"
             REDIS_PORT: 6379
-      - persist_to_workspace:
-          root: ~/project
-          paths:
-            - .
 
 workflows:
   test_my_app:
