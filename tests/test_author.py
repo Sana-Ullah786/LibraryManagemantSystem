@@ -4,7 +4,11 @@ from starlette import status
 
 from ..src.models.all_models import Author
 from .client import client
-from .utils import SUPER_USER_CRED, TEST_AUTHOR, check_no_auth, get_fresh_token
+# fmt: off
+from .utils import (SUPER_USER_CRED, TEST_AUTHOR, TEST_USER_CRED,
+                    check_no_auth, get_fresh_token)
+
+# fmt: on
 
 
 def test_create_author(test_db: sessionmaker) -> None:
@@ -16,6 +20,27 @@ def test_create_author(test_db: sessionmaker) -> None:
     )
     assert response.status_code == status.HTTP_200_OK
     assert response.json().get("first_name") == TEST_AUTHOR.get("first_name")
+
+
+def test_get_all_authors(test_db: sessionmaker) -> None:
+    check_no_auth("/author/", client.get)
+    delete_all_authors(test_db)
+    # Inserting dummy data of 2 authors
+    token = get_fresh_token(test_db, SUPER_USER_CRED)
+    response = client.post(
+        "/author/", headers={"Authorization": f"Bearer {token}"}, json=TEST_AUTHOR
+    )
+    SECOND_AUTHOR = TEST_AUTHOR.copy()
+    SECOND_AUTHOR["first_name"] = "Tahir"
+    response = client.post(
+        "/author/", headers={"Authorization": f"Bearer {token}"}, json=SECOND_AUTHOR
+    )
+
+    token = get_fresh_token(test_db, TEST_USER_CRED)
+    response = client.get("/author/", headers={"Authorization": f"Bearer {token}"})
+    assert response.status_code == status.HTTP_200_OK
+    assert len(response.json()) == 2
+    assert response.json()[1].get("first_name") == SECOND_AUTHOR.get("first_name")
 
 
 def delete_all_authors(test_db: sessionmaker) -> None:
