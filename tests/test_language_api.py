@@ -6,7 +6,7 @@ from fastapi import status
 from src.endpoints.auth import get_password_hash
 from src.models.user import User
 
-from .client import client
+from client import client
 
 
 def create_user_using_model(test_db, librarian=False) -> None:
