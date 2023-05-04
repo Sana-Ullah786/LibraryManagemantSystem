@@ -11,7 +11,7 @@ from ....schemas.author_schema import AuthorSchema
 from ..router_init import router
 
 
-@router.post("/", status_code=status.HTTP_200_OK, response_model=None)
+@router.post("/", status_code=status.HTTP_201_CREATED, response_model=None)
 def create_author(
     author: AuthorSchema,
     user: dict = Depends(get_current_librarian),

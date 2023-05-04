@@ -18,7 +18,7 @@ def test_create_author(test_db: sessionmaker) -> None:
     response = client.post(
         "/author/", headers={"Authorization": f"Bearer {token}"}, json=TEST_AUTHOR
     )
-    assert response.status_code == status.HTTP_200_OK
+    assert response.status_code == status.HTTP_201_CREATED
     assert response.json().get("first_name") == TEST_AUTHOR.get("first_name")
 
 
