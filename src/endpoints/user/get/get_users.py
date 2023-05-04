@@ -5,11 +5,11 @@ from sqlalchemy import select
 from sqlalchemy.orm import Session
 from starlette import status
 
-from ...dependencies import get_current_user, get_db
-from ...models.user import User
-from ..auth import get_current_librarian
-from .exceptions import db_not_available, user_not_exist
-from .router_init import router
+from ....dependencies import get_current_user, get_db
+from ....models.user import User
+from ...auth import get_current_librarian
+from ..exceptions import db_not_available, user_not_exist
+from ..router_init import router
 
 
 @router.get("/{user_id}", status_code=status.HTTP_200_OK, response_model=None)

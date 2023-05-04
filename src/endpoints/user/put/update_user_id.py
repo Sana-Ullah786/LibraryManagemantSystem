@@ -5,13 +5,13 @@ from sqlalchemy import select
 from sqlalchemy.orm import Session
 from starlette import status
 
-from ...dependencies import get_current_user, get_db
-from ...models.user import User
-from ...schemas.update_user import UpdateUserSchema
-from ..auth import get_current_librarian, verify_password
-from .exceptions import invalid_data, old_pass_not_matched, user_not_exist
-from .router_init import router
-from .user_utils import update_user
+from ....dependencies import get_current_user, get_db
+from ....models.user import User
+from ....schemas.update_user import UpdateUserSchema
+from ...auth import get_current_librarian, verify_password
+from ..exceptions import invalid_data, old_pass_not_matched, user_not_exist
+from ..router_init import router
+from ..user_utils import update_user
 
 
 @router.put("/{user_id}", status_code=status.HTTP_200_OK, response_model=None)
