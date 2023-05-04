@@ -1,72 +1,36 @@
 import os
 from datetime import datetime, timedelta
-from typing import Optional, Tuple
+from typing import Optional
 
 import pytz
-from dotenv import load_dotenv
-from fastapi import APIRouter, Depends, HTTPException, Request, status
-from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
-from jose import JWTError, jwt
+from fastapi import APIRouter, Depends, Request, status
+from fastapi.security import OAuth2PasswordRequestForm
+from jose import jwt
 from passlib.context import CryptContext
 from redis import Redis
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
-from ..models.database import get_db
+from ..dependencies import get_current_librarian  # isort skip
+from ..dependencies import get_current_user  # isort skip
+from ..dependencies import get_db  # isort skip
+from ..dependencies import get_password_hash  # isort skip
+from ..dependencies import get_token_exception  # isort skip
+from ..dependencies import get_user_already_exists_exception  # isort skip
+from ..dependencies import verify_password  # isort skip; isort skip
 from ..models.user import User
 from ..schemas.user import UserSchema
-
-load_dotenv()
-
 
 SECRET_KEY = os.getenv("JWT_SECRET_KEY")
 ALGORITHM = os.getenv("JWT_ALGORITHM")
 EXPIRE_TIME_IN_MINUTES = int(os.getenv("JWT_EXPIRE_TIME_IN_MINUTES"))
 
 
-bcryp_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
-
-oauth2_bearer = OAuth2PasswordBearer(tokenUrl="token")
-
-redis_conn = Redis(host="localhost", port=6379, db=0, decode_responses=True)
-
 router = APIRouter(
     prefix="/auth", tags=["auth"], responses={401: {"user": "Not authorized"}}
 )
 
-# Dependency functions
-
-
-def get_current_user(token: str = Depends(oauth2_bearer)) -> dict:
-    """
-    Fetches user details for a given token.
-    To be used as a dependency by authenticated routes for users
-    """
-    try:
-        username, user_id = decode_and_verify_jwt(token)
-        return {"username": username, "id": user_id}
-    except JWTError:
-        raise get_user_exception()
-
-
-def get_current_librarian(
-    token: str = Depends(oauth2_bearer), db: Session = Depends(get_db)
-) -> dict:
-    """
-    Verifies that user for given token is librarian and fetches details.
-    To be used as a dependency by authenticated routes for librarians
-    """
-    try:
-        username, user_id = decode_and_verify_jwt(token)
-        user = db.scalar(select(User).where(User.id == user_id))
-        if not user.is_librarian:
-            raise get_librarian_exception()
-        return {"username": username, "id": user_id}
-    except JWTError:
-        raise get_librarian_exception()
-
-
-# Endpoints
+redis_conn = Redis("127.0.0.1")
 
 
 @router.post("/register", status_code=status.HTTP_201_CREATED)
@@ -119,6 +83,8 @@ async def logout(
 
 # Helper functions
 
+bcryp_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
+
 
 def create_user(user: UserSchema, is_librarian: bool, db: Session) -> None:
     """
@@ -144,18 +110,6 @@ def create_user(user: UserSchema, is_librarian: bool, db: Session) -> None:
     db.commit()
 
 
-def get_password_hash(password: str) -> str:
-    """A helper function that hashes a given password"""
-
-    return bcryp_context.hash(password)
-
-
-def verify_password(plain_password: str, hashed_password: str) -> bool:
-    """A helper function that verifies a given password against a hashed password"""
-
-    return bcryp_context.verify(plain_password, hashed_password)
-
-
 def authenticate_user(username: str, password: str, db: Session) -> User | bool:
     """A helper function that authenticates a given username and password"""
 
@@ -177,24 +131,6 @@ def create_access_token(username: str, user_id: int) -> str:
     return jwt.encode(encode, SECRET_KEY, algorithm=ALGORITHM)
 
 
-def decode_and_verify_jwt(token: str) -> Tuple[str | None]:
-    """
-    Decodes a given jwt token, verifies that it is active (not in the blacklist) and returns the sub (username) and id.
-    Raises a 401 exception if token is blacklisted or if username or id are None
-    """
-
-    in_black_list = redis_conn.get(f"bl_{token}")
-    if in_black_list:
-        raise get_user_exception()
-
-    payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
-    username = payload.get("sub")
-    user_id = payload.get("id")
-    if username is None or user_id is None:
-        raise get_user_exception()
-    return username, user_id
-
-
 def check_user_already_exists(user: UserSchema, db: Session) -> None:
     """
     Raises an exception is user with the same email or username already exists
@@ -205,36 +141,3 @@ def check_user_already_exists(user: UserSchema, db: Session) -> None:
     )
     if fetched_user:
         raise get_user_already_exists_exception()
-
-
-# Exceptions
-
-
-def get_user_exception() -> HTTPException:
-    return HTTPException(
-        status_code=status.HTTP_401_UNAUTHORIZED,
-        detail="Could not validate credentials for user",
-        headers={"WWW-Authenticate": "Bearer"},
-    )
-
-
-def get_librarian_exception() -> HTTPException:
-    return HTTPException(
-        status_code=status.HTTP_401_UNAUTHORIZED,
-        detail="Could not validate credentials for librarian",
-        headers={"WWW-Authenticate": "Bearer"},
-    )
-
-
-def get_token_exception() -> HTTPException:
-    return HTTPException(
-        status_code=status.HTTP_401_UNAUTHORIZED,
-        detail="Incorrect username or password",
-        headers={"WWW-Authenticate": "Bearer"},
-    )
-
-
-def get_user_already_exists_exception() -> HTTPException:
-    return HTTPException(
-        status_code=status.HTTP_400_BAD_REQUEST, detail="User already exists"
-    )
