@@ -1,8 +1,9 @@
 import logging
 from datetime import datetime
 
+from fastapi import status
+
 from src.endpoints.auth import get_password_hash
-from src.models.language import Language
 from src.models.user import User
 
 from .client import client
@@ -73,7 +74,7 @@ def test_create_language(test_db) -> None:
     logging.info(
         "Tested create language API with status code: " + str(response.status_code)
     )
-    assert response.status_code == 401
+    assert response.status_code == status.HTTP_401_UNAUTHORIZED
     create_user_using_model(test_db, librarian=True)
     token = get_token_for_user(test_db)
     data = {"language": "Test"}
@@ -83,7 +84,9 @@ def test_create_language(test_db) -> None:
     logging.info(
         "Tested create language API with status code: " + str(response.status_code)
     )
-    assert response.status_code == 201
+    assert response.status_code == status.HTTP_201_CREATED
+    assert response.json()["language"] == "Test"
+    assert response.json()["language_id"] == None
 
 
 # Test case for get all languages (GET /language/)
@@ -101,7 +104,7 @@ def test_get_all_languages(test_db) -> None:
     logging.info(
         "Tested get all languages API with status code: " + str(response.status_code)
     )
-    assert response.status_code == 200
+    assert response.status_code == status.HTTP_200_OK
     assert len(response.json()) == 1
     assert response.json()[0]["language"] == "Test"
     assert response.json()[0]["id"] == 1
@@ -123,7 +126,7 @@ def test_get_language_by_id(test_db) -> None:
     logging.info(
         "Tested get language by id API with status code: " + str(response.status_code)
     )
-    assert response.status_code == 200
+    assert response.status_code == status.HTTP_200_OK
     assert response.json()["language"] == "Test"
     assert response.json()["id"] == 1
 
@@ -149,7 +152,7 @@ def test_update_language_by_id(test_db) -> None:
         "Tested update language by id API with status code: "
         + str(response.status_code)
     )
-    assert response.status_code == 404
+    assert response.status_code == status.HTTP_404_NOT_FOUND
     # valid id
     response = client.put(
         "/language/1", json=data, headers={"Authorization": f"Bearer {token}"}
@@ -158,7 +161,7 @@ def test_update_language_by_id(test_db) -> None:
         "Tested update language by id API with status code: "
         + str(response.status_code)
     )
-    assert response.status_code == 200
+    assert response.status_code == status.HTTP_200_OK
     assert response.json()["language"] == "Test2"
     assert response.json()["language_id"] == 1
 
@@ -183,7 +186,7 @@ def test_delete_language_by_id(test_db) -> None:
         "Tested delete language by id API with status code: "
         + str(response.status_code)
     )
-    assert response.status_code == 404
+    assert response.status_code == status.HTTP_404_NOT_FOUND
     # valid id
     response = client.delete(
         "/language/1", headers={"Authorization": f"Bearer {token}"}
@@ -192,9 +195,7 @@ def test_delete_language_by_id(test_db) -> None:
         "Tested delete language by id API with status code: "
         + str(response.status_code)
     )
-    assert response.status_code == 200
-    assert response.json()["language"] == "Test"
-    assert response.json()["id"] == 1
+    assert response.status_code == status.HTTP_204_NO_CONTENT
     response = client.get("/language/")
-    assert response.status_code == 200
+    assert response.status_code == status.HTTP_200_OK
     assert len(response.json()) == 0

@@ -3,12 +3,10 @@ import logging
 from fastapi import Depends, HTTPException, status
 from sqlalchemy.orm import Session
 
-from src.endpoints.auth import get_current_librarian
-from src.models import all_models
-from src.models.database import get_db
-from src.schemas import language_schema
-
-from .router_init import router
+from ....dependencies import get_current_librarian, get_db
+from ....models import all_models
+from ....schemas import language_schema
+from ..router_init import router
 
 
 @router.post("/", response_model=None, status_code=status.HTTP_201_CREATED)

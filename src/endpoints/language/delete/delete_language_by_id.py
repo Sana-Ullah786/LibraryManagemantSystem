@@ -4,19 +4,19 @@ from fastapi import Depends, HTTPException, status
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
-from src.endpoints.auth import get_current_librarian
-from src.models import all_models
-from src.models.database import get_db
-
-from .router_init import router
+from ....dependencies import get_current_librarian, get_db
+from ....models import all_models
+from ..router_init import router
 
 
-@router.delete("/{language_id}", response_model=None, status_code=status.HTTP_200_OK)
+@router.delete(
+    "/{language_id}", response_model=None, status_code=status.HTTP_204_NO_CONTENT
+)
 async def delete_language_by_id(
     language_id: int,
     user: dict = Depends(get_current_librarian),
     db: Session = Depends(get_db),
-) -> all_models.Language:
+) -> None:
     """
     This function will be used to delete a language by id.
     Parameters:
@@ -24,7 +24,7 @@ async def delete_language_by_id(
         user: The user data. (current librarian)
         db: The database session.
     Returns:
-        language: The deleted language.
+        None
     """
     logging.info("Deleting language in database with id: " + str(language_id))
     found_language = db.scalars(
@@ -39,7 +39,6 @@ async def delete_language_by_id(
         db.delete(found_language)
         db.commit()
         logging.info("Deleted language in database with id: " + str(language_id))
-        return found_language
     except Exception as e:
         logging.exception("Error deleting language from database. Details = " + str(e))
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(e))
