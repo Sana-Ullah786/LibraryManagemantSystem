@@ -12,7 +12,7 @@ from src.models.author import Author
 
 
 @router.get("/", status_code=status.HTTP_200_OK, response_model=None)
-def get_all_authors(
+async def get_all_authors(
     user: dict = Depends(get_current_user),
     db: Session = Depends(get_db),
 ) -> List[Author]:

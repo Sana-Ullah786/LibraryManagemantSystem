@@ -12,7 +12,7 @@ from src.schemas.author_schema import AuthorSchema
 
 
 @router.post("/", status_code=status.HTTP_201_CREATED, response_model=None)
-def create_author(
+async def create_author(
     author: AuthorSchema,
     user: dict = Depends(get_current_librarian),
     db: Session = Depends(get_db),
