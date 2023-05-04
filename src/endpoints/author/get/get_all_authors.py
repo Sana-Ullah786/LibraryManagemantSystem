@@ -6,9 +6,9 @@ from sqlalchemy import select
 from sqlalchemy.orm import Session
 from starlette import status
 
-from ....dependencies import get_current_user, get_db
-from ....models.author import Author
-from ..router_init import router
+from src.dependencies import get_current_user, get_db
+from src.endpoints.author.router_init import router
+from src.models.author import Author
 
 
 @router.get("/", status_code=status.HTTP_200_OK, response_model=None)

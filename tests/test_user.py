@@ -1,10 +1,10 @@
 from sqlalchemy.orm import sessionmaker
 from starlette import status
 
-from .client import client
+from tests.client import client
 # fmt: off
-from .utils import (LIB_USER, SUPER_USER_CRED, TEST_USER, TEST_USER_CRED,
-                    check_no_auth, get_fresh_token)
+from tests.utils import (LIB_USER, SUPER_USER_CRED, TEST_USER, TEST_USER_CRED,
+                         check_no_auth, get_fresh_token)
 
 # fmt: on
 

@@ -5,10 +5,10 @@ from sqlalchemy import select
 from sqlalchemy.orm import Session
 from starlette import status
 
-from ....dependencies import get_current_librarian, get_db
-from ....models.author import Author
-from ....schemas.author_schema import AuthorSchema
-from ..router_init import router
+from src.dependencies import get_current_librarian, get_db
+from src.endpoints.author.router_init import router
+from src.models.author import Author
+from src.schemas.author_schema import AuthorSchema
 
 
 @router.post("/", status_code=status.HTTP_201_CREATED, response_model=None)

@@ -5,11 +5,10 @@ from sqlalchemy import delete
 from sqlalchemy.orm import Session
 from starlette import status
 
-from ....dependencies import get_current_user, get_db
-from ....models.user import User
-from ...auth import get_current_librarian
-from ..exceptions import db_not_available, user_not_exist
-from ..router_init import router
+from src.dependencies import get_current_librarian, get_current_user, get_db
+from src.endpoints.user.exceptions import db_not_available, user_not_exist
+from src.endpoints.user.router_init import router
+from src.models.user import User
 
 
 @router.delete("/{user_id}", status_code=status.HTTP_204_NO_CONTENT)
