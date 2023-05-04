@@ -4,9 +4,9 @@ from fastapi import Depends, HTTPException, status
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
-from ....dependencies import get_current_librarian, get_db
-from ....models import all_models
-from ..router_init import router
+from src.dependencies import get_current_librarian, get_db
+from src.models import all_models
+from src.endpoints.language.router_init import router
 
 
 @router.delete(

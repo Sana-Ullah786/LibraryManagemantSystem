@@ -4,10 +4,10 @@ from fastapi import Depends, HTTPException, status
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
-from ....dependencies import get_current_librarian, get_db
-from ....models import all_models
-from ....schemas import language_schema
-from ..router_init import router
+from src.dependencies import get_current_librarian, get_db
+from src.models import all_models
+from src.schemas import language_schema
+from src.endpoints.language.router_init import router
 
 
 @router.put("/{language_id}", response_model=None, status_code=status.HTTP_200_OK)
