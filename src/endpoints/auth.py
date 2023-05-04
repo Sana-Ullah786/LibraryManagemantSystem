@@ -18,6 +18,7 @@ from ..dependencies import get_db  # isort skip
 from ..dependencies import get_password_hash  # isort skip
 from ..dependencies import get_token_exception  # isort skip
 from ..dependencies import get_user_already_exists_exception  # isort skip
+from ..dependencies import redis_conn  # isort skip
 from ..dependencies import verify_password  # isort skip; isort skip
 from ..models.user import User
 from ..schemas.user import UserSchema
@@ -25,17 +26,11 @@ from ..schemas.user import UserSchema
 SECRET_KEY = os.getenv("JWT_SECRET_KEY")
 ALGORITHM = os.getenv("JWT_ALGORITHM")
 EXPIRE_TIME_IN_MINUTES = int(os.getenv("JWT_EXPIRE_TIME_IN_MINUTES"))
-REDIS_HOST = os.getenv("REDIS_HOST")
-REDIS_PORT = os.getenv("REDIS_PORT")
 
-
-redis_conn = redis.Redis(host=REDIS_HOST, port=REDIS_PORT, decode_responses=True)
 
 router = APIRouter(
     prefix="/auth", tags=["auth"], responses={401: {"user": "Not authorized"}}
 )
-
-redis_conn = Redis("127.0.0.1")
 
 
 @router.post("/register", status_code=status.HTTP_201_CREATED)
@@ -81,8 +76,7 @@ async def logout(
     request: Request, user: dict = Depends(get_current_user)
 ) -> dict[str, str]:
     token = request.headers.get("authorization").split()[1]
-    redis_conn.setex(f"bl_{token}", timedelta(minutes=EXPIRE_TIME_IN_MINUTES), token)
-
+    redis_conn.setex(f"bl_{token}", get_jwt_exp(token), token)
     return {"status": "success", "message": "user logged out"}
 
 
@@ -146,3 +140,8 @@ def check_user_already_exists(user: UserSchema, db: Session) -> None:
     )
     if fetched_user:
         raise get_user_already_exists_exception()
+
+
+def get_jwt_exp(token):
+    decoded = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+    return decoded["exp"]
