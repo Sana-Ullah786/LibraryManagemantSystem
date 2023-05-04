@@ -2,13 +2,13 @@ from datetime import datetime
 from typing import Callable
 
 import pytz
-from client import client
 from sqlalchemy import delete
 from sqlalchemy.orm import sessionmaker
 from starlette import status
 
 from src.endpoints.auth import get_password_hash
 from src.models.all_models import User
+from tests.client import client
 
 NOT_AUTH = {"detail": "Not authenticated"}
 LIB_USER = {
