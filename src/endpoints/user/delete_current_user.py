@@ -5,9 +5,8 @@ from sqlalchemy import delete
 from sqlalchemy.orm import Session
 from starlette import status
 
-from ...models.database import get_db
+from ...dependencies import get_current_user, get_db
 from ...models.user import User
-from ..auth import get_current_user
 from .exceptions import db_not_available
 from .router_init import router
 
