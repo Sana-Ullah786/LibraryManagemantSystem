@@ -25,6 +25,6 @@ def get_all_authors(
     ------
     List of authors
     """
-    logging.info("Getting all the authors -- {__name__}")
+    logging.info(f"Getting all the authors -- {__name__}")
     authors = db.execute(select(Author)).scalars().all()
     return authors
