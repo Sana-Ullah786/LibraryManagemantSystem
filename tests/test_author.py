@@ -69,6 +69,26 @@ def test_get_authors_by_id(test_db: sessionmaker) -> None:
     assert response.status_code == status.HTTP_404_NOT_FOUND
 
 
+def test_delete_author_by_id(test_db: sessionmaker) -> None:
+    check_no_auth("/author/1", client.delete)
+    delete_all_authors(test_db)
+    token = get_fresh_token(test_db, SUPER_USER_CRED)
+    response = client.post(
+        "/author/", headers={"Authorization": f"Bearer {token}"}, json=TEST_AUTHOR
+    )
+    # If user is not librarian
+    token = get_fresh_token(test_db, TEST_USER_CRED)
+    response = client.delete("/author/1", headers={"Authorization": f"Bearer {token}"})
+    assert response.status_code == status.HTTP_401_UNAUTHORIZED
+    # success
+    token = get_fresh_token(test_db, SUPER_USER_CRED)
+    response = client.delete("/author/1", headers={"Authorization": f"Bearer {token}"})
+    assert response.status_code == status.HTTP_204_NO_CONTENT
+    # if no author is found of that id
+    response = client.delete("/author/1", headers={"Authorization": f"Bearer {token}"})
+    assert response.status_code == status.HTTP_404_NOT_FOUND
+
+
 def delete_all_authors(test_db: sessionmaker) -> None:
     """
     Helper function that can be used to delete all authors
