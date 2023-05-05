@@ -26,5 +26,5 @@ class Borrowed(Base):
         DateTime(timezone=True), onupdate=func.now(), nullable=True
     )
 
-    user = relationship("User", back_populates="borrowed")
-    copy = relationship("Copy", back_populates="borrowed")
+    user = relationship("User", back_populates="borrowed", lazy=False)
+    copy = relationship("Copy", back_populates="borrowed", lazy=False)
