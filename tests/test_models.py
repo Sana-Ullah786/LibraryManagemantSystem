@@ -3,7 +3,7 @@ from datetime import datetime
 from sqlalchemy import select
 from sqlalchemy.orm import sessionmaker
 
-from ..src.models import all_models
+from src.models import all_models
 
 
 def test_book_language_relationship(test_db: sessionmaker) -> None:
