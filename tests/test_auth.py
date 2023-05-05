@@ -5,9 +5,9 @@ from fastapi import Response, status
 from sqlalchemy import select
 from sqlalchemy.orm import sessionmaker
 
-from ..src.endpoints.auth import get_password_hash
-from ..src.models.user import User
-from .client import client
+from src.endpoints.auth import get_password_hash
+from src.models.user import User
+from tests.client import client
 
 TEST_USER = {
     "username": "testuser",
@@ -156,6 +156,26 @@ def test_register_librarian_without_librarian_token(test_db: sessionmaker) -> No
 
     response = register_librarian(TEST_USER, None)
     assert response.status_code == status.HTTP_401_UNAUTHORIZED
+
+
+# Test logout
+
+
+def test_logout(test_db: sessionmaker) -> None:
+    """
+    Tests the logout functionality
+    """
+
+    # setup
+    token = create_librarian_and_get_token(test_db)
+
+    # test
+    headers = {"Authorization": f"Bearer {token}"}
+    response = client.post("/auth/logout", headers=headers)
+
+    assert response.status_code == 200
+    response = register_librarian(TEST_USER, token)
+    assert response.status_code == 401
 
 
 # Helper functions

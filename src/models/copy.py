@@ -36,6 +36,6 @@ class Copy(Base):
         DateTime(timezone=True), onupdate=func.now(), nullable=True
     )
 
-    book = relationship("Book", back_populates="copies")
-    language = relationship("Language", back_populates="copies")
+    book = relationship("Book", back_populates="copies", lazy=False)
+    language = relationship("Language", back_populates="copies", lazy=False)
     borrowed = relationship("Borrowed", back_populates="copy")
