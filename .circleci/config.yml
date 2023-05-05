@@ -25,6 +25,7 @@ jobs:
             SQLALCHEMY_DATABASE_URL_TEST: sqlite:///test.db
             JWT_SECRET_KEY: "a-dummy-jwt-key-just-for-testing-purposes"
             JWT_ALGORITHM: "HS256"
+            JWT_EXPIRE_TIME_IN_MINUTES: 1440
             REDIS_HOST: "127.0.0.1"
             REDIS_PORT: 6379
 

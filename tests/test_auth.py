@@ -158,6 +158,26 @@ def test_register_librarian_without_librarian_token(test_db: sessionmaker) -> No
     assert response.status_code == status.HTTP_401_UNAUTHORIZED
 
 
+# Test logout
+
+
+def test_logout(test_db: sessionmaker) -> None:
+    """
+    Tests the logout functionality
+    """
+
+    # setup
+    token = create_librarian_and_get_token(test_db)
+
+    # test
+    headers = {"Authorization": f"Bearer {token}"}
+    response = client.post("/auth/logout", headers=headers)
+
+    assert response.status_code == 200
+    response = register_librarian(TEST_USER, token)
+    assert response.status_code == 401
+
+
 # Helper functions
 
 
