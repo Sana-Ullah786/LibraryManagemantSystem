@@ -43,6 +43,32 @@ def test_get_all_authors(test_db: sessionmaker) -> None:
     assert response.json()[1].get("first_name") == SECOND_AUTHOR.get("first_name")
 
 
+def test_get_authors_by_id(test_db: sessionmaker) -> None:
+    check_no_auth("/author/1", client.get)
+    delete_all_authors(test_db)
+    # Inserting dummy data of 2 authors
+    token = get_fresh_token(test_db, SUPER_USER_CRED)
+    response = client.post(
+        "/author/", headers={"Authorization": f"Bearer {token}"}, json=TEST_AUTHOR
+    )
+    SECOND_AUTHOR = TEST_AUTHOR.copy()
+    SECOND_AUTHOR["first_name"] = "Tahir"
+    response = client.post(
+        "/author/", headers={"Authorization": f"Bearer {token}"}, json=SECOND_AUTHOR
+    )
+
+    token = get_fresh_token(test_db, TEST_USER_CRED)
+    response = client.get("/author/1", headers={"Authorization": f"Bearer {token}"})
+    assert response.status_code == status.HTTP_200_OK
+    assert response.json().get("first_name") == TEST_AUTHOR.get("first_name")
+    response = client.get("/author/2", headers={"Authorization": f"Bearer {token}"})
+    assert response.status_code == status.HTTP_200_OK
+    assert response.json().get("first_name") == SECOND_AUTHOR.get("first_name")
+    # No such author exsist
+    response = client.get("/author/4", headers={"Authorization": f"Bearer {token}"})
+    assert response.status_code == status.HTTP_404_NOT_FOUND
+
+
 def delete_all_authors(test_db: sessionmaker) -> None:
     """
     Helper function that can be used to delete all authors
