@@ -1,4 +1,4 @@
-from ..src.endpoints.auth import redis_conn
+from src.endpoints.auth import redis_conn
 
 
 def test_redis_conn():
