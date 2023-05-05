@@ -142,6 +142,9 @@ def check_user_already_exists(user: UserSchema, db: Session) -> None:
         raise get_user_already_exists_exception()
 
 
-def get_jwt_exp(token):
+def get_jwt_exp(token: str) -> int:
+    """
+    Returns the expiry for a given token
+    """
     decoded = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
     return decoded["exp"]
