@@ -3,10 +3,10 @@ import logging
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
-from ...models.user import User
-from ...schemas.update_user import UpdateUserSchema
-from ..auth import get_password_hash
-from .exceptions import user_not_exist
+from src.dependencies import get_password_hash
+from src.endpoints.user.exceptions import user_not_exist
+from src.models.user import User
+from src.schemas.update_user import UpdateUserSchema
 
 
 def update_user(
