@@ -19,7 +19,6 @@ class AuthorSchema(BaseModel):
 
     @validator("death_date")
     def birth_date_greater_than_death_date(cls, v, values, **kwargs):
-        print(v.date() >= values["birth_date"].date())
         if "birth_date" in values and v.date() < values["birth_date"].date():
             raise ValueError("Death Date must be greater than Birth Date")
         return v
