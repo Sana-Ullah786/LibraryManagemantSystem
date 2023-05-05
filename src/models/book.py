@@ -38,10 +38,14 @@ class Book(Base):
         DateTime(timezone=True), onupdate=func.now(), nullable=True
     )
 
-    authors = relationship("Author", secondary="book_author", back_populates="books")
-    genres = relationship("Genre", secondary="book_genre", back_populates="books")
+    authors = relationship(
+        "Author", secondary="book_author", back_populates="books", lazy=False
+    )
+    genres = relationship(
+        "Genre", secondary="book_genre", back_populates="books", lazy=False
+    )
     copies = relationship("Copy", back_populates="book")
-    language = relationship("Language", back_populates="books")
+    language = relationship("Language", back_populates="books", lazy=False)
 
     # author_associations = relationship("BookAuthor", back_populates="book")
     # genre_associations = relationship("BookGenre", back_populates="book")
