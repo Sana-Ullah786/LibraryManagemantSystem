@@ -1,4 +1,5 @@
 import logging
+from typing import List
 
 from fastapi import Depends, status
 from sqlalchemy import select
@@ -12,7 +13,7 @@ from src.models.borrowed import Borrowed
 @router.get("/", status_code=status.HTTP_200_OK)
 async def get_all_borrowed(
     librarian: dict = Depends(get_current_librarian), db: Session = Depends(get_db)
-) -> None:
+) -> List[Borrowed]:
     """
     Returns all borrowed objects. Only accessible by librarian
     """

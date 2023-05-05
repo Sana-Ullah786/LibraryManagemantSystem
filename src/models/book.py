@@ -46,6 +46,3 @@ class Book(Base):
     )
     copies = relationship("Copy", back_populates="book")
     language = relationship("Language", back_populates="books", lazy=False)
-
-    # author_associations = relationship("BookAuthor", back_populates="book")
-    # genre_associations = relationship("BookGenre", back_populates="book")
