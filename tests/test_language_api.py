@@ -5,7 +5,6 @@ from fastapi import status
 
 from src.endpoints.auth import get_password_hash
 from src.models.user import User
-
 from tests.client import client
 
 
