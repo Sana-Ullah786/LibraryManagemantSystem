@@ -1,13 +1,15 @@
 import logging
+from datetime import datetime
 
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 from starlette import status
 
+from ..dependencies import get_current_librarian, get_db
 from ..models.author import Author
 from ..models.book import Book
-from ..models.database import get_db
 from ..models.genre import Genre
+from ..models.language import Language
 from ..schemas.book import BookSchema
 
 router = APIRouter(
@@ -58,31 +60,6 @@ async def get_book_by_id(book_id: int, db: Session = Depends(get_db)):
     return book
 
 
-@router.get("", status_code=status.HTTP_200_OK, response_model=None)
-async def filter_book(
-    author: str | None = None,
-    genre: str | None = None,
-    language_id: int | None = None,
-    db: Session = Depends(get_db),
-) -> None:
-    """
-    Filters the users list based on param provided. If None given then it will
-    return the complete list.
-    """
-    params = {
-        "author": author,
-        "genre": genre,
-        "language_id": language_id,
-    }
-    filters = {key: value for key, value in params.items() if value}
-    try:
-        copies = db.query(Book).filter_by(**filters).all()
-        return copies
-    except Exception:
-        logging.exception(f"Exception occured -- {__name__}.filter_user")
-        raise http_exception()
-
-
 @router.get("/", status_code=status.HTTP_200_OK)
 async def get_books(db: Session = Depends(get_db)):
     """
@@ -92,19 +69,29 @@ async def get_books(db: Session = Depends(get_db)):
 
 
 @router.post("/", status_code=status.HTTP_201_CREATED)
-async def book_create(book: BookSchema, db: Session = Depends(get_db)) -> dict:
+async def book_create(
+    book: BookSchema,
+    db: Session = Depends(get_db),
+    librarian: dict = Depends(get_current_librarian),  # noqa,
+) -> dict:
     """
     Endpoint to create a book
     """
+    language = db.query(Language).filter(Language.id == book.language_id).first()
+    authors = db.query(Author).filter(Author.id.in_(book.author_ids)).all()
+    genres = db.query(Genre).filter(Genre.id.in_(book.genre_ids)).all()
 
     book_model = Book()
     book_model.title = book.title
-    book_model.date_of_publication = book.date_of_publication
+    book_model.date_of_publication = datetime.strptime(
+        book.date_of_publication, "%m-%d-%Y"
+    ).date()
     book_model.description = book.description
     book_model.isbn = book.isbn
-    book_model.authors = book.author_ids
     book_model.language_id = book.language_id
-    book_model.genres = book.genre_ids
+    book_model.authors.extend(authors)
+    book_model.genres.extend(genres)
+    book_model.language = language
 
     db.add(book_model)
     db.commit()
@@ -112,7 +99,12 @@ async def book_create(book: BookSchema, db: Session = Depends(get_db)) -> dict:
 
 
 @router.put("/{book_id}", status_code=status.HTTP_204_NO_CONTENT)
-async def book_update(book_id: int, book: BookSchema, db: Session = Depends(get_db)):
+async def book_update(
+    book_id: int,
+    book: BookSchema,
+    librarian: dict = Depends(get_current_librarian),
+    db: Session = Depends(get_db),
+):
     """
     Update an existing book by ID.
     """
@@ -121,14 +113,20 @@ async def book_update(book_id: int, book: BookSchema, db: Session = Depends(get_
 
     if book_model is None:
         raise http_exception()
+    language = db.query(Language).filter(Language.id == book.language_id).first()
+    authors = db.query(Author).filter(Author.id.in_(book.author_ids)).all()
+    genres = db.query(Genre).filter(Genre.id.in_(book.genre_ids)).all()
 
     book_model.title = book.title
-    book_model.date_of_publication = book.date_of_publication
+    book_model.date_of_publication = datetime.strptime(
+        book.date_of_publication, "%m-%d-%Y"
+    ).date()
     book_model.description = book.description
     book_model.isbn = book.isbn
-    book_model.authors = book.author_ids
     book_model.language_id = book.language_id
-    book_model.genres = book.genre_ids
+    book_model.authors.extend(authors)
+    book_model.genres.extend(genres)
+    book_model.language = language
 
     db.add(book_model)
     db.commit()
@@ -137,7 +135,11 @@ async def book_update(book_id: int, book: BookSchema, db: Session = Depends(get_
 
 
 @router.delete("/delete/{book_id}", status_code=status.HTTP_200_OK)
-async def book_delete(book_id: int, db: Session = Depends(get_db)) -> dict:
+async def book_delete(
+    book_id: int,
+    librarian: dict = Depends(get_current_librarian),
+    db: Session = Depends(get_db),
+) -> dict:
     """
     Delete a book by ID.
     """

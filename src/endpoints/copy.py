@@ -2,8 +2,8 @@ from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 from starlette import status
 
+from ..dependencies import get_db
 from ..models.copy import Copy
-from ..models.database import get_db
 from ..schemas.copy import CopySchema
 
 router = APIRouter(
@@ -61,7 +61,7 @@ async def copy_create(copy: CopySchema, db: Session = Depends(get_db)) -> dict:
     return succesful_response()
 
 
-@router.put("/{book_id}", status_code=status.HTTP_204_NO_CONTENT)
+@router.put("/{copy_id}", status_code=status.HTTP_204_NO_CONTENT)
 async def copy_update(copy_id: int, copy: CopySchema, db: Session = Depends(get_db)):
     """
     Endpoint to Update an existing copy by ID.

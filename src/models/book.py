@@ -40,7 +40,7 @@ class Book(Base):
 
     authors = relationship("Author", secondary="book_author", back_populates="books")
     genres = relationship("Genre", secondary="book_genre", back_populates="books")
-    copies = relationship("Copy", back_populates="book")
+    copies = relationship("Copy", back_populates="book", cascade="all, delete-orphan")
     language = relationship("Language", back_populates="books")
 
     # author_associations = relationship("BookAuthor", back_populates="book")
