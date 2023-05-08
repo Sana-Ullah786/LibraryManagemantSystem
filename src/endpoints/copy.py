@@ -2,7 +2,7 @@ from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 from starlette import status
 
-from ..dependencies import get_db
+from ..dependencies import get_current_librarian, get_db
 from ..models.copy import Copy
 from ..schemas.copy import CopySchema
 
@@ -46,7 +46,11 @@ async def get_copy_by_id(copy_id: int, db: Session = Depends(get_db)):
 
 
 @router.post("/", status_code=status.HTTP_201_CREATED)
-async def copy_create(copy: CopySchema, db: Session = Depends(get_db)) -> dict:
+async def copy_create(
+    copy: CopySchema,
+    db: Session = Depends(get_db),
+    librarian: dict = Depends(get_current_librarian),  # noqa
+) -> dict:
     """
     Endpoint to create a copy
     """
@@ -62,7 +66,12 @@ async def copy_create(copy: CopySchema, db: Session = Depends(get_db)) -> dict:
 
 
 @router.put("/{copy_id}", status_code=status.HTTP_204_NO_CONTENT)
-async def copy_update(copy_id: int, copy: CopySchema, db: Session = Depends(get_db)):
+async def copy_update(
+    copy_id: int,
+    copy: CopySchema,
+    db: Session = Depends(get_db),
+    librarian: dict = Depends(get_current_librarian),  # noqa
+):
     """
     Endpoint to Update an existing copy by ID.
     """
@@ -83,7 +92,11 @@ async def copy_update(copy_id: int, copy: CopySchema, db: Session = Depends(get_
 
 
 @router.delete("/{copy_id}", status_code=status.HTTP_200_OK)
-async def copy_delete(copy_id: int, db: Session = Depends(get_db)) -> dict:
+async def copy_delete(
+    copy_id: int,
+    db: Session = Depends(get_db),
+    librarian: dict = Depends(get_current_librarian),  # noqa
+) -> dict:
     """
     Endpoint to delete a copy by ID.
     """

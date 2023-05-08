@@ -81,6 +81,12 @@ def test_copy_create(test_db: sessionmaker) -> None:
 
     payload = {"book_id": copy[0].id, "language_id": copy[2].id, "status": " Available"}
 
+    # without authentication
+
+    response = client.post("/copy", json=payload)
+
+    assert response.status_code == status.HTTP_401_UNAUTHORIZED
+
     response = client.post(
         "/copy", headers={"Authorization": f"Bearer {token}"}, json=payload
     )
@@ -124,12 +130,20 @@ def test_copy_delete(test_db: sessionmaker):
     # success delete
     copy = insert_copy(test_db, isbn="qwer", language="English")
 
-    response = client.delete(f"/copy/{copy[1].id}")
+    token = get_fresh_token(test_db, SUPER_USER_CRED)
+
+    response = client.delete(
+        f"/copy/{copy[1].id}",
+        headers={"Authorization": f"Bearer {token}"},
+    )
     assert response.status_code == status.HTTP_200_OK
 
     # if a book is already deleted  or invalid id
 
-    response = client.delete(f"/copy/{copy[1].id}")
+    response = client.delete(
+        f"/copy/{copy[1].id}", headers={"Authorization": f"Bearer {token}"}
+    )
+
     assert response.status_code == status.HTTP_404_NOT_FOUND
     assert response.json().get("detail") == "Copy not found"
 
