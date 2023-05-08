@@ -97,7 +97,7 @@ def test_filter_books(test_db: sessionmaker) -> None:
         db.flush()
 
     payload = {"author": author.id, "language": language.id, "genre": genre.id}
-    response = client.get(url="/book/filter/", params=payload)
+    response = client.get(url="/book/", params=payload)
     assert response.status_code == status.HTTP_200_OK
 
     # testing
@@ -120,7 +120,7 @@ def test_filter_books(test_db: sessionmaker) -> None:
     # If no book is present for the given filters
 
     payload = {"author": 2, "language": 1, "genre": 4}
-    response = client.get(url="/book/filter/", params=payload)
+    response = client.get(url="/book", params=payload)
 
     assert response.status_code == status.HTTP_200_OK
     assert len(response.json()) == 3
@@ -179,7 +179,8 @@ def test_book_update(test_db: sessionmaker) -> None:
         f"/book/{book.id}", headers={"Authorization": f"Bearer {token}"}, json=payload
     )
 
-    assert response.status_code == status.HTTP_204_NO_CONTENT
+    assert response.status_code == status.HTTP_200_OK
+    assert response.json().get("description") == "Hello"
 
 
 def check_no_auth(url: str, client_method: Callable) -> None:

@@ -51,14 +51,14 @@ def test_get_copy(test_db: sessionmaker) -> None:
 
     # get all books by book id
 
-    response = client.get(f"/copy/all/{copy[1].id}")
+    response = client.get(f"/copy/book/{copy[1].id}")
     assert response.json()[0].get("id") == copy[1].id
 
     # get all books by book id that doesnt exist
 
-    response = client.get("/copy/all/3")
-    assert response.status_code == status.HTTP_404_NOT_FOUND
-    assert response.json().get("detail") == "Copy not found"
+    response = client.get("/copy/book/3")
+    assert response.status_code == status.HTTP_200_OK
+    assert len(response.json()) == 0
 
     # get copy by copy id
 

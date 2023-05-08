@@ -1,5 +1,6 @@
 import logging
 from datetime import datetime
+from typing import List
 
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
@@ -17,17 +18,18 @@ router = APIRouter(
 )
 
 
-@router.get("/filter/", status_code=status.HTTP_200_OK)
+@router.get("/", status_code=status.HTTP_200_OK, response_model=None)
 async def get_books_by_query(
     author: int = None,
     genre: int = None,
     language: int = None,
     db: Session = Depends(get_db),
-):
+) -> List[Book]:
     """
     Endpoint to get books by author , genre , languages
     """
     query = db.query(Book)
+    logging.info(f"Book filtered with {author}, {genre},{language}")
 
     if author is not None:
         authordb = db.query(Author).filter(Author.id == author).first()
@@ -47,25 +49,19 @@ async def get_books_by_query(
     return query.all()
 
 
-@router.get("/{book_id}", status_code=status.HTTP_200_OK)
-async def get_book_by_id(book_id: int, db: Session = Depends(get_db)):
+@router.get("/{book_id}", status_code=status.HTTP_200_OK, response_model=None)
+async def get_book_by_id(book_id: int, db: Session = Depends(get_db)) -> Book:
     """
     Endpoint to get book by id
     """
     book = db.query(Book).filter(Book.id == book_id).first()
     if book:
+        logging.info(f"Book with id : {book_id} requested")
         return book
+
     if not book:
+        logging.info(f"Book id : {book_id} not Found")
         raise http_exception()
-    return book
-
-
-@router.get("/", status_code=status.HTTP_200_OK)
-async def get_books(db: Session = Depends(get_db)):
-    """
-    Endpoint to get all books
-    """
-    return db.query(Book).all()
 
 
 @router.post("/", status_code=status.HTTP_201_CREATED)
@@ -77,6 +73,8 @@ async def book_create(
     """
     Endpoint to create a book
     """
+    logging.info(f"Book Create Request by Librarian {librarian['id']}")
+
     language = db.query(Language).filter(Language.id == book.language_id).first()
     authors = db.query(Author).filter(Author.id.in_(book.author_ids)).all()
     genres = db.query(Genre).filter(Genre.id.in_(book.genre_ids)).all()
@@ -95,21 +93,28 @@ async def book_create(
 
     db.add(book_model)
     db.commit()
+    logging.info(
+        f"Book with ID: {book_model.id} Created by Librarian {librarian['id']}"
+    )
+
     return succesful_response()
 
 
-@router.put("/{book_id}", status_code=status.HTTP_204_NO_CONTENT)
+@router.put("/{book_id}", status_code=status.HTTP_200_OK, response_model=None)
 async def book_update(
     book_id: int,
     book: BookSchema,
     librarian: dict = Depends(get_current_librarian),
     db: Session = Depends(get_db),
-):
+) -> Book:
     """
     Update an existing book by ID.
     """
 
     book_model = db.query(Book).filter(Book.id == book_id).first()
+    logging.info(
+        f"Book with ID: {book_model.id} Update requested by Librarian {librarian['id']}"
+    )
 
     if book_model is None:
         raise http_exception()
@@ -124,17 +129,19 @@ async def book_update(
     book_model.description = book.description
     book_model.isbn = book.isbn
     book_model.language_id = book.language_id
-    book_model.authors.extend(authors)
-    book_model.genres.extend(genres)
+    book_model.authors = authors
+    book_model.genres = genres
     book_model.language = language
 
     db.add(book_model)
     db.commit()
+    logging.info(
+        f"Book with ID: {book_model.id} Updated by Librarian {librarian['id']}"
+    )
+    return book_model
 
-    return succesful_response()
 
-
-@router.delete("/delete/{book_id}", status_code=status.HTTP_200_OK)
+@router.delete("/{book_id}", status_code=status.HTTP_200_OK)
 async def book_delete(
     book_id: int,
     librarian: dict = Depends(get_current_librarian),
@@ -143,6 +150,9 @@ async def book_delete(
     """
     Delete a book by ID.
     """
+    logging.info(
+        f"Book with ID: {book_id} Delete Request by Librarian {librarian['id']}"
+    )
 
     book_model = db.query(Book).filter(Book.id == book_id).first()
 
@@ -150,15 +160,17 @@ async def book_delete(
         raise http_exception()
 
     db.query(Book).filter(Book.id == book_id).delete()
-
     db.commit()
+    logging.info(
+        f"Book with ID: {book_model.id} Deleted by Librarian {librarian['id']}"
+    )
 
     return succesful_response()
 
 
-def http_exception():
+def http_exception() -> dict:
     return HTTPException(status_code=404, detail="Book not found")
 
 
-def succesful_response():
+def succesful_response() -> dict:
     return {"status": 201, "transaction": "succesful_response"}
