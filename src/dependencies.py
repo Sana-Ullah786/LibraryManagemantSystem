@@ -1,6 +1,7 @@
 import os
 from typing import Generator, Tuple
 
+import redis
 from fastapi import Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer
 from jose import JWTError, jwt
@@ -13,10 +14,14 @@ from .models.user import User
 
 SECRET_KEY = os.getenv("JWT_SECRET_KEY")
 ALGORITHM = os.getenv("JWT_ALGORITHM")
+REDIS_HOST = os.getenv("REDIS_HOST")
+REDIS_PORT = os.getenv("REDIS_PORT")
 
 bcryp_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
 oauth2_bearer = OAuth2PasswordBearer(tokenUrl="token")
+
+redis_conn = redis.Redis(host=REDIS_HOST, port=REDIS_PORT, decode_responses=True)
 
 
 def get_db() -> Generator[Session, None, None]:
@@ -36,7 +41,7 @@ def get_current_user(token: str = Depends(oauth2_bearer)) -> dict:
     To be used as a dependency by authenticated routes for users
     """
     try:
-        username, user_id = decode_jwt(token)
+        username, user_id = check_blacklist_and_decode_jwt(token)
         return {"username": username, "id": user_id}
     except JWTError:
         raise get_user_exception()
@@ -50,7 +55,7 @@ def get_current_librarian(
     To be used as a dependency by authenticated routes for librarians
     """
     try:
-        username, user_id = decode_jwt(token)
+        username, user_id = check_blacklist_and_decode_jwt(token)
         user = db.scalar(select(User).where(User.id == user_id))
         if not user.is_librarian:
             raise get_librarian_exception()
@@ -62,8 +67,13 @@ def get_current_librarian(
 # Helper functions
 
 
-def decode_jwt(token: str) -> Tuple[str | None]:
-    """Decodes a given jwt token and returns the sub (username) and id. Raises an exception if any of these are None"""
+def check_blacklist_and_decode_jwt(token: str) -> Tuple[str | None]:
+    """
+    Checks a given token against the redis blacklist. Raises an exception if it exists.\n
+    Decodes the given jwt token and returns the sub (username) and id. Raises an exception if any of these are None
+    """
+    if redis_conn.get(f"bl_{token}"):
+        raise get_user_exception()
 
     payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
     username = payload.get("sub")

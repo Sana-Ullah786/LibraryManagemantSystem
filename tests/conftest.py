@@ -4,8 +4,7 @@ import pytest
 from sqlalchemy.orm import sessionmaker
 
 from src.models.all_models import Base
-
-from .client import TestingSessionLocal, engine
+from tests.client import TestingSessionLocal, engine
 
 
 @pytest.fixture()

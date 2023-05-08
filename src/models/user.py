@@ -1,7 +1,7 @@
 from datetime import datetime
 
 from sqlalchemy import Boolean, DateTime, Integer, String, func
-from sqlalchemy.orm import Mapped, mapped_column, relationship
+from sqlalchemy.orm import Mapped, deferred, mapped_column, relationship
 
 from .database import Base
 
@@ -17,7 +17,7 @@ class User(Base):
     id: Mapped[int] = mapped_column(Integer(), primary_key=True, index=True)
     email: Mapped[str] = mapped_column(String(32), unique=True, index=True)
     username: Mapped[str] = mapped_column(String(32), unique=True, index=True)
-    password: Mapped[str] = mapped_column(String, unique=True, index=True)
+    password: Mapped[str] = deferred(mapped_column(String, unique=True, index=True))
     first_name: Mapped[str] = mapped_column(String(32))
     last_name: Mapped[str] = mapped_column(String(32))
     date_of_joining: Mapped[datetime] = mapped_column(DateTime)

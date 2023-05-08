@@ -11,7 +11,7 @@ class AuthorSchema(BaseModel):
 
     """
 
-    user_id: Optional[int] = None
+    id: Optional[int] = None
     first_name: str = Field(title="First name of Author ")
     last_name: str = Field(title="Last name of Author ")
     birth_date: datetime = Field(title="Date of Birth For The Author")
@@ -19,15 +19,16 @@ class AuthorSchema(BaseModel):
 
     @validator("death_date")
     def birth_date_greater_than_death_date(cls, v, values, **kwargs):
-        if "birth_date" in values and values["death_date"] >= values["birth_date"]:
+        if "birth_date" in values and v.date() < values["birth_date"].date():
             raise ValueError("Death Date must be greater than Birth Date")
+        return v
 
     class Config:
         schema_extra = {
             "example": {
                 "first_name": "John",
                 "last_name": "Doe",
-                "birth_date": "11/8/1981",
-                "death_date": "21/12/2022",
+                "birth_date": datetime(2023, 4, 26),
+                "death_date": datetime(2023, 4, 26),
             }
         }

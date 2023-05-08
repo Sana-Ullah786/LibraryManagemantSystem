@@ -3,24 +3,29 @@ from datetime import datetime, timedelta
 from typing import Optional
 
 import pytz
-from fastapi import APIRouter, Depends, status
+import redis
+from fastapi import APIRouter, Depends, Request, status
 from fastapi.security import OAuth2PasswordRequestForm
 from jose import jwt
 from passlib.context import CryptContext
+from redis import Redis
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
 from ..dependencies import get_current_librarian  # isort skip
+from ..dependencies import get_current_user  # isort skip
 from ..dependencies import get_db  # isort skip
 from ..dependencies import get_password_hash  # isort skip
 from ..dependencies import get_token_exception  # isort skip
 from ..dependencies import get_user_already_exists_exception  # isort skip
+from ..dependencies import redis_conn  # isort skip
 from ..dependencies import verify_password  # isort skip; isort skip
 from ..models.user import User
 from ..schemas.user import UserSchema
 
 SECRET_KEY = os.getenv("JWT_SECRET_KEY")
 ALGORITHM = os.getenv("JWT_ALGORITHM")
+EXPIRE_TIME_IN_MINUTES = int(os.getenv("JWT_EXPIRE_TIME_IN_MINUTES"))
 
 
 router = APIRouter(
@@ -62,9 +67,17 @@ async def login_for_access_token(
     user = authenticate_user(form_data.username, form_data.password, db)
     if not user:
         raise get_token_exception()
-    token_expires = timedelta(minutes=20)
-    token = create_access_token(user.username, user.id, expires_delta=token_expires)
+    token = create_access_token(user.username, user.id)
     return {"token": token, "is_librarian": user.is_librarian}
+
+
+@router.post("/logout", status_code=status.HTTP_200_OK)
+async def logout(
+    request: Request, user: dict = Depends(get_current_user)
+) -> dict[str, str]:
+    token = request.headers.get("authorization").split()[1]
+    redis_conn.setex(f"bl_{token}", get_jwt_exp(token), token)
+    return {"status": "success", "message": "user logged out"}
 
 
 # Helper functions
@@ -107,15 +120,12 @@ def authenticate_user(username: str, password: str, db: Session) -> User | bool:
     return user
 
 
-def create_access_token(
-    username: str, user_id: int, expires_delta: Optional[timedelta] = None
-) -> str:
+def create_access_token(username: str, user_id: int) -> str:
     """
-    Takes in a username, id and expire time and returns a JWT access token for the user
+    Takes in a username and id and returns a JWT access token for the user
     """
     encode = {"sub": username, "id": user_id}
-    if expires_delta:
-        expire = datetime.utcnow() + timedelta(minutes=15)
+    expire = datetime.utcnow() + timedelta(minutes=EXPIRE_TIME_IN_MINUTES)
     encode.update({"exp": expire})
     return jwt.encode(encode, SECRET_KEY, algorithm=ALGORITHM)
 
@@ -130,3 +140,11 @@ def check_user_already_exists(user: UserSchema, db: Session) -> None:
     )
     if fetched_user:
         raise get_user_already_exists_exception()
+
+
+def get_jwt_exp(token: str) -> int:
+    """
+    Returns the expiry for a given token
+    """
+    decoded = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+    return decoded["exp"]
