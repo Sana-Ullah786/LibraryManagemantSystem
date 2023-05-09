@@ -31,7 +31,7 @@ class UserSchema(BaseModel):
         pattern = r"^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^&_*-]).{8,}$"
         if not re.match(pattern, v):
             raise ValueError(
-                "Password must contain at least one lowercase letter, one uppercase letter, one digit, one special character and must be atleast 8 characters long."
+                "Password must contain at least one lowercase letter, one uppercase letter, one digit, one special character and must be at least 8 characters long."
             )
         return v
 
