@@ -24,18 +24,18 @@ def create_required_entries_in_db(test_db: sessionmaker, copy_status: str) -> in
         language = all_models.Language(language="English")
         genre = all_models.Genre(genre="Fantasy")
         author = all_models.Author(
-                first_name="J.K.",
-                last_name="Rowling",
-                birth_date=datetime(1980, 1, 1),
-                death_date=None,
-            )
+            first_name="J.K.",
+            last_name="Rowling",
+            birth_date=datetime(1980, 1, 1),
+            death_date=None,
+        )
         book = all_models.Book(
-                title="Harry Potter",
-                description="The boy who lived",
-                language=language,
-                date_of_publication=datetime(2000, 1, 1),
-                isbn="ABCD-1234",
-            )
+            title="Harry Potter",
+            description="The boy who lived",
+            language=language,
+            date_of_publication=datetime(2000, 1, 1),
+            isbn="ABCD-1234",
+        )
         book.authors.append(author)
         book.genres.append(genre)
         copy = all_models.Copy(book=book, language=language, status=copy_status)
@@ -44,7 +44,6 @@ def create_required_entries_in_db(test_db: sessionmaker, copy_status: str) -> in
         db.refresh(copy)
         logging.info("Created required entries in database for borrowed Testing.")
         return copy.id
-     
 
 
 # Test case for create borrowed (POST /borrowed/)
@@ -61,7 +60,7 @@ def test_create_borrowed_with_correct_due_date(test_db: sessionmaker) -> None:
         create_user_using_model(test_db, librarian=True)
         copy_id = create_required_entries_in_db(test_db, "available")
         user = db.scalar(select(all_models.User).where(all_models.User.email == "Test"))
-       
+
         due_date = datetime.now() + timedelta(days=2)
         due_date = due_date.isoformat()
         data = {
@@ -259,8 +258,8 @@ def test_with_not_available_copy_id(test_db: sessionmaker) -> None:
         )
         assert response.status_code == status.HTTP_400_BAD_REQUEST
         logging.info(" Wrong Return date Tested successfully")
-         
-         
+
+
 # Test case for create borrowed (POST /borrowed/)
 def test_with_simple_user(test_db: sessionmaker) -> None:
     """
@@ -337,8 +336,8 @@ def test_with_wrong_user_id(test_db: sessionmaker) -> None:
         )
         assert response.status_code == status.HTTP_400_BAD_REQUEST
         logging.info(" Wrong Return date Tested successfully")
-        
-        
+
+
 # Test case for create borrowed (POST /borrowed/)
 def test_with_wrong_copy_id(test_db: sessionmaker) -> None:
     """

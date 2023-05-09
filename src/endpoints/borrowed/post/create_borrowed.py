@@ -25,9 +25,13 @@ async def create_borrowed(
         borrowed: The created borrowed.
     """
     logging.info(f"Creating new borrowed in database with user ID: {borrowed.user_id}")
-    copy = db.scalars(
-        select(all_models.Copy).where(all_models.Copy.id == borrowed.copy_id)
-    ).unique().one_or_none()
+    copy = (
+        db.scalars(
+            select(all_models.Copy).where(all_models.Copy.id == borrowed.copy_id)
+        )
+        .unique()
+        .one_or_none()
+    )
     if copy is None:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
@@ -38,9 +42,13 @@ async def create_borrowed(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail="Copy with given ID is not available",
         )
-    user = db.scalars(
-        select(all_models.User).where(all_models.User.id == borrowed.user_id)
-    ).unique().one_or_none()
+    user = (
+        db.scalars(
+            select(all_models.User).where(all_models.User.id == borrowed.user_id)
+        )
+        .unique()
+        .one_or_none()
+    )
     if user is None:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
