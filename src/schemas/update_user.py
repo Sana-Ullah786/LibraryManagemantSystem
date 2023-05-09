@@ -8,7 +8,7 @@ class UpdateUserSchema(UserSchema):
     Pydantic model that will we used to update user model
     """
 
-    old_password: str = Field(min_length=0, max_length=8)
+    old_password: str = Field(min_length=8, max_length=100)
 
     class Config:
         schema_extra = {
