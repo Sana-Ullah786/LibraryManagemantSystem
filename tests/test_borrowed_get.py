@@ -81,7 +81,7 @@ def test_borrowed_get_by_id_without_token(test_db: sessionmaker) -> None:
     borrowed = create_borrowed(test_db)
 
     response = make_request(f"/borrowed/{borrowed.id}")
-    response.status_code == 401
+    response.status_code == status.HTTP_401_UNAUTHORIZED
 
 
 def test_borrowed_get_by_id_with_different_user_token(test_db: sessionmaker) -> None:
@@ -105,7 +105,7 @@ def test_borrowed_get_by_id_with_different_user_token(test_db: sessionmaker) -> 
 # Helper function
 
 
-def make_request(endpoint, token: str | None = None) -> Response:
+def make_request(endpoint: str, token: str | None = None) -> Response:
     """
     Helper function to make a request
     """
