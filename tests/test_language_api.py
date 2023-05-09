@@ -3,9 +3,8 @@ from datetime import datetime
 
 from fastapi import status
 
-from src.endpoints.auth import get_password_hash
+from src.endpoints.auth.auth_utils import get_password_hash
 from src.models.user import User
-
 from tests.client import client
 
 
@@ -86,7 +85,7 @@ def test_create_language(test_db) -> None:
     )
     assert response.status_code == status.HTTP_201_CREATED
     assert response.json()["language"] == "Test"
-    assert response.json()["language_id"] == None
+    assert response.json()["language_id"] is None
 
 
 # Test case for get all languages (GET /language/)
