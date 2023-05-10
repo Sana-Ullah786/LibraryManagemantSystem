@@ -3,13 +3,12 @@ from datetime import datetime
 
 from fastapi import status
 
-from src.endpoints.auth import get_password_hash
+from src.endpoints.auth.auth_utils import get_password_hash
 from src.models.user import User
-
 from tests.client import client
 
 
-def create_user_using_model(test_db, librarian=False) -> None:
+def create_user_using_model(test_db, librarian=False) -> User:
     """
     This function will be used to create a user using model.
     Parameters:
@@ -35,6 +34,7 @@ def create_user_using_model(test_db, librarian=False) -> None:
         db.commit()
         db.refresh(user)
     logging.info("Created user in database in Test DB with id: " + str(user.id))
+    return user
 
 
 def get_token_for_user(test_db) -> str:
@@ -86,7 +86,7 @@ def test_create_language(test_db) -> None:
     )
     assert response.status_code == status.HTTP_201_CREATED
     assert response.json()["language"] == "Test"
-    assert response.json()["language_id"] == None
+    assert response.json()["language_id"] is None
 
 
 # Test case for get all languages (GET /language/)
