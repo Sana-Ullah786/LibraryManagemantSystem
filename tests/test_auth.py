@@ -5,7 +5,7 @@ from fastapi import Response, status
 from sqlalchemy import select
 from sqlalchemy.orm import sessionmaker
 
-from src.endpoints.auth import get_password_hash
+from src.endpoints.auth.auth_utils import get_password_hash
 from src.models.user import User
 from tests.client import client
 

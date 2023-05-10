@@ -6,7 +6,7 @@ from sqlalchemy import delete
 from sqlalchemy.orm import sessionmaker
 from starlette import status
 
-from src.endpoints.auth import get_password_hash
+from src.endpoints.auth.auth_utils import get_password_hash
 from src.models.all_models import User
 from tests.client import client
 
