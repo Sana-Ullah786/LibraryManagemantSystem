@@ -6,4 +6,5 @@ from .borrowed import *  # noqa
 from .copy import *  # noqa
 from .genre import *  # noqa
 from .language import *  # noqa
+from .status import *  # noqa
 from .user import *  # noqa
