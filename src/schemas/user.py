@@ -25,6 +25,7 @@ class UserSchema(BaseModel):
     def join_date_greater_than_current(cls, v):
         if v.date() > date.today():
             raise ValueError("joining date can't be greater than today.")
+        return v
 
     @validator("password")
     def check_password(cls, v):
