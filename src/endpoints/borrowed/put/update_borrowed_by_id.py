@@ -5,7 +5,7 @@ from sqlalchemy import select
 from sqlalchemy.orm import Session
 
 from src.dependencies import get_current_librarian, get_db
-from src.endpoints.borrowed.router import router
+from src.endpoints.borrowed.router_init import router
 from src.models import all_models
 from src.schemas.borrowed import BorrowedSchema
 
@@ -37,12 +37,11 @@ async def update_borrowed_by_id(
             status_code=status.HTTP_404_NOT_FOUND, detail="Borrowed not found"
         )
     try:
-        found_borrowed.issue_date = borrowed.issue_date
         found_borrowed.due_date = borrowed.due_date
         found_borrowed.return_date = borrowed.return_date
         db.commit()
         logging.info("Updated borrowed in database with id: " + str(borrowed_id))
-        borrowed.borrowed_id = borrowed_id
+        borrowed.id = found_borrowed.id
         return borrowed
     except Exception as e:
         logging.exception("Error updating borrowed in database. Details = " + str(e))
