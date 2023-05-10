@@ -21,14 +21,14 @@ def test_borrowed_get_all(test_db: sessionmaker) -> None:
     token = create_librarian_and_get_token(test_db)
 
     # test empty
-    response = make_request(token)
+    response = make_request("/borrowed/", token)
     data = response.json()
     assert response.status_code == status.HTTP_200_OK
     assert data == []
 
     # test with entry
     borrowed = create_borrowed(test_db)
-    response = make_request(token)
+    response = make_request("/borrowed/", token)
     data = response.json()
     assert response.status_code == status.HTTP_200_OK
     assert len(data) == 1
@@ -40,7 +40,7 @@ def test_borrowed_get_all_without_token(test_db: sessionmaker) -> None:
     """
     Tests the get all borrowed endpoint with no token provided. Should return 401
     """
-    response = make_request()
+    response = make_request("/borrowed/")
     assert response.status_code == status.HTTP_401_UNAUTHORIZED
 
 
@@ -51,23 +51,70 @@ def test_borrowed_get_all_with_user_token(test_db: sessionmaker) -> None:
     register_user(TEST_USER)
     token = login(TEST_USER_AUTH).json()["token"]
 
-    response = make_request(token)
+    response = make_request("/borrowed/", token)
     assert response.status_code == status.HTTP_401_UNAUTHORIZED
+
+
+def test_borrowed_get_by_id(test_db: sessionmaker) -> None:
+    """
+    Tests the get borrowed by id endpoint
+    """
+
+    borrowed = create_borrowed(test_db)
+    token = login(TEST_USER_AUTH).json()["token"]
+
+    response = make_request(f"/borrowed/{borrowed.id}", token)
+    data = response.json()
+    assert response.status_code == status.HTTP_200_OK
+    assert "copy_id" in data and data["copy_id"] == borrowed.copy_id
+    assert "user_id" in data and data["user_id"] == borrowed.user_id
+    assert "due_date" in data and data["due_date"] == borrowed.due_date.isoformat()
+    assert (
+        "issue_date" in data and data["issue_date"] == borrowed.issue_date.isoformat()
+    )
+
+
+def test_borrowed_get_by_id_without_token(test_db: sessionmaker) -> None:
+    """
+    Tests the get borrowed by id endpoint without a token. Should return 401
+    """
+    borrowed = create_borrowed(test_db)
+
+    response = make_request(f"/borrowed/{borrowed.id}")
+    response.status_code == status.HTTP_401_UNAUTHORIZED
+
+
+def test_borrowed_get_by_id_with_different_user_token(test_db: sessionmaker) -> None:
+    """
+    Tests the get borrowed by id endpoint with token of different user and borrowed of different user. Should return 404.
+    """
+
+    borrowed = create_borrowed(test_db)
+    new_user = TEST_USER.copy()
+    new_user["username"] = "newuser1"
+    new_user["email"] = "newuser1@gmail.com"
+    register_user(new_user)
+    new_user_auth = TEST_USER_AUTH.copy()
+    new_user_auth["username"] = "newuser1"
+    token = login(new_user_auth).json()["token"]
+
+    response = make_request(f"/borrowed/{borrowed.id}", token)
+    assert response.status_code == status.HTTP_404_NOT_FOUND
 
 
 # Helper function
 
 
-def make_request(token: str | None = None) -> Response:
+def make_request(endpoint: str, token: str | None = None) -> Response:
     """
-    Helper function to make the get all borrowed request
+    Helper function to make a request
     """
 
     if token:
         headers = {"Authorization": f"Bearer {token}"}
     else:
         headers = None
-    return client.get("/borrowed/", headers=headers)
+    return client.get(endpoint, headers=headers)
 
 
 def create_borrowed(test_db: sessionmaker) -> all_models.Borrowed:
