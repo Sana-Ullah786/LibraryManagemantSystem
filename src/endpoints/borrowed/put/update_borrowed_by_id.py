@@ -15,7 +15,7 @@ async def update_borrowed_by_id(
     borrowed_id: int,
     borrowed: BorrowedSchema,
     db: Session = get_db(),
-    librarian=Depends(get_current_librarian),
+    librarian: dict = Depends(get_current_librarian),
 ) -> BorrowedSchema:
     """
     This function will be used to update a borrowed by id.
@@ -37,8 +37,6 @@ async def update_borrowed_by_id(
             status_code=status.HTTP_404_NOT_FOUND, detail="Borrowed not found"
         )
     try:
-        found_borrowed.book_id = borrowed.book_id
-        found_borrowed.user_id = borrowed.user_id
         found_borrowed.issue_date = borrowed.issue_date
         found_borrowed.due_date = borrowed.due_date
         found_borrowed.return_date = borrowed.return_date
