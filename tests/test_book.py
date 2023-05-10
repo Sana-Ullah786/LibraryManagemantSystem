@@ -7,7 +7,6 @@ from sqlalchemy.orm import sessionmaker
 from starlette import status
 
 from src.dependencies import get_password_hash
-
 from ..src.models import all_models
 from ..src.models.all_models import User
 from .client import client
