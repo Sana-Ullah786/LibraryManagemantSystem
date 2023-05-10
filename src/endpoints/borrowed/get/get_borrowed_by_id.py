@@ -6,7 +6,7 @@ from sqlalchemy import select
 from sqlalchemy.orm import Session
 
 from src.dependencies import get_current_user, get_db
-from src.endpoints.borrowed.router import router
+from src.endpoints.borrowed.router_init import router
 from src.models.borrowed import Borrowed
 from src.models.user import User
 

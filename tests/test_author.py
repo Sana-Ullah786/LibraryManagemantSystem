@@ -4,6 +4,7 @@ from starlette import status
 
 from src.models.all_models import Author
 from tests.client import client
+
 # fmt: off
 from tests.utils import (SUPER_USER_CRED, TEST_AUTHOR, TEST_USER_CRED,
                          check_no_auth, get_fresh_token)
