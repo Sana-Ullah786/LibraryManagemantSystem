@@ -24,7 +24,7 @@ async def create_borrowed(
     Returns:
         borrowed: The created borrowed.
     """
-    logging.info(f"Creating new borrowed in database with user ID: {borrowed.user_id}")
+    logging.info(f"Creating new borrowed in database with user ID: {user.get('id')}")
     copy = (
         db.scalars(
             select(all_models.Copy).where(all_models.Copy.id == borrowed.copy_id)
@@ -42,29 +42,17 @@ async def create_borrowed(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail="Copy with given ID is not available",
         )
-    user = (
-        db.scalars(
-            select(all_models.User).where(all_models.User.id == borrowed.user_id)
-        )
-        .unique()
-        .one_or_none()
-    )
-    if user is None:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail="User with given ID does not exist",
-        )
     try:
         new_borrowed = all_models.Borrowed()
         new_borrowed.copy_id = borrowed.copy_id
-        new_borrowed.user_id = borrowed.user_id
+        new_borrowed.user_id = user.get("id")
         new_borrowed.issue_date = borrowed.issue_date
         new_borrowed.due_date = borrowed.due_date
         new_borrowed.return_date = borrowed.return_date
         db.add(new_borrowed)
         db.commit()
         logging.info(
-            f"Created new borrowed in database with user ID: {borrowed.user_id}"
+            f"Created new borrowed in database with user ID: {user.get('id')}"
         )
         return borrowed
     except Exception as e:
