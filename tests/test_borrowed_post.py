@@ -57,15 +57,13 @@ def test_create_borrowed_with_correct_due_date(test_db: sessionmaker) -> None:
     """
 
     with test_db() as db:
-        create_user_using_model(test_db, librarian=True)
+        user = create_user_using_model(test_db, librarian=True)
         copy_id = create_required_entries_in_db(test_db, "available")
-        user = db.scalar(select(all_models.User).where(all_models.User.email == "Test"))
 
         due_date = datetime.now() + timedelta(days=2)
         due_date = due_date.isoformat()
         data = {
             "copy_id": copy_id,
-            "user_id": user.id,
             "issue_date": datetime.now().isoformat(),
             "due_date": due_date,
             "return_date": None,
@@ -122,14 +120,12 @@ def test_create_borrowed_with_wrong_due_date(test_db: sessionmaker) -> None:
         None
     """
     with test_db() as db:
-        create_user_using_model(test_db, librarian=True)
+        user = create_user_using_model(test_db, librarian=True)
         copy_id = create_required_entries_in_db(test_db, "available")
-        user = db.scalar(select(all_models.User).where(all_models.User.email == "Test"))
         due_date = datetime.now() - timedelta(days=2)
         due_date = due_date.isoformat()
         data = {
             "copy_id": copy_id,
-            "user_id": user.id,
             "issue_date": datetime.now().isoformat(),
             "due_date": due_date,
             "return_date": None,
@@ -157,16 +153,14 @@ def test_create_borrowed_with_wrong_return_date(test_db: sessionmaker) -> None:
     Returns:
     """
     with test_db() as db:
-        create_user_using_model(test_db, librarian=True)
+        user = create_user_using_model(test_db, librarian=True)
         copy_id = create_required_entries_in_db(test_db, "available")
-        user = db.scalar(select(all_models.User).where(all_models.User.email == "Test"))
         due_date = datetime.now() + timedelta(days=2)
         due_date = due_date.isoformat()
         return_date = datetime.now() - timedelta(days=1)
         return_date = return_date.isoformat()
         data = {
             "copy_id": copy_id,
-            "user_id": user.id,
             "issue_date": datetime.now().isoformat(),
             "due_date": due_date,
             "return_date": return_date,
@@ -194,16 +188,14 @@ def test_create_borrowed_with_correct_return_date(test_db: sessionmaker) -> None
     Returns:
     """
     with test_db() as db:
-        create_user_using_model(test_db, librarian=True)
+        user = create_user_using_model(test_db, librarian=True)
         copy_id = create_required_entries_in_db(test_db, "available")
-        user = db.scalar(select(all_models.User).where(all_models.User.email == "Test"))
         due_date = datetime.now() + timedelta(days=2)
         due_date = due_date.isoformat()
         return_date = datetime.now() + timedelta(days=3)
         return_date = return_date.isoformat()
         data = {
             "copy_id": copy_id,
-            "user_id": user.id,
             "issue_date": datetime.now().isoformat(),
             "due_date": due_date,
             "return_date": return_date,
@@ -234,14 +226,12 @@ def test_with_not_available_copy_id(test_db: sessionmaker) -> None:
     with test_db() as db:
         create_user_using_model(test_db, librarian=True)
         copy_id = create_required_entries_in_db(test_db, "not_available")
-        user = db.scalar(select(all_models.User).where(all_models.User.email == "Test"))
         due_date = datetime.now() + timedelta(days=2)
         due_date = due_date.isoformat()
         return_date = datetime.now() + timedelta(days=3)
         return_date = return_date.isoformat()
         data = {
             "copy_id": copy_id,
-            "user_id": user.id,
             "issue_date": datetime.now().isoformat(),
             "due_date": due_date,
             "return_date": return_date,
@@ -270,16 +260,15 @@ def test_with_simple_user(test_db: sessionmaker) -> None:
         None
     """
     with test_db() as db:
-        create_user_using_model(test_db, librarian=False)
+        user = create_user_using_model(test_db, librarian=False)
         copy_id = create_required_entries_in_db(test_db, "available")
-        user = db.scalar(select(all_models.User).where(all_models.User.email == "Test"))
+       
         due_date = datetime.now() + timedelta(days=2)
         due_date = due_date.isoformat()
         return_date = datetime.now() + timedelta(days=3)
         return_date = return_date.isoformat()
         data = {
             "copy_id": copy_id,
-            "user_id": user.id,
             "issue_date": datetime.now().isoformat(),
             "due_date": due_date,
             "return_date": return_date,
@@ -301,41 +290,7 @@ def test_with_simple_user(test_db: sessionmaker) -> None:
         logging.info(" Wrong Return date Tested successfully")
 
 
-# Test case for create borrowed (POST /borrowed/)
-def test_with_wrong_user_id(test_db: sessionmaker) -> None:
-    """
-    This function will be used to test create borrowed.
-    Parameters:
-        test_db: The database session.
-    Returns:
-        None
-    """
-    with test_db() as db:
-        create_user_using_model(test_db, librarian=False)
-        copy_id = create_required_entries_in_db(test_db, "available")
-        due_date = datetime.now() + timedelta(days=2)
-        due_date = due_date.isoformat()
-        return_date = datetime.now() + timedelta(days=3)
-        return_date = return_date.isoformat()
-        data = {
-            "copy_id": copy_id,
-            "user_id": 100,
-            "issue_date": datetime.now().isoformat(),
-            "due_date": due_date,
-            "return_date": return_date,
-        }
-        token = get_token_for_user(test_db)
-        response = client.post(
-            "/borrowed", json=data, headers={"Authorization": f"Bearer {token}"}
-        )
-        logging.info(
-            " Response status code with Token = "
-            + token
-            + " "
-            + str(response.status_code)
-        )
-        assert response.status_code == status.HTTP_400_BAD_REQUEST
-        logging.info(" Wrong Return date Tested successfully")
+
 
 
 # Test case for create borrowed (POST /borrowed/)
@@ -349,14 +304,12 @@ def test_with_wrong_copy_id(test_db: sessionmaker) -> None:
     """
     with test_db() as db:
         create_user_using_model(test_db, librarian=False)
-        user = db.scalar(select(all_models.User).where(all_models.User.email == "Test"))
         due_date = datetime.now() + timedelta(days=2)
         due_date = due_date.isoformat()
         return_date = datetime.now() + timedelta(days=3)
         return_date = return_date.isoformat()
         data = {
             "copy_id": 100,
-            "user_id": user.id,
             "issue_date": datetime.now().isoformat(),
             "due_date": due_date,
             "return_date": return_date,

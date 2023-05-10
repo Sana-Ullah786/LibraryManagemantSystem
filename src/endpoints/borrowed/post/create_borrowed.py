@@ -54,6 +54,7 @@ async def create_borrowed(
         logging.info(
             f"Created new borrowed in database with user ID: {user.get('id')}"
         )
+        borrowed.user_id = user.get("id")
         return borrowed
     except Exception as e:
         logging.exception(

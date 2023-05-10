@@ -8,7 +8,7 @@ from src.models.user import User
 from tests.client import client
 
 
-def create_user_using_model(test_db, librarian=False) -> None:
+def create_user_using_model(test_db, librarian=False) -> User:
     """
     This function will be used to create a user using model.
     Parameters:
@@ -34,6 +34,7 @@ def create_user_using_model(test_db, librarian=False) -> None:
         db.commit()
         db.refresh(user)
     logging.info("Created user in database in Test DB with id: " + str(user.id))
+    return user
 
 
 def get_token_for_user(test_db) -> str:
