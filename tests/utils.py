@@ -6,7 +6,8 @@ from sqlalchemy import delete
 from sqlalchemy.orm import sessionmaker
 from starlette import status
 
-from src.endpoints.auth.auth_utils import get_password_hash
+from src.dependencies import get_password_hash
+from src.models import all_models
 from src.models.all_models import User
 from tests.client import client
 
@@ -95,3 +96,83 @@ def insert_user(test_db: sessionmaker, user: User) -> None:
     with test_db() as db:
         db.add(user)
         db.commit()
+
+
+def insert_copy(test_db: sessionmaker, isbn: str, language: str) -> list:
+    with test_db() as db:
+        # setup
+
+        language = all_models.Language(language=language)
+        book = all_models.Book(
+            title="Let us C",
+            description="Coding book",
+            isbn=isbn,
+            date_of_publication=datetime(2008, 1, 1),
+            language=language,
+        )
+        copy = all_models.Copy(book=book, language=language, status="available")
+        db.add_all([language, book, copy])
+        db.flush()
+        db.commit()
+        return [book, copy, language]
+
+
+def insert_book(test_db: sessionmaker) -> list:
+    author = all_models.Author(
+        first_name="Charles",
+        last_name="Babbage",
+        birth_date=datetime(1990, 1, 1),
+        death_date=datetime(2020, 1, 1),
+    )
+    language = all_models.Language(language="English")
+    genre = all_models.Genre(genre="Comedy")
+
+    book = all_models.Book(
+        title="Let us C",
+        description="Coding book",
+        isbn="ABCD1234",
+        date_of_publication=datetime(2008, 1, 1),
+        language=language,
+    )
+    book.genres.append(genre)
+    book.authors.append(author)
+
+    with test_db() as db:
+        db.add_all([author, language, genre, book])
+        db.commit()
+        db.flush()
+    return [author, language, genre, book]
+
+
+def insert_author(test_db: sessionmaker) -> all_models.Author:
+    author = all_models.Author(
+        first_name="Charles",
+        last_name="Babbage",
+        birth_date=datetime(1990, 1, 1),
+        death_date=datetime(2020, 1, 1),
+    )
+    with test_db() as db:
+        db.add_all([author])
+        db.commit()
+        db.flush()
+    return author
+
+
+def insert_language(test_db: sessionmaker) -> all_models.Language:
+    language = all_models.Language(language="English")
+
+    with test_db() as db:
+        db.add(language)
+        db.commit()
+        db.flush()
+    return language
+
+
+def insert_genre(test_db: sessionmaker) -> all_models.Genre:
+    genre = all_models.Genre(genre="English")
+
+    with test_db() as db:
+        db.add(genre)
+        db.commit()
+        db.flush()
+    return genre
