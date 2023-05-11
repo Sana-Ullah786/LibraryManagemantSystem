@@ -14,12 +14,12 @@ TEST_USER = {
     "email": "testuser@gmail.com",
     "first_name": "Test",
     "last_name": "User",
-    "password": "12345678",
-    "contact_number": "+921234212345",
+    "password": "abc123A_GT!",
+    "contact_number": "03123421234",
     "address": "Bahria Town",
 }
 
-TEST_USER_AUTH = {"username": "testuser", "password": "12345678"}
+TEST_USER_AUTH = {"username": "testuser", "password": "abc123A_GT!"}
 
 ## Register User Tests
 
@@ -29,6 +29,7 @@ def test_register_user_valid(test_db: sessionmaker) -> None:
     Tests a valid user registration
     """
     response = register_user(TEST_USER)
+    print(response.json())
     assert response.status_code == status.HTTP_201_CREATED
 
     with test_db() as db:

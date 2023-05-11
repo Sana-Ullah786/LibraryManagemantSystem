@@ -102,6 +102,60 @@ def test_borrowed_get_by_id_with_different_user_token(test_db: sessionmaker) -> 
     assert response.status_code == status.HTTP_404_NOT_FOUND
 
 
+def test_borrowed_get_all_for_logged_in_user(test_db: sessionmaker) -> None:
+    """
+    Tests the get all borrowed for logged in user endpoint.
+    """
+
+    borrowed = create_borrowed(test_db)
+    token = login(TEST_USER_AUTH).json()["token"]
+
+    response = make_request("/borrowed/user", token)
+    data = response.json()
+    assert response.status_code == status.HTTP_200_OK
+    assert len(data) == 1
+    assert "copy_id" in data[0] and data[0]["copy_id"] == borrowed.copy_id
+    assert "user_id" in data[0] and data[0]["user_id"] == borrowed.user_id
+    assert (
+        "due_date" in data[0] and data[0]["due_date"] == borrowed.due_date.isoformat()
+    )
+    assert (
+        "issue_date" in data[0]
+        and data[0]["issue_date"] == borrowed.issue_date.isoformat()
+    )
+
+
+def test_borrowed_get_all_for_logged_in_user2(test_db: sessionmaker) -> None:
+    """
+    Tests the get all borrowed for logged in user endpoint by verifying that a borrowed object created by one user is not returned for another user
+    """
+
+    create_borrowed(test_db)
+    new_user = TEST_USER.copy()
+    new_user["username"] = "newuser1"
+    new_user["email"] = "newuser1@gmail.com"
+    register_user(new_user)
+    new_user_auth = TEST_USER_AUTH.copy()
+    new_user_auth["username"] = "newuser1"
+    token = login(new_user_auth).json()["token"]
+
+    response = make_request("/borrowed/user", token)
+    data = response.json()
+    assert response.status_code == status.HTTP_200_OK
+    assert data == []
+
+
+def test_borrowed_get_all_for_logged_in_user_without_token(
+    test_db: sessionmaker,
+) -> None:
+    """
+    Tests the get all borrowed for logged in user endpoint by requesting without a token. Should return 401.
+    """
+
+    response = make_request("/borrowed/user")
+    assert response.status_code == status.HTTP_401_UNAUTHORIZED
+
+
 # Helper function
 
 
