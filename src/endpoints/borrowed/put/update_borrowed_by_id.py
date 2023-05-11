@@ -14,7 +14,7 @@ from src.schemas.borrowed import BorrowedSchema
 async def update_borrowed_by_id(
     borrowed_id: int,
     borrowed: BorrowedSchema,
-    db: Session = get_db(),
+    db: Session = Depends(get_db),
     librarian: dict = Depends(get_current_librarian),
 ) -> BorrowedSchema:
     """
@@ -40,8 +40,10 @@ async def update_borrowed_by_id(
         found_borrowed.due_date = borrowed.due_date
         found_borrowed.return_date = borrowed.return_date
         db.commit()
+        db.refresh(found_borrowed)
         logging.info("Updated borrowed in database with id: " + str(borrowed_id))
         borrowed.id = found_borrowed.id
+        borrowed.user_id = found_borrowed.user_id
         return borrowed
     except Exception as e:
         logging.exception("Error updating borrowed in database. Details = " + str(e))
