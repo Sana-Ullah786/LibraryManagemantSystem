@@ -1,45 +1,20 @@
 from datetime import datetime
-from typing import Callable
 
-import pytz
 from sqlalchemy import select
 from sqlalchemy.orm import sessionmaker
 from starlette import status
 
 from src.dependencies import get_password_hash
-
-from ..src.models import all_models
-from ..src.models.all_models import User
-from .client import client
-
-NOT_AUTH = {"detail": "Not authenticated"}
-LIB_USER = {
-    "email": "user@super.com",
-    "username": "super_user",
-    "password": get_password_hash("12345678"),
-    "first_name": "Users First name",
-    "last_name": "Tahir",
-    "contact_number": "users cellphone number",
-    "address": "users physical address",
-    "is_librarian": True,
-    "is_active": True,
-    "date_of_joining": datetime.now(pytz.UTC),
-}
-TEST_USER = {
-    "email": "user1@gmail.com",
-    "username": "user1",
-    "password": get_password_hash("12345678"),
-    "first_name": "Users First name",
-    "last_name": "Users last name",
-    "contact_number": "users cellphone number",
-    "address": "users physical address",
-    "is_librarian": False,
-    "is_active": True,
-    "date_of_joining": datetime.now(pytz.UTC),
-}
-
-SUPER_USER_CRED = {"username": "super_user", "password": "12345678"}
-TEST_USER_CRED = {"username": "user1", "password": "12345678"}
+from src.models import all_models
+from src.models.all_models import User
+from tests.client import client
+from tests.utils import SUPER_USER_CRED  # isort skip
+from tests.utils import check_no_auth  # isort skip
+from tests.utils import get_fresh_token  # isort skip
+from tests.utils import insert_author  # isort skip
+from tests.utils import insert_book  # isort skip
+from tests.utils import insert_genre  # isort skip
+from tests.utils import insert_language  # isort skip; isort skip
 
 
 def test_get_book(test_db: sessionmaker) -> None:
@@ -139,7 +114,7 @@ def test_book_create(test_db: sessionmaker) -> None:
     payload = {
         "title": "TESTBook",
         "isbn": "dsasadaa135",
-        "date_of_publication": "12-12-2012",
+        "date_of_publication": "2000-12-13",
         "description": "Short dics about book, max 200 characters",
         "language_id": language.id,
         "author_ids": [author.id],
@@ -149,11 +124,26 @@ def test_book_create(test_db: sessionmaker) -> None:
     response = client.post(
         "/book", headers={"Authorization": f"Bearer {token}"}, json=payload
     )
-
+    # succesful Response for creation
     assert response.status_code == status.HTTP_201_CREATED
     assert len(response.json()) == 2
     assert response.json().get("status") == 201
     assert response.json().get("transaction") == "succesful_response"
+
+    # #add an already added Book
+    # payload = {
+    #     "title": "TESTBook",
+    #     "isbn": "dsasadaa135",
+    #     "date_of_publication": "2000-12-13",
+    #     "description": "Short dics about book, max 200 characters",
+    #     "language_id": language.id,
+    #     "author_ids": [author.id],
+    #     "genre_ids": [genre.id],
+    # }
+    # response = client.post(
+    #     "/book", headers={"Authorization": f"Bearer {token}"}, json=payload
+    # )
+    # assert response.status_code == status.HTTP_500_INTERNAL_SERVER_ERROR
 
 
 def test_book_update(test_db: sessionmaker) -> None:
@@ -169,7 +159,7 @@ def test_book_update(test_db: sessionmaker) -> None:
     payload = {
         "title": "TESTBook",
         "isbn": "dsasadaa135",
-        "date_of_publication": "12-12-2012",
+        "date_of_publication": "2000-12-03",
         "description": "Hello",
         "language_id": book.language_id,
         "author_ids": [author.id],
@@ -182,105 +172,3 @@ def test_book_update(test_db: sessionmaker) -> None:
 
     assert response.status_code == status.HTTP_200_OK
     assert response.json().get("description") == "Hello"
-
-
-def check_no_auth(url: str, client_method: Callable) -> None:
-    """
-    Hit the url with no token to check response\n
-    Param
-    -----
-    url: str to fetch from
-    client_method: Function methods to call with like post | get
-    """
-    response = client_method(url)
-    assert response.json() == NOT_AUTH
-    assert response.status_code == status.HTTP_401_UNAUTHORIZED
-
-
-def insert_user(test_db: sessionmaker, user: User) -> None:
-    """
-    Creates a user in database
-    """
-    with test_db() as db:
-        db.add(user)
-        db.commit()
-
-
-def get_fresh_token(db: sessionmaker, data) -> str:
-    """
-    Clears the db, create new librarian and returns its jwt token
-    """
-    new_user = User(**LIB_USER)
-    insert_user(db, new_user)
-    new_user = User(**TEST_USER)
-    insert_user(db, new_user)
-    jwt_token = (
-        client.post(
-            "/auth/token",
-            data=data,
-        )
-        .json()
-        .get("token")
-    )
-    return jwt_token
-
-
-def insert_book(test_db: sessionmaker) -> list:
-    author = all_models.Author(
-        first_name="Charles",
-        last_name="Babbage",
-        birth_date=datetime(1990, 1, 1),
-        death_date=datetime(2020, 1, 1),
-    )
-    language = all_models.Language(language="English")
-    genre = all_models.Genre(genre="Comedy")
-
-    book = all_models.Book(
-        title="Let us C",
-        description="Coding book",
-        isbn="ABCD1234",
-        date_of_publication=datetime(2008, 1, 1),
-        language=language,
-    )
-    book.genres.append(genre)
-    book.authors.append(author)
-
-    with test_db() as db:
-        db.add_all([author, language, genre, book])
-        db.commit()
-        db.flush()
-    return [author, language, genre, book]
-
-
-def insert_author(test_db: sessionmaker) -> all_models.Author:
-    author = all_models.Author(
-        first_name="Charles",
-        last_name="Babbage",
-        birth_date=datetime(1990, 1, 1),
-        death_date=datetime(2020, 1, 1),
-    )
-    with test_db() as db:
-        db.add_all([author])
-        db.commit()
-        db.flush()
-    return author
-
-
-def insert_language(test_db: sessionmaker) -> all_models.Language:
-    language = all_models.Language(language="English")
-
-    with test_db() as db:
-        db.add(language)
-        db.commit()
-        db.flush()
-    return language
-
-
-def insert_genre(test_db: sessionmaker) -> all_models.Genre:
-    genre = all_models.Genre(genre="English")
-
-    with test_db() as db:
-        db.add(genre)
-        db.commit()
-        db.flush()
-    return genre
