@@ -4,8 +4,8 @@ from pydantic import BaseModel, Field
 
 
 class GenreSchema(BaseModel):
-    id: Optional[int] = None
-    genre: str = Field()
+    id: Optional[int] = Field(None, title="Genre Id", gt=0)
+    genre: str = Field(title="Enter Genre Name", max_length=50, min_length=3)
 
     class Config:
         schema_extra = {
