@@ -1,7 +1,7 @@
 from datetime import datetime
 from typing import Optional
 
-from pydantic import BaseModel, Field, validator
+from pydantic import BaseModel, Field, constr, validator
 
 
 class AuthorSchema(BaseModel):
@@ -12,8 +12,8 @@ class AuthorSchema(BaseModel):
     """
 
     id: Optional[int] = None
-    first_name: str = Field(title="First name of Author ")
-    last_name: str = Field(title="Last name of Author ")
+    first_name: constr(strip_whitespace=True, min_length=1, max_length=32)
+    last_name: constr(strip_whitespace=True, min_length=1, max_length=32)
     birth_date: datetime = Field(title="Date of Birth For The Author")
     death_date: datetime = Field(title="Date of Passing For The Author", default=None)
 
