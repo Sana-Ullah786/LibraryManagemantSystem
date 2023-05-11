@@ -19,7 +19,7 @@ def create_user_using_model(test_db, librarian=False) -> User:
     """
     logging.info("Creating user in database in Test DB")
     user = User()
-    user.email = "Test"
+    user.email = "test@test.com"
     user.username = "Test"
     user.password = get_password_hash("Test")
     user.first_name = "Test"

@@ -4,28 +4,29 @@ from typing import Optional
 
 from pydantic import BaseModel, EmailStr, Field, constr, validator
 
+from src.models.user import User
 
-class UserSchema(BaseModel):
+
+class UserSchemaBase(BaseModel):
     """
-    Pydantic model that will we used to send data to and from routes.
-    Has attributes and validations as of DB.
+    A Base Pydantic model for user.
     """
 
-    id: Optional[int] = None
     email: EmailStr
     username: constr(strip_whitespace=True, min_length=3, max_length=32)
-    password: constr(min_length=8, max_length=100)
     first_name: constr(strip_whitespace=True, min_length=1, max_length=32)
     last_name: constr(strip_whitespace=True, min_length=1, max_length=32)
-    date_of_joining: Optional[datetime]
     contact_number: constr()
     address: constr(strip_whitespace=True, min_length=3, max_length=200)
 
-    @validator("date_of_joining")
-    def join_date_greater_than_current(cls, v):
-        if v.date() > date.today():
-            raise ValueError("joining date can't be greater than today.")
-        return v
+
+class UserSchemaIn(UserSchemaBase):
+
+    """
+    A Pydantic user schema which will be used to create a new user.
+    """
+
+    password: constr(min_length=8, max_length=100)
 
     @validator("password")
     def check_password(cls, v):
@@ -55,3 +56,23 @@ class UserSchema(BaseModel):
                 "address": "Folio3 Tower, Shahrah-e-Faisal, Karachi, Pakistan",
             }
         }
+
+
+class UserSchemaOut(UserSchemaBase):
+
+    """
+    A Pydantic user schema which will be used to return the user.
+    """
+
+    id: int
+    date_of_joining: datetime
+    is_librarian: bool
+
+
+class UserSchemaToken(UserSchemaOut):
+
+    """
+    A Pydantic user schema that will be used to return the token as well as other user information when a user logs in
+    """
+
+    token: str

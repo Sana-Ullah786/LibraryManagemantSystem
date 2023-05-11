@@ -1,9 +1,9 @@
 from pydantic import Field
 
-from .user import UserSchema
+from .user import UserSchemaIn
 
 
-class UpdateUserSchema(UserSchema):
+class UpdateUserSchema(UserSchemaIn):
     """
     Pydantic model that will we used to update user model
     """
