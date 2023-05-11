@@ -52,6 +52,8 @@ async def create_borrowed(
         db.add(new_borrowed)
         db.commit()
         logging.info(f"Created new borrowed in database with user ID: {user.get('id')}")
+        db.refresh(new_borrowed)
+        borrowed.id = new_borrowed.id
         borrowed.user_id = user.get("id")
         return borrowed
     except Exception as e:

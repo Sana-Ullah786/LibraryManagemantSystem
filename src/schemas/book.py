@@ -7,17 +7,19 @@ from pydantic import BaseModel, Field, validator
 class BookSchema(BaseModel):
     id: Optional[int] = None
     title: str = Field()
-    date_of_publication: str
+    date_of_publication: str = Field()
     isbn: str = Field()
     description: str = Field(min_length=0, max_length=200)
     language_id: int = Field()
     author_ids: List[int] = Field()
     genre_ids: List[int] = Field()
 
-    # @validator("date_of_publication")
-    # def pub_date_greater_than_current(cls, v):
-    #     if v > date.today():
-    #         raise ValueError("publication date can't be greater than today.")
+    @validator("date_of_publication")
+    def validate_my_date(cls, value):
+        input_date = date.fromisoformat(value)
+        if input_date > date.today():
+            raise ValueError("Date can't be greater than today")
+        return value
 
     class Config:
         schema_extra = {
