@@ -20,7 +20,7 @@ class Language(Base):
     __tablename__ = "language"
 
     id: Mapped[int] = mapped_column(primary_key=True)
-    language: Mapped[str] = mapped_column(String(32), nullable=False, unique=True)
+    language: Mapped[str] = mapped_column(String(50), nullable=False, unique=True)
     created_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True), server_default=func.now()
     )
