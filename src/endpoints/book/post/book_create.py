@@ -3,6 +3,7 @@ from datetime import datetime
 
 from fastapi import Depends, HTTPException
 from sqlalchemy import select
+from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
 from starlette import status
 
@@ -31,13 +32,18 @@ async def book_create(
         .scalars()
         .first()
     )
+    if language is None:
+        raise http_exception()
     authors = (
         db.execute(select(Author).where(Author.id.in_(book.author_ids))).scalars().all()
     )
+    if len(authors) == 0:
+        raise http_exception()
     genres = (
         db.execute(select(Genre).where(Genre.id.in_(book.genre_ids))).scalars().all()
     )
-
+    if len(genres) == 0:
+        raise http_exception()
     book_model = Book()
     book_model.title = book.title
     book_model.date_of_publication = datetime.strptime(
@@ -49,18 +55,24 @@ async def book_create(
     book_model.authors.extend(authors)
     book_model.genres.extend(genres)
     book_model.language = language
-
-    db.add(book_model)
-    db.commit()
-    logging.info(
-        f"Book with ID: {book_model.id} Created by Librarian {librarian['id']}"
-    )
+    try:
+        db.add(book_model)
+        db.commit()
+        logging.info(
+            f"Book with ID: {book_model.id} Created by Librarian {librarian['id']}"
+        )
+    except IntegrityError:
+        raise book_exist()
 
     return succesful_response()
 
 
 def http_exception() -> dict:
     return HTTPException(status_code=404, detail="Book not found")
+
+
+def book_exist() -> dict:
+    return HTTPException(status_code=400, detail="Book already exist")
 
 
 def succesful_response() -> dict:
