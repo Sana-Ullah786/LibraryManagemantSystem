@@ -19,6 +19,7 @@ bcrypt = "==4.0.1"
 httpx = "==0.24.0"
 alembic = "==1.10.4"
 redis = "==4.5.4"
+pydantic = {extras = ["email"], version = "==1.10.7"}
 
 [dev-packages]
 

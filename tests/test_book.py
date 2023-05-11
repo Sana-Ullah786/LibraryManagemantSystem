@@ -12,6 +12,9 @@ from tests.utils import insert_book  # isort skip
 from tests.utils import insert_genre  # isort skip
 from tests.utils import insert_language  # isort skip; isort skip
 
+from src.dependencies import get_password_hash
+
+
 from ..src.models import all_models
 from .client import client
 

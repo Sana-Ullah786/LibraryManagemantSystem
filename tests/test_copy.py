@@ -6,6 +6,11 @@ from tests.utils import check_no_auth  # isort skip
 from tests.utils import get_fresh_token  # isort skip
 from tests.utils import insert_copy  # isort skip
 
+from src.dependencies import get_password_hash
+
+from src.models import all_models
+from src.models.all_models import User
+
 from .client import client
 
 
