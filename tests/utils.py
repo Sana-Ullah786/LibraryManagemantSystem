@@ -14,10 +14,10 @@ NOT_AUTH = {"detail": "Not authenticated"}
 LIB_USER = {
     "email": "user@super.com",
     "username": "super_user",
-    "password": get_password_hash("12345678"),
+    "password": get_password_hash("abc123A_GT"),
     "first_name": "Users First name",
     "last_name": "Tahir",
-    "contact_number": "users cellphone number",
+    "contact_number": "03122345678",
     "address": "users physical address",
     "is_librarian": True,
     "is_active": True,
@@ -26,18 +26,18 @@ LIB_USER = {
 TEST_USER = {
     "email": "user1@gmail.com",
     "username": "user1",
-    "password": get_password_hash("12345678"),
+    "password": get_password_hash("abc123A_GT"),
     "first_name": "Users First name",
     "last_name": "Users last name",
-    "contact_number": "users cellphone number",
+    "contact_number": "03122345678",
     "address": "users physical address",
     "is_librarian": False,
     "is_active": True,
     "date_of_joining": datetime.now(pytz.UTC),
 }
 
-SUPER_USER_CRED = {"username": "super_user", "password": "12345678"}
-TEST_USER_CRED = {"username": "user1", "password": "12345678"}
+SUPER_USER_CRED = {"username": "super_user", "password": "abc123A_GT"}
+TEST_USER_CRED = {"username": "user1", "password": "abc123A_GT"}
 
 TEST_AUTHOR = {
     "first_name": "Talha",
