@@ -3,7 +3,7 @@ from datetime import datetime
 from sqlalchemy import DateTime, ForeignKey, func
 from sqlalchemy.orm import Mapped, mapped_column
 
-from .database import Base
+from src.models.database import Base
 
 
 class BookGenre(Base):

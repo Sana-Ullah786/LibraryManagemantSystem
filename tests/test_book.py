@@ -4,6 +4,10 @@ from sqlalchemy import select
 from sqlalchemy.orm import sessionmaker
 from starlette import status
 
+from src.dependencies import get_password_hash
+from src.models import all_models
+from src.models.all_models import User
+from tests.client import client
 from tests.utils import SUPER_USER_CRED  # isort skip
 from tests.utils import check_no_auth  # isort skip
 from tests.utils import get_fresh_token  # isort skip
@@ -11,12 +15,6 @@ from tests.utils import insert_author  # isort skip
 from tests.utils import insert_book  # isort skip
 from tests.utils import insert_genre  # isort skip
 from tests.utils import insert_language  # isort skip; isort skip
-
-from src.dependencies import get_password_hash
-
-
-from ..src.models import all_models
-from .client import client
 
 
 def test_get_book(test_db: sessionmaker) -> None:
