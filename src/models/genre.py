@@ -3,7 +3,7 @@ from datetime import datetime
 from sqlalchemy import DateTime, String, func
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
-from .database import Base
+from src.models.database import Base
 
 
 class Genre(Base):
@@ -21,7 +21,7 @@ class Genre(Base):
     __tablename__ = "genre"
 
     id: Mapped[int] = mapped_column(primary_key=True)
-    genre: Mapped[str] = mapped_column(String(), unique=True)
+    genre: Mapped[str] = mapped_column(String(50), unique=True, nullable=False)
     created_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True), server_default=func.now()  # noqa
     )

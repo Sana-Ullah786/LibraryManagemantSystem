@@ -1,6 +1,6 @@
 from pydantic import Field
 
-from .user import UserSchema
+from src.schemas.user import UserSchema
 
 
 class UpdateUserSchema(UserSchema):
