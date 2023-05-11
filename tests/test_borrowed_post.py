@@ -262,7 +262,7 @@ def test_with_simple_user(test_db: sessionmaker) -> None:
     with test_db() as db:
         user = create_user_using_model(test_db, librarian=False)
         copy_id = create_required_entries_in_db(test_db, "available")
-       
+
         due_date = datetime.now() + timedelta(days=2)
         due_date = due_date.isoformat()
         return_date = datetime.now() + timedelta(days=3)
@@ -288,9 +288,6 @@ def test_with_simple_user(test_db: sessionmaker) -> None:
         assert borrowed["copy_id"] == copy_id
         assert borrowed["user_id"] == user.id
         logging.info(" Wrong Return date Tested successfully")
-
-
-
 
 
 # Test case for create borrowed (POST /borrowed/)
