@@ -43,7 +43,7 @@ TEST_USER_CRED = {"username": "user1", "password": "abc123A_GT"}
 TEST_AUTHOR = {
     "first_name": "Talha",
     "last_name": "Tahir",
-    "birth_date": "2023-04-26T00:00:00",
+    "birth_date": "2023-04-26",
 }
 
 
