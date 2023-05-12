@@ -10,16 +10,16 @@ from src.dependencies import get_password_hash  # isort skip
 from src.dependencies import get_user_already_exists_exception  # isort skip
 from src.dependencies import verify_password  # isort skip; isort skip
 from src.models.user import User
-from src.schemas.user import UserSchema
+from src.schemas.user import UserSchemaIn, UserSchemaOut
 
 SECRET_KEY = os.getenv("JWT_SECRET_KEY")
 ALGORITHM = os.getenv("JWT_ALGORITHM")
 EXPIRE_TIME_IN_MINUTES = int(os.getenv("JWT_EXPIRE_TIME_IN_MINUTES"))
 
 
-def create_user(user: UserSchema, is_librarian: bool, db: Session) -> None:
+def create_user(user: UserSchemaIn, is_librarian: bool, db: Session) -> UserSchemaOut:
     """
-    Helper function that creates a user based on the parameters provided. It also checks if the user already exists. Raises an exception if it does.
+    Helper function that creates a user based on the parameters provided and returns the user. It also checks if the user already exists. Raises an exception if it does.
     """
 
     check_user_already_exists(user, db)
@@ -39,9 +39,12 @@ def create_user(user: UserSchema, is_librarian: bool, db: Session) -> None:
 
     db.add(new_user)
     db.commit()
+    db.refresh(new_user)
+    user = UserSchemaOut(**new_user.__dict__)
+    return user
 
 
-def check_user_already_exists(user: UserSchema, db: Session) -> None:
+def check_user_already_exists(user: UserSchemaIn, db: Session) -> None:
     """
     Raises an exception is user with the same email or username already exists
     """

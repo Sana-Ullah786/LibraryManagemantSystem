@@ -1,9 +1,10 @@
 from pydantic import Field
 
-from src.schemas.user import UserSchema
+
+from src.schemas.user import UserSchemaIn
 
 
-class UpdateUserSchema(UserSchema):
+class UpdateUserSchema(UserSchemaIn):
     """
     Pydantic model that will we used to update user model
     """
