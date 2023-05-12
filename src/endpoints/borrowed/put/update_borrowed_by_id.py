@@ -1,6 +1,6 @@
 import logging
 
-from fastapi import Depends, HTTPException, status
+from fastapi import Depends, HTTPException, Path, status
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
@@ -12,8 +12,8 @@ from src.schemas.borrowed import BorrowedSchema
 
 @router.put("/{borrowed_id}", response_model=None, status_code=status.HTTP_200_OK)
 async def update_borrowed_by_id(
-    borrowed_id: int,
     borrowed: BorrowedSchema,
+    borrowed_id: int = Path(gt=-1),
     db: Session = Depends(get_db),
     librarian: dict = Depends(get_current_librarian),
 ) -> BorrowedSchema:
