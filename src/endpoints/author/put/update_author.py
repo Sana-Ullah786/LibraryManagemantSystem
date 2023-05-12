@@ -42,4 +42,6 @@ async def update_author(
     author.death_date = new_author.death_date
     logging.info(f"updating author {author_id}-- {__name__}")
     db.commit()
+    db.refresh(author)
+    new_author.id = author.id
     return new_author

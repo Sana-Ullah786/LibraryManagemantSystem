@@ -3,7 +3,7 @@ from datetime import datetime, timedelta
 
 import pytz
 from jose import jwt
-from sqlalchemy import select
+from sqlalchemy import or_, select
 from sqlalchemy.orm import Session
 
 from src.dependencies import get_password_hash  # isort skip
@@ -50,7 +50,9 @@ def check_user_already_exists(user: UserSchemaIn, db: Session) -> None:
     """
 
     fetched_user = db.scalar(
-        select(User).where(User.email == user.email or User.username == user.username)
+        select(User).where(
+            or_(User.email == user.email, User.username == user.username)
+        )
     )
     if fetched_user:
         raise get_user_already_exists_exception()
