@@ -130,20 +130,20 @@ def test_book_create(test_db: sessionmaker) -> None:
     assert response.json().get("status") == 201
     assert response.json().get("transaction") == "succesful_response"
 
-    # #add an already added Book
-    # payload = {
-    #     "title": "TESTBook",
-    #     "isbn": "dsasadaa135",
-    #     "date_of_publication": "2000-12-13",
-    #     "description": "Short dics about book, max 200 characters",
-    #     "language_id": language.id,
-    #     "author_ids": [author.id],
-    #     "genre_ids": [genre.id],
-    # }
-    # response = client.post(
-    #     "/book", headers={"Authorization": f"Bearer {token}"}, json=payload
-    # )
-    # assert response.status_code == status.HTTP_500_INTERNAL_SERVER_ERROR
+    # add an already added Book
+    payload = {
+        "title": "TESTBook",
+        "isbn": "dsasadaa135",
+        "date_of_publication": "2000-12-13",
+        "description": "Short dics about book, max 200 characters",
+        "language_id": language.id,
+        "author_ids": [author.id],
+        "genre_ids": [genre.id],
+    }
+    response = client.post(
+        "/book", headers={"Authorization": f"Bearer {token}"}, json=payload
+    )
+    assert response.status_code == status.HTTP_400_BAD_REQUEST
 
 
 def test_book_update(test_db: sessionmaker) -> None:
