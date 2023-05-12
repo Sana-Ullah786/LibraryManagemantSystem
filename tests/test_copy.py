@@ -45,12 +45,12 @@ def test_get_copy(test_db: sessionmaker) -> None:
 
 
 def test_copy_create(test_db: sessionmaker) -> None:
-    copy = insert_copy(test_db, isbn="qwer", language="English")
+    copy = insert_copy(test_db, isbn="qwertiuyii", language="English")
 
     check_no_auth("/book", client.post)
     token = get_fresh_token(test_db, SUPER_USER_CRED)
 
-    payload = {"book_id": copy[0].id, "language_id": copy[2].id, "status": " Available"}
+    payload = {"book_id": copy[0].id, "language_id": copy[2].id, "status": "available"}
 
     # without authentication
 
@@ -69,12 +69,12 @@ def test_copy_create(test_db: sessionmaker) -> None:
 
 def test_copy_update(test_db: sessionmaker) -> None:
     # succesful Update
-    copy = insert_copy(test_db, isbn="qwer", language="English")
+    copy = insert_copy(test_db, isbn="qwertutuis", language="English")
 
     check_no_auth("/book", client.post)
     token = get_fresh_token(test_db, SUPER_USER_CRED)
 
-    payload = {"book_id": copy[0].id, "language_id": copy[2].id, "status": "Reserved"}
+    payload = {"book_id": copy[0].id, "language_id": copy[2].id, "status": "reserved"}
     response = client.put(
         f"/copy/{copy[1].id}",
         headers={"Authorization": f"Bearer {token}"},
@@ -89,7 +89,7 @@ def test_copy_update(test_db: sessionmaker) -> None:
     # check updated status
     response = client.get(f"/copy/{copy[1].id}")
     assert response.status_code == 200
-    assert response.json().get("status") == "Reserved"
+    assert response.json().get("status") == "reserved"
 
     # Invalid copy id
 
@@ -102,7 +102,7 @@ def test_copy_update(test_db: sessionmaker) -> None:
 
 def test_copy_delete(test_db: sessionmaker):
     # success delete
-    copy = insert_copy(test_db, isbn="qwer", language="English")
+    copy = insert_copy(test_db, isbn="qwdadsaxser", language="English")
 
     token = get_fresh_token(test_db, SUPER_USER_CRED)
 
