@@ -86,7 +86,7 @@ def test_create_language(test_db) -> None:
     )
     assert response.status_code == status.HTTP_201_CREATED
     assert response.json()["language"] == "Test"
-    assert response.json()["language_id"] is None
+    assert response.json()["language_id"] == 1
 
 
 # Test case for get all languages (GET /language/)
@@ -180,13 +180,13 @@ def test_delete_language_by_id(test_db) -> None:
     token = get_token_for_user(test_db)
     # invalid id
     response = client.delete(
-        "/language/2", headers={"Authorization": f"Bearer {token}"}
+        "/language/-1", headers={"Authorization": f"Bearer {token}"}
     )
     logging.info(
         "Tested delete language by id API with status code: "
         + str(response.status_code)
     )
-    assert response.status_code == status.HTTP_404_NOT_FOUND
+    assert response.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY
     # valid id
     response = client.delete(
         "/language/1", headers={"Authorization": f"Bearer {token}"}

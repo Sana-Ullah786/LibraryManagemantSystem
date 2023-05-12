@@ -4,7 +4,7 @@ from pydantic import BaseModel, Field, constr
 
 
 class GenreSchema(BaseModel):
-    id: Optional[int] = Field(None, title="Genre Id", gt=0)
+    id: Optional[int] = Field(None, title="Genre Id", gt=-1)
     genre: constr(strip_whitespace=True, min_length=3, max_length=50) = Field(
         title="Enter Genre Name"
     )
