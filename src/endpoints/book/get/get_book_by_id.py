@@ -8,6 +8,7 @@ from starlette import status
 from src.dependencies import get_db
 from src.endpoints.book.router_init import router
 from src.models.book import Book
+from src.schemas.book import BookSchema
 
 
 @router.get("/{book_id}", status_code=status.HTTP_200_OK, response_model=None)

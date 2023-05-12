@@ -11,9 +11,11 @@ from src.dependencies import get_current_librarian, get_db
 from src.endpoints.book.router_init import router
 from src.models.author import Author
 from src.models.book import Book
+from src.models.copy import Copy
 from src.models.genre import Genre
 from src.models.language import Language
 from src.schemas.book import BookSchema
+from src.schemas.copy import CopySchema
 
 
 @router.post("/", status_code=status.HTTP_201_CREATED)
@@ -21,7 +23,7 @@ async def book_create(
     book: BookSchema,
     db: Session = Depends(get_db),
     librarian: dict = Depends(get_current_librarian),  # noqa,
-) -> dict:
+) -> BookSchema:
     """
     Endpoint to create a book
     """
@@ -55,16 +57,32 @@ async def book_create(
     book_model.authors.extend(authors)
     book_model.genres.extend(genres)
     book_model.language = language
+
     try:
         db.add(book_model)
         db.commit()
         logging.info(
             f"Book with ID: {book_model.id} Created by Librarian {librarian['id']}"
         )
+        book_id = book_model.id
+        copy_models = []
+        for i in range(book.no_of_copies):
+            copy = Copy(
+                book_id=book_id, language_id=book.language_id, status="available"
+            )
+            copy_models.append(copy)
+
+        db.add_all(copy_models)
+        db.commit()
+        logging.info(
+            f"{book.no_of_copies} Copies created with Book ID: {book_model.id} Created by Librarian {librarian['id']}"
+        )
     except IntegrityError:
         raise book_exist()
 
-    return succesful_response()
+    book.id = book_model.id
+
+    return book
 
 
 def http_exception() -> dict:
