@@ -1,7 +1,7 @@
 import logging
 from typing import List
 
-from fastapi import Depends, HTTPException, status
+from fastapi import Depends, HTTPException, Path, status
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
@@ -13,7 +13,7 @@ from src.models.user import User
 
 @router.get("/{borrowed_id}", status_code=status.HTTP_200_OK, response_model=None)
 async def get_borrowed_by_id(
-    borrowed_id: int,
+    borrowed_id: int = Path(gt=-1),
     user: dict = Depends(get_current_user),
     db: Session = Depends(get_db),
 ) -> List[Borrowed]:
