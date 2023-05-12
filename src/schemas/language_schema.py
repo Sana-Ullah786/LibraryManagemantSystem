@@ -10,7 +10,7 @@ class LanguageSchema(BaseModel):
 
     """
 
-    language_id: Optional[int] = Field(None, title="Language Id", gt=0)
+    language_id: Optional[int] = Field(None, title="Language Id", gt=-1)
     language: constr(max_length=50, min_length=2) = Field(title="Enter Language Name")
 
     class Config:

@@ -1,6 +1,5 @@
 from pydantic import Field
 
-
 from src.schemas.user import UserSchemaIn
 
 

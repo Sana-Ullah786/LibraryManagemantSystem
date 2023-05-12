@@ -40,9 +40,8 @@ async def update_borrowed_by_id(
         found_borrowed.due_date = borrowed.due_date
         found_borrowed.return_date = borrowed.return_date
         db.commit()
-        db.refresh(found_borrowed)
         logging.info("Updated borrowed in database with id: " + str(borrowed_id))
-        borrowed.id = found_borrowed.id
+        borrowed.id = borrowed_id
         borrowed.user_id = found_borrowed.user_id
         return borrowed
     except Exception as e:

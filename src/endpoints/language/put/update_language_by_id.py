@@ -1,6 +1,6 @@
 import logging
 
-from fastapi import Depends, HTTPException, status
+from fastapi import Depends, HTTPException, Path, status
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
@@ -12,8 +12,8 @@ from src.schemas import language_schema
 
 @router.put("/{language_id}", response_model=None, status_code=status.HTTP_200_OK)
 async def update_language_by_id(
-    language_id: int,
     language: language_schema.LanguageSchema,
+    language_id: int = Path(gt=-1),
     user: dict = Depends(get_current_librarian),
     db: Session = Depends(get_db),
 ) -> language_schema.LanguageSchema:
