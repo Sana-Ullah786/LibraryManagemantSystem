@@ -126,10 +126,8 @@ def test_book_create(test_db: sessionmaker) -> None:
     )
     # succesful Response for creation
     assert response.status_code == status.HTTP_201_CREATED
-    assert len(response.json()) == 2
-    assert response.json().get("status") == 201
-    assert response.json().get("transaction") == "succesful_response"
-
+    assert len(response.json()) == 9
+    print(response.json())
     # add an already added Book
     payload = {
         "title": "TESTBook",
@@ -144,6 +142,81 @@ def test_book_create(test_db: sessionmaker) -> None:
         "/book", headers={"Authorization": f"Bearer {token}"}, json=payload
     )
     assert response.status_code == status.HTTP_400_BAD_REQUEST
+
+    # Add a book with no title
+    payload = {
+        "title": "",
+        "isbn": "dsasadaa135",
+        "date_of_publication": "2000-12-13",
+        "description": "Short dics about book, max 200 characters",
+        "language_id": language.id,
+        "author_ids": [author.id],
+        "genre_ids": [genre.id],
+    }
+    response = client.post(
+        "/book", headers={"Authorization": f"Bearer {token}"}, json=payload
+    )
+    assert response.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY
+
+    # add a book title with whitespaces
+    payload = {
+        "title": "  ",
+        "isbn": "123456789131",
+        "date_of_publication": "2000-12-13",
+        "description": "Short dics about book, max 200 characters",
+        "language_id": language.id,
+        "author_ids": [author.id],
+        "genre_ids": [genre.id],
+    }
+    response = client.post(
+        "/book", headers={"Authorization": f"Bearer {token}"}, json=payload
+    )
+    assert response.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY
+
+    # If date is future
+    payload = {
+        "title": "asdsa",
+        "isbn": "123456789120",
+        "date_of_publication": "2030-12-13",
+        "description": "Short dics about book, max 200 characters",
+        "language_id": language.id,
+        "author_ids": [author.id],
+        "genre_ids": [genre.id],
+    }
+    response = client.post(
+        "/book", headers={"Authorization": f"Bearer {token}"}, json=payload
+    )
+    assert response.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY
+
+    # check copies created with no of copies 4.
+    payload = {
+        "title": "lksajdlsajdlsajd",
+        "isbn": "123456789121",
+        "date_of_publication": "2000-12-13",
+        "description": "Short dics about book, max 200 characters",
+        "language_id": language.id,
+        "author_ids": [author.id],
+        "genre_ids": [genre.id],
+        "no_of_copies": 4,  # Here are the number of copies to be created
+    }
+    response = client.post(
+        "/book", headers={"Authorization": f"Bearer {token}"}, json=payload
+    )
+    print(response.json())
+    assert response.status_code == status.HTTP_201_CREATED
+    book_id = response.json().get("id")
+    print(book_id)
+    with test_db() as test_db:
+        copies = (
+            test_db.scalars(
+                select(all_models.Copy).where(
+                    all_models.Copy.book_id == response.json().get("id")
+                )
+            )
+            .unique()
+            .all()
+        )
+        assert len(copies) == payload.get("no_of_copies")
 
 
 def test_book_update(test_db: sessionmaker) -> None:
