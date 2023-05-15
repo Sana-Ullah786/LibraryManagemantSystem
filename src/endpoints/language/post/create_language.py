@@ -4,9 +4,9 @@ from fastapi import Depends, HTTPException, status
 from sqlalchemy.orm import Session
 
 from src.dependencies import get_current_librarian, get_db
+from src.endpoints.language.router_init import router
 from src.models import all_models
 from src.schemas import language_schema
-from src.endpoints.language.router_init import router
 
 
 @router.post("/", response_model=None, status_code=status.HTTP_201_CREATED)
@@ -29,7 +29,9 @@ async def create_language(
         new_language.language = language.language
         db.add(new_language)
         db.commit()
+        db.refresh(new_language)
         logging.info("Created new language in database with name: " + language.language)
+        language.language_id = new_language.id
         return language
     except Exception as e:
         logging.exception(

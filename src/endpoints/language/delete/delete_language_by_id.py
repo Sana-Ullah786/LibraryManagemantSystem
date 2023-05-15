@@ -1,19 +1,19 @@
 import logging
 
-from fastapi import Depends, HTTPException, status
+from fastapi import Depends, HTTPException, Path, status
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
 from src.dependencies import get_current_librarian, get_db
-from src.models import all_models
 from src.endpoints.language.router_init import router
+from src.models import all_models
 
 
 @router.delete(
     "/{language_id}", response_model=None, status_code=status.HTTP_204_NO_CONTENT
 )
 async def delete_language_by_id(
-    language_id: int,
+    language_id: int = Path(gt=-1),
     user: dict = Depends(get_current_librarian),
     db: Session = Depends(get_db),
 ) -> None:

@@ -9,8 +9,8 @@ from passlib.context import CryptContext
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
-from .models.database import SessionLocal
-from .models.user import User
+from src.models.database import SessionLocal
+from src.models.user import User
 
 SECRET_KEY = os.getenv("JWT_SECRET_KEY")
 ALGORITHM = os.getenv("JWT_ALGORITHM")

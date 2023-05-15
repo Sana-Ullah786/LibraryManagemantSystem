@@ -6,8 +6,8 @@ from sqlalchemy import select
 from sqlalchemy.orm import Session
 
 from src.dependencies import get_db
-from src.models import all_models
 from src.endpoints.language.router_init import router
+from src.models import all_models
 
 
 @router.get("/", response_model=None, status_code=status.HTTP_200_OK)

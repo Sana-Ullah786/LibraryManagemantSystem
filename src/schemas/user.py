@@ -1,39 +1,78 @@
+import re
 from datetime import date, datetime
 from typing import Optional
 
-from pydantic import BaseModel, Field, validator
+from pydantic import BaseModel, EmailStr, Field, constr, validator
+
+from src.models.user import User
 
 
-class UserSchema(BaseModel):
+class UserSchemaBase(BaseModel):
     """
-    Pydantic model that will we used to send data to and from routes.
-    Has attributes and validations as of DB.
+    A Base Pydantic model for user.
     """
 
-    id: Optional[int] = None
-    email: str = Field(min_length=0, max_length=32)
-    username: str = Field(min_length=0, max_length=32)
-    password: str = Field(min_length=0, max_length=8)
-    first_name: str = Field(min_length=0, max_length=32)
-    last_name: str = Field(min_length=0, max_length=32)
-    date_of_joining: Optional[datetime] = Field()
-    contact_number: str = Field(min_length=0, max_length=32)
-    address: str = Field(min_length=0, max_length=200)
+    email: EmailStr
+    username: constr(strip_whitespace=True, min_length=3, max_length=32)
+    first_name: constr(strip_whitespace=True, min_length=1, max_length=32)
+    last_name: constr(strip_whitespace=True, min_length=1, max_length=32)
+    contact_number: constr()
+    address: constr(strip_whitespace=True, min_length=3, max_length=200)
 
-    @validator("date_of_joining")
-    def join_date_greater_than_current(cls, v):
-        if v.date() > date.today():
-            raise ValueError("joining date can't be greater than today.")
+
+class UserSchemaIn(UserSchemaBase):
+
+    """
+    A Pydantic user schema which will be used to create a new user.
+    """
+
+    password: constr(min_length=8, max_length=100)
+
+    @validator("password")
+    def check_password(cls, v):
+        pattern = r"^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^&_*-]).{8,}$"
+        if not re.match(pattern, v):
+            raise ValueError(
+                "Password must contain at least one lowercase letter, one uppercase letter, one digit, one special character and must be at least 8 characters long."
+            )
+        return v
+
+    @validator("contact_number")
+    def check_contact_number(cls, v):
+        pattern = r"^\d{11}$"
+        if not re.match(pattern, v):
+            raise ValueError("Contact number should have 11 digits.")
+        return v
 
     class Config:
         schema_extra = {
             "example": {
-                "email": "A unique email",
-                "username": "A unique username",
-                "password": "8 character string that can be used to login",
-                "first_name": "Users first name",
-                "last_name": "Users last name",
-                "contact_number": "users cellphone number",
-                "address": "users physical address",
+                "email": "johndoe@gmail.com",
+                "username": "johndoe123",
+                "password": "John_Doe987",
+                "first_name": "John",
+                "last_name": "Doe",
+                "contact_number": "03411231231",
+                "address": "Folio3 Tower, Shahrah-e-Faisal, Karachi, Pakistan",
             }
         }
+
+
+class UserSchemaOut(UserSchemaBase):
+
+    """
+    A Pydantic user schema which will be used to return the user.
+    """
+
+    id: int
+    date_of_joining: datetime
+    is_librarian: bool
+
+
+class UserSchemaToken(UserSchemaOut):
+
+    """
+    A Pydantic user schema that will be used to return the token as well as other user information when a user logs in
+    """
+
+    token: str

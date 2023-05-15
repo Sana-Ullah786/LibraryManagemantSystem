@@ -1,3 +1,13 @@
+from src.models.author import *  # noqa
+from src.models.book import *  # noqa
+from src.models.book_author import *  # noqa
+from src.models.book_genre import *  # noqa
+from src.models.borrowed import *  # noqa
+from src.models.copy import *  # noqa
+from src.models.genre import *  # noqa
+from src.models.language import *  # noqa
+from src.models.user import *  # noqa
+
 from .author import *  # noqa
 from .book import *  # noqa
 from .book_author import *  # noqa

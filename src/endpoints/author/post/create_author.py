@@ -31,4 +31,6 @@ async def create_author(
     db.add(author_model)
     logging.info(f"Inserting new author -- {__name__}")
     db.commit()
+    db.refresh(author_model)
+    author.id = author_model.id
     return author
