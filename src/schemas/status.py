@@ -10,10 +10,10 @@ class StatusSchema(BaseModel):
 
     """
 
-    status_id: Optional[int] = Field(None, title="Language Id ")
-    status: str = Field(
-        title="Enter Status ", max_length=32, min_length=1, unique_items=True
+    status_id: Optional[int] = Field(
+        None,
     )
+    status: str = Field(title="Enter Status ", max_length=32, min_length=1)
 
     class Config:
-        schema_extra = {"example": {"status": "Available"}}
+        schema_extra = {"example": {"status": "available"}}
