@@ -1,0 +1,156 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Snapshot tests produces correct snapshot 1`] = `
+<div>
+  <h1>
+    <p
+      data-testid="titleHeading"
+      style={
+        Object {
+          "display": "inline",
+        }
+      }
+    >
+       Title: 
+    </p>
+    <p
+      data-testid="title"
+      style={
+        Object {
+          "display": "inline",
+        }
+      }
+    >
+       
+      title
+       
+    </p>
+  </h1>
+  <p
+    data-testid="authorHeading"
+    style={
+      Object {
+        "display": "inline",
+      }
+    }
+  >
+    <strong>
+      Author: 
+    </strong>
+  </p>
+  <p
+    data-testid="author"
+    style={
+      Object {
+        "display": "inline",
+      }
+    }
+  >
+    <a
+      href="/authors/1"
+      onClick={[Function]}
+    >
+      lastname, firstname
+    </a>
+  </p>
+  <br />
+  <br />
+  <p
+    data-testid="summaryHeading"
+    style={
+      Object {
+        "display": "inline",
+      }
+    }
+  >
+    <strong>
+      Summary: 
+    </strong>
+  </p>
+  <p
+    data-testid="summary"
+    style={
+      Object {
+        "display": "inline",
+      }
+    }
+  >
+     
+    summary
+  </p>
+  <br />
+  <br />
+  <p
+    data-testid="isbnHeading"
+    style={
+      Object {
+        "display": "inline",
+      }
+    }
+  >
+    <strong>
+      ISBN: 
+    </strong>
+  </p>
+  <p
+    data-testid="isbn"
+    style={
+      Object {
+        "display": "inline",
+      }
+    }
+  >
+     
+    1231231231231
+  </p>
+  <br />
+  <br />
+  <p
+    data-testid="languageHeading"
+    style={
+      Object {
+        "display": "inline",
+      }
+    }
+  >
+    <strong>
+      Language: 
+    </strong>
+  </p>
+  <p
+    data-testid="language"
+    style={
+      Object {
+        "display": "inline",
+      }
+    }
+  >
+    English
+  </p>
+  <br />
+  <br />
+  <p
+    data-testid="genreHeading"
+    style={
+      Object {
+        "display": "inline",
+      }
+    }
+  >
+    <strong>
+      Genre: 
+    </strong>
+  </p>
+  <p
+    data-testid="genres"
+    style={
+      Object {
+        "display": "inline",
+      }
+    }
+  >
+     
+    Fantasy, Drama
+  </p>
+</div>
+`;
