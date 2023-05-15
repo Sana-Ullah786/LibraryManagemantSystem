@@ -12,7 +12,6 @@ from src.models import all_models
 @router.get("/{language_id}", response_model=None, status_code=status.HTTP_200_OK)
 async def get_language_by_id(
     language_id: int = Path(gt=-1),
-    user: dict = Depends(get_current_user),
     db: Session = Depends(get_db),
 ) -> all_models.Language:
     """

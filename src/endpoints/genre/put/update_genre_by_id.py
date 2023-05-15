@@ -10,7 +10,7 @@ from src.models import all_models
 from src.schemas import genre
 
 
-@router.put("/{language_id}", response_model=None, status_code=status.HTTP_200_OK)
+@router.put("/{genre_id}", response_model=None, status_code=status.HTTP_200_OK)
 async def update_genre_by_id(
     new_genre: genre.GenreSchema,
     genre_id: int = Path(gt=-1),
@@ -37,10 +37,10 @@ async def update_genre_by_id(
             status_code=status.HTTP_404_NOT_FOUND, detail="Genre not found"
         )
     try:
-        found_genre.name = new_genre.name
+        found_genre.genre = new_genre.genre
         db.commit()
         logging.info("Updated Genre in database with id: " + str(genre_id))
-        new_genre.genre_id = genre_id
+        new_genre.id = genre_id
         return new_genre
     except Exception as e:
         logging.exception("Error updating Genre in database. Details = " + str(e))

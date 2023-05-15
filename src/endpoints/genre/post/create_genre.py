@@ -32,7 +32,7 @@ async def create_genre(
         db.commit()
         db.refresh(genre_model)
         logging.info("Created new Genre in database with name: " + new_genre.genre)
-        new_genre.genre_id = genre_model.id
+        new_genre.id = genre_model.id
         return new_genre
     except Exception as e:
         logging.exception("Error creating a new genre database. Details = " + str(e))
