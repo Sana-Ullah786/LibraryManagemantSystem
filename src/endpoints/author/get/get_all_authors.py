@@ -2,7 +2,7 @@ import logging
 from typing import Annotated, List
 
 from fastapi import Depends, Query
-from sqlalchemy import select
+from sqlalchemy import asc, select
 from sqlalchemy.orm import Session
 from starlette import status
 
@@ -27,6 +27,17 @@ async def get_all_authors(
     ------
     List of authors
     """
+    starting_index = (page_number - 1) * page_size
+    ending_index = starting_index + page_size
     logging.info(f"Getting all the authors -- {__name__}")
-    authors = db.execute(select(Author)).scalars().all()
+    authors = (
+        db.execute(
+            select(Author)
+            .order_by(asc(Author.id))
+            .offset(starting_index)
+            .limit(ending_index)
+        )
+        .scalars()
+        .all()
+    )
     return authors
