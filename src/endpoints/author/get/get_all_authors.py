@@ -28,14 +28,13 @@ async def get_all_authors(
     List of authors
     """
     starting_index = (page_number - 1) * page_size
-    ending_index = starting_index + page_size
     logging.info(f"Getting all the authors -- {__name__}")
     authors = (
         db.execute(
             select(Author)
             .order_by(asc(Author.id))
             .offset(starting_index)
-            .limit(ending_index)
+            .limit(page_size)
         )
         .scalars()
         .all()
