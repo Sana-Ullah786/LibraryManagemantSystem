@@ -11,7 +11,7 @@ from src.endpoints.author.router_init import router
 from src.models.author import Author
 
 
-@router.get("/", status_code=status.HTTP_200_OK, response_model=None)
+@router.get("", status_code=status.HTTP_200_OK, response_model=None)
 async def get_all_authors(
     user: dict = Depends(get_current_user),
     db: Session = Depends(get_db),
