@@ -4,7 +4,6 @@ from starlette import status
 
 from src.models.all_models import Author
 from tests.client import client
-
 # fmt: off
 from tests.utils import (
     SUPER_USER_CRED,
@@ -29,7 +28,7 @@ def test_create_author(test_db: sessionmaker) -> None:
 
 
 def test_get_all_authors(test_db: sessionmaker) -> None:
-    check_no_auth("/author/", client.get)
+    check_no_auth("/author", client.get)
     delete_all_authors(test_db)
     # Inserting dummy data of 2 authors
     token = get_fresh_token(test_db, SUPER_USER_CRED)
@@ -43,7 +42,7 @@ def test_get_all_authors(test_db: sessionmaker) -> None:
     )
 
     token = get_fresh_token(test_db, TEST_USER_CRED)
-    response = client.get("/author/", headers={"Authorization": f"Bearer {token}"})
+    response = client.get("/author", headers={"Authorization": f"Bearer {token}"})
     assert response.status_code == status.HTTP_200_OK
     assert len(response.json()) == 2
     assert response.json()[1].get("first_name") == SECOND_AUTHOR.get("first_name")
