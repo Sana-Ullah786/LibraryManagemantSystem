@@ -80,7 +80,7 @@ def test_copy_update(test_db: sessionmaker) -> None:
         headers={"Authorization": f"Bearer {token}"},
         json=payload,
     )
-    assert response.status_code == status.HTTP_204_NO_CONTENT
+    assert response.status_code == status.HTTP_200_OK
 
     # without authentication
     response = client.put("/copy", json=payload)

@@ -17,7 +17,17 @@ async def copy_delete(
     librarian: dict = Depends(get_current_librarian),  # noqa
 ) -> dict:
     """
-    Endpoint to delete a copy by ID.
+    Endpoint to delete a copy by ID.\n
+    Parameters:
+    ----------- \n
+    copy_id: Copy Id.\n
+    db : db Session. \n
+    librarian : Librarian Credentials \n
+    Returns:
+    ------- \n
+    Succesful Response / Failed Response
+
+
     """
     logging.info(
         f"Book Delete with id :{copy_id} Request by Librarian {librarian['id']}"

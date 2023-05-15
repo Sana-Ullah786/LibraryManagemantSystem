@@ -4,7 +4,7 @@ from pydantic import BaseModel, Field, validator
 
 
 class CopySchema(BaseModel):
-    book_id: Optional[int] = None
+    book_id: Optional[int] = Field(None, gt=-1)
     language_id: Optional[int] = Field(
         None, title="Enter Language Id for book language"
     )

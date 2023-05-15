@@ -21,7 +21,16 @@ async def get_books_by_query(
     db: Session = Depends(get_db),
 ) -> List[Book]:
     """
-    Endpoint to get books by author , genre , languages
+    Endpoint to get books by author , genre , languages \n
+    Parameters :
+    ----------\n
+    author : Author Id ,\n
+    genre : Genre Id,\n
+    language : Language Id\n
+    db : Db Session \n
+    Returns :
+    ------- \n
+    Return List Of Books based on filters . Returns all books if no parameters provided.
     """
     query = db.query(Book)
     logging.info(f"Book filtered with {author}, {genre},{language}")

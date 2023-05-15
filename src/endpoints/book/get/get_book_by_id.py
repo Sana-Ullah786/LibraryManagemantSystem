@@ -14,7 +14,15 @@ from src.schemas.book import BookSchema
 @router.get("/{book_id}", status_code=status.HTTP_200_OK, response_model=None)
 async def get_book_by_id(book_id: int, db: Session = Depends(get_db)) -> Book:
     """
-    Endpoint to get book by id
+    Endpoint to get book by id\n
+    Parameters :
+    -----------\n
+    book_id : Book id (INT), \n
+    db : Session \n
+    Returns :
+    --------- \n
+    Book Object
+
     """
     book = db.execute(select(Book).where(Book.id == book_id)).scalars().first()
     if book:

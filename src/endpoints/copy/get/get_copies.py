@@ -15,6 +15,16 @@ from src.models.copy import Copy
 async def get_copies(db: Session = Depends(get_db)) -> List[Copy]:
     """
     Endpoint to get all copies for copy.
+    \n
+    Parameter:
+    ----------\n
+    db : Session
+
+    Returns:
+    -------- \n
+    Returns all copies.
+
+
     """
     logging.info("All Copy Requested")
 

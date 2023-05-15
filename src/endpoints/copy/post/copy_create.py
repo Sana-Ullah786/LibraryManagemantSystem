@@ -18,6 +18,16 @@ async def copy_create(
 ) -> dict:
     """
     Endpoint to create a copy
+    \n
+    Parameter:
+    ----------\n
+    Copy: Copy Schema json
+    db : Session
+    librarian : Librarian Credentials .
+
+    Returns:
+    -------- \n
+    Response.
     """
     logging.info(f"Copy Create Request by Librarian {librarian['id']}")
 

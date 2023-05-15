@@ -14,6 +14,15 @@ from src.models.copy import Copy
 async def get_copy_by_id(copy_id: int, db: Session = Depends(get_db)) -> Copy:
     """
     Endpoint to get copy by id
+    \n
+    Parameter:
+    ----------\n
+    copy_id : Copy Id of the copy to get.
+    db : Session
+
+    Returns:
+    -------- \n
+    Copy object
     """
     copy = db.execute(select(Copy).where(Copy.id == copy_id)).scalars().first()
     if copy:

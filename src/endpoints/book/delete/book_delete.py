@@ -17,7 +17,15 @@ async def book_delete(
     db: Session = Depends(get_db),
 ) -> dict:
     """
-    Delete a book by ID.
+    Delete a book by ID.\n
+    Parameters :
+    -----------\n
+    book_id : Book id (INT), \n
+    db : Session \n
+    Returns :
+    --------- \n
+    Book Object
+
     """
     logging.info(
         f"Book with ID: {book_id} Delete Request by Librarian {librarian['id']}"

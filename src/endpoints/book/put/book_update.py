@@ -23,7 +23,16 @@ async def book_update(
     db: Session = Depends(get_db),
 ) -> Book:
     """
-    Update an existing book by ID.
+    Update an existing book by ID.\n
+    Parameters:
+    ---------- \n
+    book_id : Id of book.\n
+    book: Book Json containing fields to update.\n
+    libararian : librarian credentials to verify transaction.\n
+    db: Db Session.\n
+    Returns:
+    ------ \n
+    Book Object .
     """
 
     book_model = db.execute(select(Book).where(Book.id == book_id)).scalars().first()

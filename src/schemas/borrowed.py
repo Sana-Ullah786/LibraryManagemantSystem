@@ -10,8 +10,8 @@ class BorrowedSchema(BaseModel):
     """
 
     id: Optional[int] = None
-    copy_id: int = Field(title="The ID of the copy to be borrowed")
-    user_id: Optional[int] = Field(title="The ID of the user who is borrowing")
+    copy_id: int = Field(title="The ID of the copy to be borrowed", gt=-1)
+    user_id: Optional[int] = Field(title="The ID of the user who is borrowing", gt=-1)
     issue_date: datetime = Field(title="Date on which book was issued")
     due_date: datetime = Field(title="Date on which book return is due")
     return_date: Optional[datetime] = Field(

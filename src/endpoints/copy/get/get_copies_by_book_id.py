@@ -17,6 +17,15 @@ async def get_copies_by_book_id(
 ) -> List[Copy]:
     """
     Endpoint to get all copies by book id
+    \n
+    Parameter:
+    ----------\n
+    book_id : Book id of the book to get copies of . \n
+    db : Db session .\n
+    Returns:
+    -------- \n
+    list of books under book id.
+
     """
     copies = (
         db.execute(select(Copy).where(Copy.book_id == book_id)).unique().scalars().all()

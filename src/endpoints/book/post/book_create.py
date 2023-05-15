@@ -25,7 +25,15 @@ async def book_create(
     librarian: dict = Depends(get_current_librarian),  # noqa,
 ) -> BookSchema:
     """
-    Endpoint to create a book
+    Endpoint to create a book\n
+    Parameters :
+    ----------\n
+    book : Body containing Fields ,\n
+    db : Db Session,\n
+    librarian : Librarian Credentials\n
+    Returns :
+    ------- \n
+    BookSchema containing data regarding book.
     """
     logging.info(f"Book Create Request by Librarian {librarian['id']}")
 
