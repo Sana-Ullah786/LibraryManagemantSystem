@@ -1,7 +1,7 @@
 import logging
-from typing import List
+from typing import Annotated, List
 
-from fastapi import Depends
+from fastapi import Depends, Query
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 from starlette import status
@@ -15,6 +15,8 @@ from src.models.author import Author
 async def get_all_authors(
     user: dict = Depends(get_current_user),
     db: Session = Depends(get_db),
+    page_number: Annotated[int, Query(gt=0)] = 1,  # Default value is 1
+    page_size: Annotated[int, Query(gt=0)] = 10,  # Default value is 10
 ) -> List[Author]:
     """
     Returns all the Authors in DB.\n
