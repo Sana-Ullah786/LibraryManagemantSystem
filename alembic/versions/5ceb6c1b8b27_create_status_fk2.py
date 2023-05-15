@@ -1,17 +1,17 @@
-"""Create_Status_Fk
+"""Create_Status_Fk2
 
-Revision ID: 0a8c158bb3ab
-Revises:
-Create Date: 2023-05-15 13:41:38.426178
+Revision ID: 5ceb6c1b8b27
+Revises: b4fe61fdb743
+Create Date: 2023-05-15 16:34:14.802013
 
 """
 import sqlalchemy as sa
 
 from alembic import op
 
-# revision identifiers, uscsed by Alembic.
-revision = "0a8c158bb3ab"
-down_revision = None
+# revision identifiers, used by Alembic.
+revision = "5ceb6c1b8b27"
+down_revision = "b4fe61fdb743"
 branch_labels = None
 depends_on = None
 

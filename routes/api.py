@@ -6,9 +6,7 @@ from src.endpoints import book  # noqa
 from src.endpoints import borrowed  # noqa
 from src.endpoints import copy  # noqa
 from src.endpoints import language  # noqa
-from src.endpoints import status  # noqa
 from src.endpoints import user  # noqa
-from src.endpoints.language import router_init as language_router
 
 router = APIRouter()
 router.include_router(auth.router)
@@ -18,4 +16,3 @@ router.include_router(book.router)
 router.include_router(user.router)
 router.include_router(author.router)
 router.include_router(borrowed.router)
-router.include_router(status.router)

@@ -1,18 +1,17 @@
 import logging
 
-from fastapi import Depends, HTTPException, status
+from fastapi import Depends, HTTPException, Path, status
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
-from src.dependencies import get_current_librarian, get_db
+from src.dependencies import get_current_user, get_db
 from src.endpoints.language.router_init import router
 from src.models import all_models
 
 
 @router.get("/{language_id}", response_model=None, status_code=status.HTTP_200_OK)
 async def get_language_by_id(
-    language_id: int,
-    user: dict = Depends(get_current_librarian),
+    language_id: int = Path(gt=-1),
     db: Session = Depends(get_db),
 ) -> all_models.Language:
     """

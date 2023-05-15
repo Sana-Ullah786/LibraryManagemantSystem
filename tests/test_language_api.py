@@ -121,8 +121,7 @@ def test_get_language_by_id(test_db) -> None:
     """
     logging.info("Testing get language by id API")
     test_create_language(test_db)
-    token = get_token_for_user(test_db)
-    response = client.get("/language/1", headers={"Authorization": f"Bearer {token}"})
+    response = client.get("/language/1")
     logging.info(
         "Tested get language by id API with status code: " + str(response.status_code)
     )
