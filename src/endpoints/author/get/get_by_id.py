@@ -13,7 +13,6 @@ from src.models.author import Author
 @router.get("/{author_id}", status_code=status.HTTP_200_OK, response_model=None)
 async def get_authors_by_id(
     author_id: int = Path(gt=0),
-    user: dict = Depends(get_current_user),
     db: Session = Depends(get_db),
 ) -> Author:
     """

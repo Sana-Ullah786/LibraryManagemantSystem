@@ -34,7 +34,5 @@ async def create_language(
         language.language_id = new_language.id
         return language
     except Exception as e:
-        logging.exception(
-            "Error getting all languages from database. Details = " + str(e)
-        )
+        logging.exception("Error creating a new Language database. Details = " + str(e))
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(e))
