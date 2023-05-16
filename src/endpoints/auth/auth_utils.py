@@ -69,11 +69,11 @@ def authenticate_user(username: str, password: str, db: Session) -> User | bool:
     return user
 
 
-def create_access_token(username: str, user_id: int) -> str:
+def create_access_token(user: User) -> str:
     """
     Takes in a username and id and returns a JWT access token for the user
     """
-    encode = {"sub": username, "id": user_id}
+    encode = {"sub": user.username, "id": user.id, "is_librarian": user.is_librarian}
     expire = datetime.utcnow() + timedelta(minutes=EXPIRE_TIME_IN_MINUTES)
     encode.update({"exp": expire})
     return jwt.encode(encode, SECRET_KEY, algorithm=ALGORITHM)
