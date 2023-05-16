@@ -15,7 +15,7 @@ def success_response(data: object = None, details: str = "Succes") -> dict:
 
 
 def custom_success_response(
-    status: status, data: object = None, details: str = "Succes"
+    status_code: status, data: object = None, details: str = "Succes"
 ) -> dict:
     """
     This function will be used to return a success response.
@@ -25,11 +25,13 @@ def custom_success_response(
     Returns:
         A dictionary containing the response.
     """
-    response = {"status_code": status, "data": data, "details": details}
+    response = {"status_code": status_code, "data": data, "details": details}
     return response
 
 
-def error_response(status: status, data: object = None, details: str = "Error") -> dict:
+def error_response(
+    status_code: status, data: object = None, details: str = "Error"
+) -> dict:
     """
     This function will be used to return an error response.
     Parameters:
@@ -38,5 +40,5 @@ def error_response(status: status, data: object = None, details: str = "Error") 
     Returns:
         A dictionary containing the response.
     """
-    response = {"status_code": status, "data": data, "details": details}
+    response = {"status_code": status_code, "data": data, "details": details}
     return response
