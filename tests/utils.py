@@ -98,10 +98,12 @@ def insert_user(test_db: sessionmaker, user: User) -> None:
         db.commit()
 
 
-def insert_copy(test_db: sessionmaker, isbn: str, language: str) -> list:
+def insert_copy(
+    test_db: sessionmaker, isbn: str, language: str, status_name: str
+) -> list:
     with test_db() as db:
         # setup
-
+        status = all_models.Status(status=status_name)
         language = all_models.Language(language=language)
         book = all_models.Book(
             title="Let us C",
@@ -110,8 +112,8 @@ def insert_copy(test_db: sessionmaker, isbn: str, language: str) -> list:
             date_of_publication=datetime(2008, 1, 1),
             language=language,
         )
-        copy = all_models.Copy(book=book, language=language, status="available")
-        db.add_all([language, book, copy])
+        copy = all_models.Copy(book=book, language=language, status=status)
+        db.add_all([status, language, book, copy])
         db.flush()
         db.commit()
         return [book, copy, language]

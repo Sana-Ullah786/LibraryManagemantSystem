@@ -37,7 +37,7 @@ async def create_borrowed(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail="Copy with given ID does not exist",
         )
-    if copy.status != "available":
+    if copy.status.status != "available":
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail="Copy with given ID is not available",

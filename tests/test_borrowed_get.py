@@ -178,6 +178,7 @@ def create_borrowed(test_db: sessionmaker) -> all_models.Borrowed:
 
     with test_db() as db:
         register_user(TEST_USER)
+        status = all_models.Status(status="Available")
         language = all_models.Language(language="English")
         genre = all_models.Genre(genre="Fantasy")
         author = all_models.Author(
@@ -195,7 +196,7 @@ def create_borrowed(test_db: sessionmaker) -> all_models.Borrowed:
         )
         book.authors.append(author)
         book.genres.append(genre)
-        copy = all_models.Copy(book=book, language=language, status="available")
+        copy = all_models.Copy(book=book, language=language, status=status)
         user = db.scalar(
             select(all_models.User).where(all_models.User.email == TEST_USER["email"])
         )
@@ -207,6 +208,6 @@ def create_borrowed(test_db: sessionmaker) -> all_models.Borrowed:
             return_date=None,
         )
 
-        db.add_all([language, genre, author, book, copy, borrowed])
+        db.add_all([status, language, genre, author, book, copy, borrowed])
         db.commit()
         return borrowed

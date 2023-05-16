@@ -33,7 +33,7 @@ async def copy_update(
 
     copy_model.book_id = copy.book_id
     copy_model.language_id = copy.language_id
-    copy_model.status = copy.status
+    copy_model.status_id = copy.status_id
 
     db.add(copy_model)
     db.commit()

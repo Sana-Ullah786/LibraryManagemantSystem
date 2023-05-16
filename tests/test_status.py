@@ -31,7 +31,3 @@ def status_create(statusname: str, test_db: sessionmaker) -> None:
         db.commit()
         db.refresh(status_model)
     logging.info("Created user in database in Test DB with id: " + str(status_model.id))
-
-
-def test_status_check(test_db: sessionmaker) -> None:
-    return 1
