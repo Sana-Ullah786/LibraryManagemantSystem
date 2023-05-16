@@ -1,8 +1,8 @@
 import logging
-from typing import List
+from typing import Annotated, List
 
-from fastapi import Depends, HTTPException
-from sqlalchemy import select
+from fastapi import Depends, HTTPException, Query
+from sqlalchemy import and_, asc, select
 from sqlalchemy.orm import Session
 from starlette import status
 
@@ -11,6 +11,7 @@ from src.endpoints.book.router_init import router
 from src.models.author import Author
 from src.models.book import Book
 from src.models.genre import Genre
+from src.models.language import Language
 
 
 @router.get("/", status_code=status.HTTP_200_OK, response_model=None)
@@ -18,12 +19,15 @@ async def get_books_by_query(
     author: int = None,
     genre: int = None,
     language: int = None,
+    page_number: Annotated[int, Query(gt=0)] = 1,  # Default value is 1
+    page_size: Annotated[int, Query(gt=0)] = 10,  # Default value is 10
     db: Session = Depends(get_db),
 ) -> List[Book]:
     """
     Endpoint to get books by author , genre , languages
     """
-    query = db.query(Book)
+    starting_index = (page_number - 1) * page_size
+    query = db.query(Book).order_by(asc(Book.id))
     logging.info(f"Book filtered with {author}, {genre},{language}")
 
     if author is not None:
@@ -41,9 +45,15 @@ async def get_books_by_query(
         query = query.filter(Book.genres.contains(genredb))
 
     if language is not None:
+        languagedb = (
+            db.execute(select(Language).where(Language.id == language))
+            .scalars()
+            .first()
+        )
+        if languagedb is None:
+            return http_exception()
         query = query.filter(Book.language_id == language)
-
-    return query.all()
+    return query.offset(starting_index).limit(page_size).all()
 
 
 def http_exception() -> dict:
