@@ -1,10 +1,7 @@
 from fastapi import status
-from fastapi.responses import JSONResponse
 
 
-def custom_response(
-    status_code: status, details: str, data: object = None
-) -> JSONResponse:
+def custom_response(status_code: status, details: str, data: object = None) -> dict:
     """
     Returns a custom response with the given status code, details and data
     Parameters
@@ -14,8 +11,6 @@ def custom_response(
     data : The data of the response
     Returns
     -------
-    A JSONResponse object
+    dict : The custom response
     """
-    return JSONResponse(
-        status_code=status_code, content={"details": details, "data": data}
-    )
+    return {"status_code": status_code, "details": details, "data": data}
