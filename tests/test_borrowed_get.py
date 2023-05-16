@@ -226,8 +226,11 @@ def create_borrowed(
     """
 
     with test_db() as db:
+        status = all_models.Status(status="Available")
+
         if not user_dict:
             user_dict = TEST_USER
+
         register_user(user_dict)
         language = all_models.Language(language="English")
         genre = all_models.Genre(genre="Fantasy")
