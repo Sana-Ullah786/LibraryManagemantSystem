@@ -35,16 +35,19 @@ async def book_create(
         .first()
     )
     if language is None:
+        logging.error("No language found while creating book")
         raise http_exception()
     authors = (
         db.execute(select(Author).where(Author.id.in_(book.author_ids))).scalars().all()
     )
     if len(authors) == 0:
+        logging.error("No author found while creating book")
         raise http_exception()
     genres = (
         db.execute(select(Genre).where(Genre.id.in_(book.genre_ids))).scalars().all()
     )
     if len(genres) == 0:
+        logging.error("No genre found while creating book")
         raise http_exception()
     book_model = Book()
     book_model.title = book.title
