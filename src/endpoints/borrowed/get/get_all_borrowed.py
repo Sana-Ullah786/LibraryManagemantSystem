@@ -1,8 +1,8 @@
 import logging
-from typing import List
+from typing import Annotated, List
 
-from fastapi import Depends, status
-from sqlalchemy import select
+from fastapi import Depends, Query, status
+from sqlalchemy import asc, select
 from sqlalchemy.orm import Session
 
 from src.dependencies import get_current_librarian, get_db
@@ -12,7 +12,10 @@ from src.models.borrowed import Borrowed
 
 @router.get("/", status_code=status.HTTP_200_OK, response_model=None)
 async def get_all_borrowed(
-    librarian: dict = Depends(get_current_librarian), db: Session = Depends(get_db)
+    librarian: dict = Depends(get_current_librarian),
+    db: Session = Depends(get_db),
+    page_number: Annotated[int, Query(gt=0)] = 1,  # Default value is 1
+    page_size: Annotated[int, Query(gt=0)] = 10,  # Default value is 10
 ) -> List[Borrowed]:
     """
     Returns all borrowed objects. Only accessible by librarian
@@ -20,5 +23,15 @@ async def get_all_borrowed(
 
     logging.info(f"Librarian {librarian['id']} requested all borrowed.")
 
-    borrowed = db.scalars(select(Borrowed)).unique().all()
+    starting_index = (page_number - 1) * page_size
+    borrowed = (
+        db.scalars(
+            select(Borrowed)
+            .order_by(asc(Borrowed.id))
+            .offset(starting_index)
+            .limit(page_size)
+        )
+        .unique()
+        .all()
+    )
     return borrowed
