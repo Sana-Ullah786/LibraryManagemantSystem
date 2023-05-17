@@ -6,11 +6,12 @@ from sqlalchemy.orm import Session
 from src.dependencies import get_password_hash
 from src.endpoints.user.exceptions import user_not_exist
 from src.models.user import User
+from src.responses import custom_response
 from src.schemas.update_user import UpdateUserSchema
 from src.schemas.user import UserSchemaOut
 
 
-def update_user(new_user: UpdateUserSchema, user_id: int, db: Session) -> UserSchemaOut:
+def update_user(new_user: UpdateUserSchema, user_id: int, db: Session) -> dict:
     """
     Updates the db with new user data.\n
     Params
@@ -31,4 +32,4 @@ def update_user(new_user: UpdateUserSchema, user_id: int, db: Session) -> UserSc
     logging.info(f"Updating user {user_id} -- {__name__}.udpate_current_user")
     db.commit()
     new_user = UserSchemaOut(**current_user.__dict__)
-    return new_user
+    return custom_response(status_code=200, details="User updated", data=new_user)

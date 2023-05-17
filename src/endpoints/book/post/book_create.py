@@ -14,8 +14,8 @@ from src.models.book import Book
 from src.models.copy import Copy
 from src.models.genre import Genre
 from src.models.language import Language
+from src.responses import custom_response
 from src.schemas.book import BookSchema
-from src.schemas.copy import CopySchema
 
 
 @router.post("/", status_code=status.HTTP_201_CREATED)
@@ -23,7 +23,7 @@ async def book_create(
     book: BookSchema,
     db: Session = Depends(get_db),
     librarian: dict = Depends(get_current_librarian),  # noqa,
-) -> BookSchema:
+) -> dict:
     """
     Endpoint to create a book
     """
@@ -35,16 +35,19 @@ async def book_create(
         .first()
     )
     if language is None:
+        logging.error("No language found while creating book")
         raise http_exception()
     authors = (
         db.execute(select(Author).where(Author.id.in_(book.author_ids))).scalars().all()
     )
     if len(authors) == 0:
+        logging.error("No author found while creating book")
         raise http_exception()
     genres = (
         db.execute(select(Genre).where(Genre.id.in_(book.genre_ids))).scalars().all()
     )
     if len(genres) == 0:
+        logging.error("No genre found while creating book")
         raise http_exception()
     book_model = Book()
     book_model.title = book.title
@@ -80,7 +83,11 @@ async def book_create(
 
     book.id = book_model.id
 
-    return book
+    return custom_response(
+        status_code=status.HTTP_201_CREATED,
+        details="Book created successfully!",
+        data=book,
+    )
 
 
 def http_exception() -> dict:

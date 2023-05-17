@@ -5,16 +5,17 @@ from sqlalchemy import select
 from sqlalchemy.orm import Session
 from starlette import status
 
-from src.dependencies import get_current_user, get_db
+from src.dependencies import get_db
 from src.endpoints.author.router_init import router
 from src.models.author import Author
+from src.responses import custom_response
 
 
 @router.get("/{author_id}", status_code=status.HTTP_200_OK, response_model=None)
 async def get_authors_by_id(
     author_id: int = Path(gt=0),
     db: Session = Depends(get_db),
-) -> Author:
+) -> dict:
     """
     Returns the Authors having the id passed as param.\n
     Params
@@ -23,7 +24,7 @@ async def get_authors_by_id(
     author_id: int
     Returns
     ------
-    Author
+    dict : A dict with status code, details and data
     """
     logging.info(f"Getting authors {author_id}-- {__name__}")
     author = db.execute(select(Author).where(Author.id == author_id)).scalars().first()
@@ -32,4 +33,8 @@ async def get_authors_by_id(
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND, detail="Author not found!"
         )
-    return author
+    return custom_response(
+        status_code=status.HTTP_200_OK,
+        details="Author fetched successfully!",
+        data=author,
+    )

@@ -7,6 +7,7 @@ from sqlalchemy.orm import Session
 from src.dependencies import get_current_librarian, get_db
 from src.endpoints.genre.router_init import router
 from src.models import all_models
+from src.responses import custom_response
 from src.schemas import genre
 
 
@@ -16,7 +17,7 @@ async def update_genre_by_id(
     genre_id: int = Path(gt=-1),
     user: dict = Depends(get_current_librarian),
     db: Session = Depends(get_db),
-) -> genre.GenreSchema:
+) -> dict:
     """
     This function will be used to update a genre by id.
     Parameters:
@@ -25,7 +26,7 @@ async def update_genre_by_id(
         user: The user data. (current libarian)
         db: The database session.
     Returns:
-        genre: The genre.
+        dict: A dictionary with the status code and message and data.
     """
     logging.info("Updating genre in database with id: " + str(genre_id))
     found_genre = db.scalar(
@@ -41,7 +42,11 @@ async def update_genre_by_id(
         db.commit()
         logging.info("Updated Genre in database with id: " + str(genre_id))
         new_genre.id = genre_id
-        return new_genre
+        return custom_response(
+            status_code=status.HTTP_200_OK,
+            details="Genre updated successfully!",
+            data=new_genre,
+        )
     except Exception as e:
         logging.exception("Error updating Genre in database. Details = " + str(e))
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(e))

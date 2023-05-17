@@ -10,12 +10,12 @@ from src.endpoints.copy.router_init import router
 from src.models.copy import Copy
 
 
-@router.delete("/{copy_id}", status_code=status.HTTP_200_OK)
+@router.delete("/{copy_id}", status_code=status.HTTP_204_NO_CONTENT)
 async def copy_delete(
     copy_id: int,
     db: Session = Depends(get_db),
     librarian: dict = Depends(get_current_librarian),  # noqa
-) -> dict:
+) -> None:
     """
     Endpoint to delete a copy by ID.
     """
@@ -34,12 +34,6 @@ async def copy_delete(
         f"Book Updated with id :{copy_id} Request by Librarian {librarian['id']}"
     )
 
-    return succesful_response()
-
 
 def http_exception() -> dict:
     return HTTPException(status_code=404, detail="Copy not found")
-
-
-def succesful_response() -> dict:
-    return {"status": 201, "transaction": "succesful_response"}

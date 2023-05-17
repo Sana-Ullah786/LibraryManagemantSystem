@@ -7,6 +7,7 @@ from sqlalchemy.orm import Session
 from src.dependencies import get_current_user, get_db
 from src.endpoints.borrowed.router_init import router
 from src.models import all_models
+from src.responses import custom_response
 from src.schemas.borrowed import BorrowedSchema
 
 
@@ -15,14 +16,14 @@ async def create_borrowed(
     borrowed: BorrowedSchema,
     user: dict = Depends(get_current_user),
     db: Session = Depends(get_db),
-) -> BorrowedSchema:
+) -> dict:
     """
     This function will be used to create a new borrowed.
     Parameters:
         borrowed: The borrowed data.
         db: The database session.
     Returns:
-        borrowed: The created borrowed.
+        A dictionary containing the status code, details and data.
     """
     logging.info(f"Creating new borrowed in database with user ID: {user.get('id')}")
     copy = (
@@ -55,7 +56,11 @@ async def create_borrowed(
         db.refresh(new_borrowed)
         borrowed.id = new_borrowed.id
         borrowed.user_id = user.get("id")
-        return borrowed
+        return custom_response(
+            status_code=status.HTTP_201_CREATED,
+            details="Borrowed created successfully!",
+            data=borrowed,
+        )
     except Exception as e:
         logging.exception(
             "Error getting all borroweds from database. Details = " + str(e)

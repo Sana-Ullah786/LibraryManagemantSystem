@@ -6,6 +6,7 @@ from sqlalchemy.orm import Session
 from src.dependencies import get_current_librarian, get_db
 from src.endpoints.genre.router_init import router
 from src.models import all_models
+from src.responses import custom_response
 from src.schemas import genre
 
 
@@ -14,7 +15,7 @@ async def create_genre(
     new_genre: genre.GenreSchema,
     user: dict = Depends(get_current_librarian),
     db: Session = Depends(get_db),
-) -> genre.GenreSchema:
+) -> dict:
     """
     This function will be used to create a new genre.
     Parameters:
@@ -22,7 +23,7 @@ async def create_genre(
         user: The user data. (current libarian)
         db: The database session.
     Returns:
-        genre: The created genre.
+        dict: A dictionary with the status code and message and data.
     """
     logging.info("Creating new Genre in database with name: " + new_genre.genre)
     try:
@@ -33,7 +34,11 @@ async def create_genre(
         db.refresh(genre_model)
         logging.info("Created new Genre in database with name: " + new_genre.genre)
         new_genre.id = genre_model.id
-        return new_genre
+        return custom_response(
+            status_code=status.HTTP_201_CREATED,
+            details="Genre created successfully!",
+            data=new_genre,
+        )
     except Exception as e:
         logging.exception("Error creating a new genre database. Details = " + str(e))
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(e))

@@ -8,18 +8,22 @@ from starlette import status
 from src.dependencies import get_db
 from src.endpoints.book.router_init import router
 from src.models.book import Book
-from src.schemas.book import BookSchema
+from src.responses import custom_response
 
 
 @router.get("/{book_id}", status_code=status.HTTP_200_OK, response_model=None)
-async def get_book_by_id(book_id: int, db: Session = Depends(get_db)) -> Book:
+async def get_book_by_id(book_id: int, db: Session = Depends(get_db)) -> dict:
     """
     Endpoint to get book by id
     """
     book = db.execute(select(Book).where(Book.id == book_id)).scalars().first()
     if book:
         logging.info(f"Book with id : {book_id} requested")
-        return book
+        return custom_response(
+            status_code=status.HTTP_200_OK,
+            details="Book fetched successfully!",
+            data=book,
+        )
 
     if not book:
         logging.info(f"Book id : {book_id} not Found")

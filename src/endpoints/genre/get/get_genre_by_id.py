@@ -4,16 +4,17 @@ from fastapi import Depends, HTTPException, Path, status
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
-from src.dependencies import get_current_user, get_db
+from src.dependencies import get_db
 from src.endpoints.genre.router_init import router
 from src.models import all_models
+from src.responses import custom_response
 
 
 @router.get("/{genre_id}", response_model=None, status_code=status.HTTP_200_OK)
 async def get_genre_by_id(
     genre_id: int = Path(gt=-1),
     db: Session = Depends(get_db),
-) -> all_models.Genre:
+) -> dict:
     """
     This function will be used to get a Genre by id.
     Parameters:
@@ -21,7 +22,7 @@ async def get_genre_by_id(
         user: The user data. (current libarian)
         db: The database session.
     Returns:
-        genre: The genre.
+        dict: A dictionary with the status code and message and data.
     """
     logging.info("Getting genre by id = " + str(genre_id) + " from database")
     genre = db.scalars(
@@ -33,4 +34,6 @@ async def get_genre_by_id(
             status_code=status.HTTP_404_NOT_FOUND, detail="Genre not found"
         )
     logging.info("Genre found in database and returned")
-    return genre
+    return custom_response(
+        status_code=status.HTTP_200_OK, details="Genre found", data=genre
+    )

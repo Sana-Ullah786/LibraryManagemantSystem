@@ -10,12 +10,12 @@ from src.endpoints.book.router_init import router
 from src.models.book import Book
 
 
-@router.delete("/{book_id}", status_code=status.HTTP_200_OK)
+@router.delete("/{book_id}", status_code=status.HTTP_204_NO_CONTENT)
 async def book_delete(
     book_id: int,
     librarian: dict = Depends(get_current_librarian),
     db: Session = Depends(get_db),
-) -> dict:
+) -> None:
     """
     Delete a book by ID.
     """
@@ -34,8 +34,6 @@ async def book_delete(
 
     db.execute(delete(Book).where(Book.id == book_id))
     db.commit()
-
-    return succesful_response()
 
 
 def http_exception() -> dict:
