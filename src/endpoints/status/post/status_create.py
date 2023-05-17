@@ -2,17 +2,19 @@ from fastapi import Depends
 from sqlalchemy.orm import Session
 from starlette import status
 
-from src.dependencies import get_db
+from src.dependencies import get_current_librarian, get_db
 from src.endpoints.status.router_init import router
 from src.models.status import Status
+from src.responses import custom_response
 from src.schemas.status import StatusSchema
 
 
-@router.get("/", status_code=status.HTTP_200_OK, response_model=None)
+@router.post("/", status_code=status.HTTP_200_OK, response_model=None)
 async def status_create(
     status: StatusSchema,
     db: Session = Depends(get_db),
-) -> Status:
+    librarian=Depends(get_current_librarian),
+) -> dict:
     """
     Creates the Status .
     Params
@@ -27,6 +29,9 @@ async def status_create(
     try:
         db.commit(status_model)
         db.refresh(status_model)
-        return status_model
+        status.status_id = status_model.id
+        return custom_response(
+            status_code=status.HTTP_200_OK, details="Success", data=status
+        )
     except Exception as e:
-        raise e
+        raise ValueError("Undefined Error")

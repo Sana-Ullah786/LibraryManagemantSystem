@@ -6,15 +6,5 @@ from src.models.borrowed import *  # noqa
 from src.models.copy import *  # noqa
 from src.models.genre import *  # noqa
 from src.models.language import *  # noqa
+from src.models.status import *  # noqa
 from src.models.user import *  # noqa
-
-from .author import *  # noqa
-from .book import *  # noqa
-from .book_author import *  # noqa
-from .book_genre import *  # noqa
-from .borrowed import *  # noqa
-from .copy import *  # noqa
-from .genre import *  # noqa
-from .language import *  # noqa
-from .status import *  # noqa
-from .user import *  # noqa

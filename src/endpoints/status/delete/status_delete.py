@@ -10,12 +10,12 @@ from src.endpoints.status.router_init import router
 from src.models.status import Status
 
 
-@router.get("/", status_code=status.HTTP_204_NO_CONTENT, response_model=None)
+@router.delete("/", status_code=status.HTTP_204_NO_CONTENT, response_model=None)
 async def status_delete(
     status_id: int,
     db: Session = Depends(get_db),
 ) -> None:
-    """
+    """ "
     Deletes the Status on status ID.
     Params
     ------
