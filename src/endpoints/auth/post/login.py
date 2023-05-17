@@ -13,7 +13,7 @@ from src.schemas.user import UserSchemaToken
 @router.post("/token", status_code=status.HTTP_200_OK, response_model=None)
 async def login_for_access_token(
     form_data: OAuth2PasswordRequestForm = Depends(), db: Session = Depends(get_db)
-) -> None:
+) -> dict:
     """
     Logs in a user using username and password and returns the access token and the user object.
     """
