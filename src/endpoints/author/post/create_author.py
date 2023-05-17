@@ -1,6 +1,6 @@
 import logging
 
-from fastapi import Depends, HTTPException, Path
+from fastapi import Depends
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 from starlette import status
