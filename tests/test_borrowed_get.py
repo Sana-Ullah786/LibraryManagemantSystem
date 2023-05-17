@@ -156,6 +156,53 @@ def test_borrowed_get_all_for_logged_in_user_without_token(
     assert response.status_code == status.HTTP_401_UNAUTHORIZED
 
 
+def test_borrowed_get_all_for_any_user(test_db: sessionmaker) -> None:
+    """
+    Tests the get all borrowed for any user endpoint.
+    """
+
+    user = TEST_USER.copy()
+    user["email"] = "anewuser@gmail.com"
+    user["username"] = "anewuser"
+    borrowed = create_borrowed(test_db, user)
+    token = create_librarian_and_get_token(test_db)
+
+    response = make_request(f"/borrowed/user/{borrowed.user_id}", token)
+    data = response.json()
+    assert response.status_code == status.HTTP_200_OK
+    assert len(data) == 1
+    assert "copy_id" in data[0] and data[0]["copy_id"] == borrowed.copy_id
+    assert "user_id" in data[0] and data[0]["user_id"] == borrowed.user_id
+    assert (
+        "due_date" in data[0] and data[0]["due_date"] == borrowed.due_date.isoformat()
+    )
+    assert (
+        "issue_date" in data[0]
+        and data[0]["issue_date"] == borrowed.issue_date.isoformat()
+    )
+
+
+def test_borrowed_get_all_for_any_user_with_user_token(test_db: sessionmaker) -> None:
+    """
+    Tests the get all borrowed for any user endpoint with a user token. Should return 401.
+    """
+
+    user_id = register_user(TEST_USER).json()["id"]
+    token = login(TEST_USER_AUTH).json()["token"]
+
+    response = make_request(f"/borrowed/user/{user_id}", token)
+    assert response.status_code == status.HTTP_401_UNAUTHORIZED
+
+
+def test_borrowed_get_all_for_any_user_without_token(test_db: sessionmaker) -> None:
+    """
+    Tests the get all borrowed for any user endpoint without a token. Should return 401.
+    """
+
+    response = make_request("/borrowed/user/1")
+    assert response.status_code == status.HTTP_401_UNAUTHORIZED
+
+
 # Helper function
 
 
@@ -171,13 +218,17 @@ def make_request(endpoint: str, token: str | None = None) -> Response:
     return client.get(endpoint, headers=headers)
 
 
-def create_borrowed(test_db: sessionmaker) -> all_models.Borrowed:
+def create_borrowed(
+    test_db: sessionmaker, user_dict: dict | None = None
+) -> all_models.Borrowed:
     """
     Helper function to create a borrowed object and save to db
     """
 
     with test_db() as db:
-        register_user(TEST_USER)
+        if not user_dict:
+            user_dict = TEST_USER
+        register_user(user_dict)
         language = all_models.Language(language="English")
         genre = all_models.Genre(genre="Fantasy")
         author = all_models.Author(
@@ -197,7 +248,7 @@ def create_borrowed(test_db: sessionmaker) -> all_models.Borrowed:
         book.genres.append(genre)
         copy = all_models.Copy(book=book, language=language, status="available")
         user = db.scalar(
-            select(all_models.User).where(all_models.User.email == TEST_USER["email"])
+            select(all_models.User).where(all_models.User.email == user_dict["email"])
         )
         borrowed = all_models.Borrowed(
             copy=copy,

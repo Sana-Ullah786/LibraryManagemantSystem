@@ -41,25 +41,21 @@ def get_current_user(token: str = Depends(oauth2_bearer)) -> dict:
     To be used as a dependency by authenticated routes for users
     """
     try:
-        username, user_id = check_blacklist_and_decode_jwt(token)
-        return {"username": username, "id": user_id}
+        return check_blacklist_and_decode_jwt(token)
     except JWTError:
         raise get_user_exception()
 
 
-def get_current_librarian(
-    token: str = Depends(oauth2_bearer), db: Session = Depends(get_db)
-) -> dict:
+def get_current_librarian(token: str = Depends(oauth2_bearer)) -> dict:
     """
     Verifies that user for given token is librarian and fetches details.
     To be used as a dependency by authenticated routes for librarians
     """
     try:
-        username, user_id = check_blacklist_and_decode_jwt(token)
-        user = db.scalar(select(User).where(User.id == user_id))
-        if not user.is_librarian:
+        user_dict = check_blacklist_and_decode_jwt(token)
+        if not user_dict.get("is_librarian"):
             raise get_librarian_exception()
-        return {"username": username, "id": user_id}
+        return user_dict
     except JWTError:
         raise get_librarian_exception()
 
@@ -78,9 +74,10 @@ def check_blacklist_and_decode_jwt(token: str) -> Tuple[str | None]:
     payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
     username = payload.get("sub")
     user_id = payload.get("id")
+    is_librarian = payload.get("is_librarian")
     if username is None or user_id is None:
         raise get_user_exception()
-    return username, user_id
+    return {"username": username, "id": user_id, "is_librarian": is_librarian}
 
 
 def get_password_hash(password: str) -> str:
