@@ -3,7 +3,6 @@ import { client } from "../../axios";
 import { useHistory } from "react-router-dom";
 import jwt_decode from "jwt-decode";
 import { AuthContext, DecodedToken } from "../../contexts/AuthContext";
-import { UserLoginData } from "../../CustomTypes";
 
 function Login() {
   /**
