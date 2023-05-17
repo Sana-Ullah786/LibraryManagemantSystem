@@ -20,7 +20,7 @@ async def login_for_access_token(
     user = authenticate_user(form_data.username, form_data.password, db)
     if not user:
         raise get_token_exception()
-    token = create_access_token(user.username, user.id)
+    token = create_access_token(user)
     user = UserSchemaToken(token=token, **user.__dict__)
     return custom_response(
         status_code=status.HTTP_200_OK, details="Login successful.", data=user

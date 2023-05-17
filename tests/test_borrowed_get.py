@@ -168,7 +168,7 @@ def test_borrowed_get_all_for_any_user(test_db: sessionmaker) -> None:
     token = create_librarian_and_get_token(test_db)
 
     response = make_request(f"/borrowed/user/{borrowed.user_id}", token)
-    data = response.json()
+    data = response.json()["data"]
     assert response.status_code == status.HTTP_200_OK
     assert len(data) == 1
     assert "copy_id" in data[0] and data[0]["copy_id"] == borrowed.copy_id
@@ -187,8 +187,8 @@ def test_borrowed_get_all_for_any_user_with_user_token(test_db: sessionmaker) ->
     Tests the get all borrowed for any user endpoint with a user token. Should return 401.
     """
 
-    user_id = register_user(TEST_USER).json()["id"]
-    token = login(TEST_USER_AUTH).json()["token"]
+    user_id = register_user(TEST_USER).json()["data"]["id"]
+    token = login(TEST_USER_AUTH).json()["data"]["token"]
 
     response = make_request(f"/borrowed/user/{user_id}", token)
     assert response.status_code == status.HTTP_401_UNAUTHORIZED
