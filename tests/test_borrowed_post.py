@@ -87,7 +87,7 @@ def test_create_borrowed_with_correct_due_date(test_db: sessionmaker) -> None:
             + str(response.status_code)
         )
         assert response.status_code == status.HTTP_201_CREATED
-        borrowed = response.json()
+        borrowed = response.json()["data"]
         assert borrowed["copy_id"] == copy_id
         assert borrowed["user_id"] == user.id
         assert borrowed["issue_date"][:10] == datetime.now().isoformat()[:10]
@@ -284,7 +284,7 @@ def test_with_simple_user(test_db: sessionmaker) -> None:
             + str(response.status_code)
         )
         assert response.status_code == status.HTTP_201_CREATED
-        borrowed = response.json()
+        borrowed = response.json()["data"]
         assert borrowed["copy_id"] == copy_id
         assert borrowed["user_id"] == user.id
         logging.info(" Wrong Return date Tested successfully")

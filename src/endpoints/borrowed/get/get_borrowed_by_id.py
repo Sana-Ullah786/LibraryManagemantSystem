@@ -9,6 +9,7 @@ from src.dependencies import get_current_user, get_db
 from src.endpoints.borrowed.router_init import router
 from src.models.borrowed import Borrowed
 from src.models.user import User
+from src.responses import custom_response
 
 
 @router.get("/{borrowed_id}", status_code=status.HTTP_200_OK, response_model=None)
@@ -16,7 +17,7 @@ async def get_borrowed_by_id(
     borrowed_id: int = Path(gt=-1),
     user: dict = Depends(get_current_user),
     db: Session = Depends(get_db),
-) -> List[Borrowed]:
+) -> dict:
     """
     Returns a single borrowed object. Librarian can access any, while a user can only access their own.
     """
@@ -32,4 +33,8 @@ async def get_borrowed_by_id(
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND, detail="Borrowed not found"
         )
-    return borrowed
+    return custom_response(
+        status_code=status.HTTP_200_OK,
+        details="Borrowed fetched successfully!",
+        data=borrowed,
+    )

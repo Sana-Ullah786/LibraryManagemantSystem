@@ -4,16 +4,17 @@ from fastapi import Depends, HTTPException, Path, status
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
-from src.dependencies import get_current_user, get_db
+from src.dependencies import get_db
 from src.endpoints.language.router_init import router
 from src.models import all_models
+from src.responses import custom_response
 
 
 @router.get("/{language_id}", response_model=None, status_code=status.HTTP_200_OK)
 async def get_language_by_id(
     language_id: int = Path(gt=-1),
     db: Session = Depends(get_db),
-) -> all_models.Language:
+) -> dict:
     """
     This function will be used to get a language by id.
     Parameters:
@@ -21,7 +22,7 @@ async def get_language_by_id(
         user: The user data. (current libarian)
         db: The database session.
     Returns:
-        language: The language.
+        dict: A dictionary with the status code and message and data.
     """
     logging.info("Getting language by id = " + str(language_id) + " from database")
     language = db.scalars(
@@ -33,4 +34,6 @@ async def get_language_by_id(
             status_code=status.HTTP_404_NOT_FOUND, detail="Language not found"
         )
     logging.info("Language found in database and returned")
-    return language
+    return custom_response(
+        status_code=status.HTTP_200_OK, details="Language found", data=language
+    )

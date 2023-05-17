@@ -9,6 +9,7 @@ from starlette import status
 from src.dependencies import get_current_user, get_db
 from src.endpoints.author.router_init import router
 from src.models.author import Author
+from src.responses import custom_response
 
 
 @router.get("", status_code=status.HTTP_200_OK, response_model=None)
@@ -17,7 +18,7 @@ async def get_all_authors(
     db: Session = Depends(get_db),
     page_number: Annotated[int, Query(gt=0)] = 1,  # Default value is 1
     page_size: Annotated[int, Query(gt=0)] = 10,  # Default value is 10
-) -> List[Author]:
+) -> dict:
     """
     Returns all the Authors in DB.\n
     Params
@@ -25,7 +26,7 @@ async def get_all_authors(
     JWT token of user.\n
     Returns
     ------
-    List of authors
+     dict : A dict with status code, details and data
     """
     starting_index = (page_number - 1) * page_size
     logging.info(f"Getting all the authors -- {__name__}")
@@ -39,4 +40,8 @@ async def get_all_authors(
         .scalars()
         .all()
     )
-    return authors
+    return custom_response(
+        status_code=status.HTTP_200_OK,
+        details="Authors fetched successfully!",
+        data=authors,
+    )

@@ -12,6 +12,7 @@ from src.models.author import Author
 from src.models.book import Book
 from src.models.genre import Genre
 from src.models.language import Language
+from src.responses import custom_response
 from src.schemas.book import BookSchema
 
 
@@ -21,7 +22,7 @@ async def book_update(
     book: BookSchema,
     librarian: dict = Depends(get_current_librarian),
     db: Session = Depends(get_db),
-) -> Book:
+) -> dict:
     """
     Update an existing book by ID.
     """
@@ -62,7 +63,9 @@ async def book_update(
     logging.info(
         f"Book with ID: {book_model.id} Updated by Librarian {librarian['id']}"
     )
-    return book_model
+    return custom_response(
+        status_code=status.HTTP_200_OK, details="Book Updated", data=book_model
+    )
 
 
 def http_exception() -> dict:

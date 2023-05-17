@@ -18,7 +18,7 @@ async def update_current_user(
     new_user: UpdateUserSchema,
     user: dict = Depends(get_current_user),
     db: Session = Depends(get_db),
-) -> UpdateUserSchema:
+) -> dict:
     """
     Updates the current logged in user.\n
     Params
@@ -26,7 +26,7 @@ async def update_current_user(
     Requires user to be logged in using JWT\n
     Returns
     ------
-    HTTP_STATUS_CODE_200
+    dict : A dict with status code, details and data
     """
     try:
         current_user = db.scalar(select(User).where(User.id == user.get("id")))

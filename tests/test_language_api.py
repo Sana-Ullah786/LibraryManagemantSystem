@@ -51,7 +51,7 @@ def get_token_for_user(test_db) -> str:
     data = {"username": "Test", "password": "Test"}
     response = client.post("/auth/token", data=data)
     logging.info("Got token for user in Test DB with username: Test and password: Test")
-    return response.json()["token"]
+    return response.json()["data"]["token"]
 
 
 # Test cases for language API
@@ -85,8 +85,8 @@ def test_create_language(test_db) -> None:
         "Tested create language API with status code: " + str(response.status_code)
     )
     assert response.status_code == status.HTTP_201_CREATED
-    assert response.json()["language"] == "Test"
-    assert response.json()["language_id"] == 1
+    assert response.json()["data"]["language"] == "Test"
+    assert response.json()["data"]["language_id"] == 1
 
 
 # Test case for get all languages (GET /language/)
@@ -105,9 +105,9 @@ def test_get_all_languages(test_db) -> None:
         "Tested get all languages API with status code: " + str(response.status_code)
     )
     assert response.status_code == status.HTTP_200_OK
-    assert len(response.json()) == 1
-    assert response.json()[0]["language"] == "Test"
-    assert response.json()[0]["id"] == 1
+    assert len(response.json()["data"]) == 1
+    assert response.json()["data"][0]["language"] == "Test"
+    assert response.json()["data"][0]["id"] == 1
 
 
 # Test case for get language by id (GET /language/{language_id})
@@ -126,8 +126,8 @@ def test_get_language_by_id(test_db) -> None:
         "Tested get language by id API with status code: " + str(response.status_code)
     )
     assert response.status_code == status.HTTP_200_OK
-    assert response.json()["language"] == "Test"
-    assert response.json()["id"] == 1
+    assert response.json()["data"]["language"] == "Test"
+    assert response.json()["data"]["id"] == 1
 
 
 # Test case for update language by id (PUT /language/{language_id})
@@ -161,8 +161,8 @@ def test_update_language_by_id(test_db) -> None:
         + str(response.status_code)
     )
     assert response.status_code == status.HTTP_200_OK
-    assert response.json()["language"] == "Test2"
-    assert response.json()["language_id"] == 1
+    assert response.json()["data"]["language"] == "Test2"
+    assert response.json()["data"]["language_id"] == 1
 
 
 # Test case for delete language by id (DELETE /language/{language_id})
@@ -197,4 +197,4 @@ def test_delete_language_by_id(test_db) -> None:
     assert response.status_code == status.HTTP_204_NO_CONTENT
     response = client.get("/language/")
     assert response.status_code == status.HTTP_200_OK
-    assert len(response.json()) == 0
+    assert len(response.json()["data"]) == 0

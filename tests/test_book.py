@@ -126,7 +126,7 @@ def test_book_create(test_db: sessionmaker) -> None:
     )
     # succesful Response for creation
     assert response.status_code == status.HTTP_201_CREATED
-    assert len(response.json()) == 9
+    assert len(response.json()["data"]) == 9
     print(response.json())
     # add an already added Book
     payload = {
@@ -204,13 +204,13 @@ def test_book_create(test_db: sessionmaker) -> None:
     )
     print(response.json())
     assert response.status_code == status.HTTP_201_CREATED
-    book_id = response.json().get("id")
+    book_id = response.json()["data"].get("id")
     print(book_id)
     with test_db() as test_db:
         copies = (
             test_db.scalars(
                 select(all_models.Copy).where(
-                    all_models.Copy.book_id == response.json().get("id")
+                    all_models.Copy.book_id == response.json()["data"].get("id")
                 )
             )
             .unique()
@@ -244,4 +244,4 @@ def test_book_update(test_db: sessionmaker) -> None:
     )
 
     assert response.status_code == status.HTTP_200_OK
-    assert response.json().get("description") == "Hello"
+    assert response.json()["data"].get("description") == "Hello"

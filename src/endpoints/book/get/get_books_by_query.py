@@ -11,6 +11,7 @@ from src.endpoints.book.router_init import router
 from src.models.author import Author
 from src.models.book import Book
 from src.models.genre import Genre
+from src.responses import custom_response
 from src.models.language import Language
 
 
@@ -22,7 +23,7 @@ async def get_books_by_query(
     page_number: Annotated[int, Query(gt=0)] = 1,  # Default value is 1
     page_size: Annotated[int, Query(gt=0)] = 10,  # Default value is 10
     db: Session = Depends(get_db),
-) -> List[Book]:
+) -> dict:
     """
     Endpoint to get books by author , genre , languages
     """
@@ -53,12 +54,13 @@ async def get_books_by_query(
         if languagedb is None:
             return http_exception()
         query = query.filter(Book.language_id == language)
-    return query.offset(starting_index).limit(page_size).all()
+    books = query.offset(starting_index).limit(page_size).all()
+    return custom_response(
+        status_code=status.HTTP_200_OK,
+        details="Books fetched successfully!",
+        data=books,
+    )
 
 
 def http_exception() -> dict:
     return HTTPException(status_code=404, detail="Book not found")
-
-
-def succesful_response() -> dict:
-    return {"status": 201, "transaction": "succesful_response"}

@@ -8,6 +8,7 @@ from starlette import status
 from src.dependencies import get_current_librarian, get_db
 from src.endpoints.author.router_init import router
 from src.models.author import Author
+from src.responses import custom_response
 from src.schemas.author_schema import AuthorSchema
 
 
@@ -17,7 +18,7 @@ async def update_author(
     author_id: int = Path(gt=0),
     user: dict = Depends(get_current_librarian),
     db: Session = Depends(get_db),
-) -> AuthorSchema:
+) -> dict:
     """
     Updates the author with new detail whose id is passed.\n
     Params
@@ -27,7 +28,7 @@ async def update_author(
     author_id: int = id of author to update
     Returns
     ------
-    Updated author model.
+    dict : A dict with status code, details and data
     """
     logging.info(f"Getting author {author_id}-- {__name__}")
     author = db.execute(select(Author).where(Author.id == author_id)).scalars().first()
@@ -44,4 +45,8 @@ async def update_author(
     db.commit()
     db.refresh(author)
     new_author.id = author.id
-    return new_author
+    return custom_response(
+        status_code=status.HTTP_200_OK,
+        details="Author updated successfully!",
+        data=new_author,
+    )

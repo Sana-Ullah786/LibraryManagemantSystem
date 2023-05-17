@@ -6,6 +6,7 @@ from sqlalchemy.orm import Session
 from src.dependencies import get_current_librarian, get_db
 from src.endpoints.language.router_init import router
 from src.models import all_models
+from src.responses import custom_response
 from src.schemas import language_schema
 
 
@@ -14,14 +15,14 @@ async def create_language(
     language: language_schema.LanguageSchema,
     user: dict = Depends(get_current_librarian),
     db: Session = Depends(get_db),
-) -> language_schema.LanguageSchema:
+) -> dict:
     """
     This function will be used to create a new language.
     Parameters:
         language: The language data.
         db: The database session.
     Returns:
-        language: The created language.
+        dict: A dictionary with the status code and message and data.
     """
     logging.info("Creating new language in database with name: " + language.language)
     try:
@@ -32,7 +33,11 @@ async def create_language(
         db.refresh(new_language)
         logging.info("Created new language in database with name: " + language.language)
         language.language_id = new_language.id
-        return language
+        return custom_response(
+            status_code=status.HTTP_201_CREATED,
+            details="Language created successfully!",
+            data=language,
+        )
     except Exception as e:
         logging.exception("Error creating a new Language database. Details = " + str(e))
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(e))

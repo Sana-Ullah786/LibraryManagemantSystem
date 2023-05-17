@@ -45,7 +45,7 @@ def create_borrowed_entry_in_db(test_db: sessionmaker, is_librarian: bool) -> in
             + " "
             + str(response.status_code)
         )
-        response = response.json()
+        response = response.json()["data"]
         borrowed_id = response.get("id")
         return borrowed_id, copy_id, issue_date, due_date, return_date
 

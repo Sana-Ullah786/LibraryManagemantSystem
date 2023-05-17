@@ -7,6 +7,7 @@ from sqlalchemy.orm import Session
 from src.dependencies import get_current_librarian, get_db
 from src.endpoints.borrowed.router_init import router
 from src.models import all_models
+from src.responses import custom_response
 from src.schemas.borrowed import BorrowedSchema
 
 
@@ -16,7 +17,7 @@ async def update_borrowed_by_id(
     borrowed_id: int = Path(gt=-1),
     db: Session = Depends(get_db),
     librarian: dict = Depends(get_current_librarian),
-) -> BorrowedSchema:
+) -> dict:
     """
     This function will be used to update a borrowed by id.
     Parameters:
@@ -25,7 +26,7 @@ async def update_borrowed_by_id(
         librarian: The librarian data. (current librarian)
         db: The database session.
     Returns:
-        borrowed: The updated borrowed.
+        dict: A dict with the following keys status_code, details and data.
     """
     logging.info("Updating borrowed in database with id: " + str(borrowed_id))
     found_borrowed = db.scalar(
@@ -43,7 +44,11 @@ async def update_borrowed_by_id(
         logging.info("Updated borrowed in database with id: " + str(borrowed_id))
         borrowed.id = borrowed_id
         borrowed.user_id = found_borrowed.user_id
-        return borrowed
+        return custom_response(
+            status_code=status.HTTP_200_OK,
+            details="Borrowed updated successfully!",
+            data=borrowed,
+        )
     except Exception as e:
         logging.exception("Error updating borrowed in database. Details = " + str(e))
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(e))
