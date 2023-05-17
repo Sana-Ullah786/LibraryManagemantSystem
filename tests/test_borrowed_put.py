@@ -205,6 +205,7 @@ def test_update_with_librarian_return_date(test_db: sessionmaker) -> None:
         updated_found_borrowed.return_date = updated_found_borrowed.return_date.date()
         assert updated_found_borrowed.return_date == updated_return_date.date()
 
+
 # Test case for create borrowed (PUT /borrowed/return_borrowed_user/{borrowed_id})
 def test_return_borrowed_user_with_id(test_db: sessionmaker) -> None:
     """
@@ -238,12 +239,14 @@ def test_return_borrowed_user_with_id(test_db: sessionmaker) -> None:
         updated_found_borrowed = db.scalar(query)
         # convert new_return_date to date its an str now
         new_return_date = datetime.strptime(new_return_date, "%Y-%m-%dT%H:%M:%S.%f")
-        assert new_return_date.date() == updated_found_borrowed.return_date.date() 
-        # find copy and print 
-        query = select(all_models.Copy).where(all_models.Copy.id == updated_found_borrowed.copy_id)
+        assert new_return_date.date() == updated_found_borrowed.return_date.date()
+        # find copy and print
+        query = select(all_models.Copy).where(
+            all_models.Copy.id == updated_found_borrowed.copy_id
+        )
         found_copy = db.scalar(query)
         assert found_copy.status == "available"
-        
+
         # borrowed with id not found
         response = client.put(
             f"/borrowed/return_borrowed_user/{borrowed_id+1}",
@@ -251,9 +254,9 @@ def test_return_borrowed_user_with_id(test_db: sessionmaker) -> None:
             headers={"Authorization": f"Bearer {token}"},
         )
         assert response.status_code == status.HTTP_404_NOT_FOUND
- 
- 
- # Test case for create borrowed (PUT /borrowed/return_borrowed_any_user/{borrowed_id})
+
+
+# Test case for create borrowed (PUT /borrowed/return_borrowed_any_user/{borrowed_id})
 def test_return_borrowed_any_user_with_id(test_db: sessionmaker) -> None:
     """
     This function will be used to test return borrowed with id.
@@ -283,7 +286,7 @@ def test_return_borrowed_any_user_with_id(test_db: sessionmaker) -> None:
         )
         assert response.status_code == status.HTTP_401_UNAUTHORIZED
         token = get_token_for_user(test_db)
-         # update request
+        # update request
         response = client.put(
             f"/borrowed/return_borrowed_any_user/{borrowed_id}",
             json=data,
@@ -293,12 +296,14 @@ def test_return_borrowed_any_user_with_id(test_db: sessionmaker) -> None:
         updated_found_borrowed = db.scalar(query)
         # convert new_return_date to date its an str now
         new_return_date = datetime.strptime(new_return_date, "%Y-%m-%dT%H:%M:%S.%f")
-        assert new_return_date.date() == updated_found_borrowed.return_date.date() 
-        # find copy and print 
-        query = select(all_models.Copy).where(all_models.Copy.id == updated_found_borrowed.copy_id)
+        assert new_return_date.date() == updated_found_borrowed.return_date.date()
+        # find copy and print
+        query = select(all_models.Copy).where(
+            all_models.Copy.id == updated_found_borrowed.copy_id
+        )
         found_copy = db.scalar(query)
         assert found_copy.status == "available"
-        
+
         # borrowed with id not found
         response = client.put(
             f"/borrowed/return_borrowed_any_user/{borrowed_id+1}",
