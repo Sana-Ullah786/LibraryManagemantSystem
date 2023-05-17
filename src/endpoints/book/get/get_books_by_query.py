@@ -64,7 +64,3 @@ async def get_books_by_query(
 
 def http_exception() -> dict:
     return HTTPException(status_code=404, detail="Book not found")
-
-
-def succesful_response() -> dict:
-    return {"status": 201, "transaction": "succesful_response"}
