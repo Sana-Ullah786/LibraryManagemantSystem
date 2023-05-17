@@ -7,6 +7,7 @@ from starlette import status
 from src.dependencies import get_current_librarian, get_db
 from src.endpoints.copy.router_init import router
 from src.models.copy import Copy
+from src.responses import custom_response
 from src.schemas.copy import CopySchema
 
 
@@ -31,12 +32,12 @@ async def copy_create(
     logging.info(
         f"Copy with id : {copy_model.id} Created by Librarian {librarian['id']}"
     )
-    return succesful_response()
+    return custom_response(
+        status_code=status.HTTP_201_CREATED,
+        details="Copy created successfully!",
+        data=copy,
+    )
 
 
 def http_exception() -> dict:
     return HTTPException(status_code=404, detail="Copy not found")
-
-
-def succesful_response() -> dict:
-    return {"status": 201, "transaction": "succesful_response"}

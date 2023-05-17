@@ -21,9 +21,9 @@ def test_get_all_users(test_db: sessionmaker) -> None:
     token = get_fresh_token(test_db, SUPER_USER_CRED)
     response = client.get("/user", headers={"Authorization": f"Bearer {token}"})
     assert response.status_code == status.HTTP_200_OK
-    assert len(response.json()) == 2
-    assert response.json()[0].get("username") == LIB_USER.get("username")
-    assert response.json()[1].get("username") == TEST_USER.get("username")
+    assert len(response.json()["data"]) == 2
+    assert response.json()["data"][0].get("username") == LIB_USER.get("username")
+    assert response.json()["data"][1].get("username") == TEST_USER.get("username")
 
 
 def test_get_user_by_id(test_db: sessionmaker) -> None:
@@ -31,7 +31,7 @@ def test_get_user_by_id(test_db: sessionmaker) -> None:
     token = get_fresh_token(test_db, SUPER_USER_CRED)
     response = client.get("/user/2", headers={"Authorization": f"Bearer {token}"})
     assert response.status_code == status.HTTP_200_OK
-    assert response.json().get("username") == "user1"
+    assert response.json()["data"].get("username") == "user1"
 
     response = client.get("/user/3", headers={"Authorization": f"Bearer {token}"})
     assert response.status_code == status.HTTP_404_NOT_FOUND
@@ -93,7 +93,7 @@ def test_update_current_user(test_db: sessionmaker) -> None:
         json=updated_user,
     )
     assert response.status_code == status.HTTP_200_OK
-    assert response.json().get("email") == "user2@gmail.com"
+    assert response.json()["data"].get("email") == "user2@gmail.com"
 
 
 def test_update_user_by_id(test_db: sessionmaker) -> None:
@@ -132,7 +132,7 @@ def test_update_user_by_id(test_db: sessionmaker) -> None:
         json=updated_user,
     )
     assert response.status_code == status.HTTP_200_OK
-    assert response.json().get("email") == "user2@gmail.com"  # success
+    assert response.json()["data"].get("email") == "user2@gmail.com"  # success
 
 
 def test_filter_user(test_db: sessionmaker) -> None:
@@ -144,9 +144,9 @@ def test_filter_user(test_db: sessionmaker) -> None:
         headers={"Authorization": f"Bearer {token}"},
     )
     assert response.status_code == status.HTTP_200_OK
-    assert len(response.json()) == 2
-    assert response.json()[0].get("username") == LIB_USER.get("username")
-    assert response.json()[1].get("username") == TEST_USER.get("username")
+    assert len(response.json()["data"]) == 2
+    assert response.json()["data"][0].get("username") == LIB_USER.get("username")
+    assert response.json()["data"][1].get("username") == TEST_USER.get("username")
 
     url = "/user?contact_number=03122345678&last_name=Tahir"
     response = client.get(
@@ -154,5 +154,5 @@ def test_filter_user(test_db: sessionmaker) -> None:
         headers={"Authorization": f"Bearer {token}"},
     )
     assert response.status_code == status.HTTP_200_OK
-    assert len(response.json()) == 1
-    assert response.json()[0].get("username") == LIB_USER.get("username")
+    assert len(response.json()["data"]) == 1
+    assert response.json()["data"][0].get("username") == LIB_USER.get("username")

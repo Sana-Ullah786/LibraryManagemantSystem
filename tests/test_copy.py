@@ -17,25 +17,25 @@ def test_get_copy(test_db: sessionmaker) -> None:
 
     response = client.get("/copy")
     assert response.status_code == 200
-    assert response.json()[0].get("id") == copy[1].id
-    assert response.json()[1].get("id") == copy2[1].id
+    assert response.json()["data"][0].get("id") == copy[1].id
+    assert response.json()["data"][1].get("id") == copy2[1].id
 
     # get all books by book id
 
     response = client.get(f"/copy/book/{copy[1].id}")
-    assert response.json()[0].get("id") == copy[1].id
+    assert response.json()["data"][0].get("id") == copy[1].id
 
     # get all books by book id that doesnt exist
 
     response = client.get("/copy/book/3")
     assert response.status_code == status.HTTP_200_OK
-    assert len(response.json()) == 0
+    assert len(response.json()["data"]) == 0
 
     # get copy by copy id
 
     response = client.get(f"/copy/{copy[1].id}")
     assert response.status_code == 200
-    assert response.json().get("id") == copy[1].id
+    assert response.json()["data"].get("id") == copy[1].id
 
     # get copy by wrong copy id
 
@@ -62,9 +62,7 @@ def test_copy_create(test_db: sessionmaker) -> None:
     )
 
     assert response.status_code == status.HTTP_201_CREATED
-    assert len(response.json()) == 2
-    assert response.json().get("status") == 201
-    assert response.json().get("transaction") == "succesful_response"
+    assert response.json().get("status_code") == 201
 
 
 def test_copy_update(test_db: sessionmaker) -> None:
@@ -80,7 +78,7 @@ def test_copy_update(test_db: sessionmaker) -> None:
         headers={"Authorization": f"Bearer {token}"},
         json=payload,
     )
-    assert response.status_code == status.HTTP_204_NO_CONTENT
+    assert response.status_code == status.HTTP_200_OK
 
     # without authentication
     response = client.put("/copy", json=payload)
@@ -89,7 +87,7 @@ def test_copy_update(test_db: sessionmaker) -> None:
     # check updated status
     response = client.get(f"/copy/{copy[1].id}")
     assert response.status_code == 200
-    assert response.json().get("status") == "reserved"
+    assert response.json()["data"].get("status") == "reserved"
 
     # Invalid copy id
 
@@ -110,7 +108,7 @@ def test_copy_delete(test_db: sessionmaker):
         f"/copy/{copy[1].id}",
         headers={"Authorization": f"Bearer {token}"},
     )
-    assert response.status_code == status.HTTP_200_OK
+    assert response.status_code == status.HTTP_204_NO_CONTENT
 
     # if a book is already deleted  or invalid id
 

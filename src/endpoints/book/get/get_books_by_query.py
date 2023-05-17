@@ -11,6 +11,7 @@ from src.endpoints.book.router_init import router
 from src.models.author import Author
 from src.models.book import Book
 from src.models.genre import Genre
+from src.responses import custom_response
 
 
 @router.get("/", status_code=status.HTTP_200_OK, response_model=None)
@@ -19,7 +20,7 @@ async def get_books_by_query(
     genre: int = None,
     language: int = None,
     db: Session = Depends(get_db),
-) -> List[Book]:
+) -> dict:
     """
     Endpoint to get books by author , genre , languages
     """
@@ -43,7 +44,12 @@ async def get_books_by_query(
     if language is not None:
         query = query.filter(Book.language_id == language)
 
-    return query.all()
+    books = query.all()
+    return custom_response(
+        status_code=status.HTTP_200_OK,
+        details="Books fetched successfully!",
+        data=books,
+    )
 
 
 def http_exception() -> dict:

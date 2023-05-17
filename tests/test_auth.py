@@ -29,7 +29,6 @@ def test_register_user_valid(test_db: sessionmaker) -> None:
     Tests a valid user registration
     """
     response = register_user(TEST_USER)
-    print(response.json())
     assert response.status_code == status.HTTP_201_CREATED
 
     with test_db() as db:
@@ -75,7 +74,7 @@ def test_token_valid(test_db: sessionmaker) -> None:
     response = login(TEST_USER_AUTH)
 
     assert response.status_code == status.HTTP_200_OK
-    data = response.json()
+    data = response.json()["data"]
     assert "token" in data
     assert "is_librarian" in data
 
@@ -215,7 +214,7 @@ def create_librarian_and_get_token(test_db: sessionmaker) -> str:
         db.commit()
 
     response = login(TEST_USER_AUTH)
-    return response.json()["token"]
+    return response.json()["data"]["token"]
 
 
 def register_librarian(librarian: dict, token: str | None = None) -> Response:

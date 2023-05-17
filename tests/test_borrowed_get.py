@@ -22,14 +22,14 @@ def test_borrowed_get_all(test_db: sessionmaker) -> None:
 
     # test empty
     response = make_request("/borrowed/", token)
-    data = response.json()
+    data = response.json()["data"]
     assert response.status_code == status.HTTP_200_OK
     assert data == []
 
     # test with entry
     borrowed = create_borrowed(test_db)
     response = make_request("/borrowed/", token)
-    data = response.json()
+    data = response.json()["data"]
     assert response.status_code == status.HTTP_200_OK
     assert len(data) == 1
     assert data[0]["user"]["email"] == borrowed.user.email
@@ -49,7 +49,7 @@ def test_borrowed_get_all_with_user_token(test_db: sessionmaker) -> None:
     Tests the get all borrowed endpoint with a user token provided. Should return 401
     """
     register_user(TEST_USER)
-    token = login(TEST_USER_AUTH).json()["token"]
+    token = login(TEST_USER_AUTH).json()["data"]["token"]
 
     response = make_request("/borrowed/", token)
     assert response.status_code == status.HTTP_401_UNAUTHORIZED
@@ -61,10 +61,10 @@ def test_borrowed_get_by_id(test_db: sessionmaker) -> None:
     """
 
     borrowed = create_borrowed(test_db)
-    token = login(TEST_USER_AUTH).json()["token"]
+    token = login(TEST_USER_AUTH).json()["data"]["token"]
 
     response = make_request(f"/borrowed/{borrowed.id}", token)
-    data = response.json()
+    data = response.json()["data"]
     assert response.status_code == status.HTTP_200_OK
     assert "copy_id" in data and data["copy_id"] == borrowed.copy_id
     assert "user_id" in data and data["user_id"] == borrowed.user_id
@@ -96,7 +96,7 @@ def test_borrowed_get_by_id_with_different_user_token(test_db: sessionmaker) -> 
     register_user(new_user)
     new_user_auth = TEST_USER_AUTH.copy()
     new_user_auth["username"] = "newuser1"
-    token = login(new_user_auth).json()["token"]
+    token = login(new_user_auth).json()["data"]["token"]
 
     response = make_request(f"/borrowed/{borrowed.id}", token)
     assert response.status_code == status.HTTP_404_NOT_FOUND
@@ -108,10 +108,10 @@ def test_borrowed_get_all_for_logged_in_user(test_db: sessionmaker) -> None:
     """
 
     borrowed = create_borrowed(test_db)
-    token = login(TEST_USER_AUTH).json()["token"]
+    token = login(TEST_USER_AUTH).json()["data"]["token"]
 
     response = make_request("/borrowed/user", token)
-    data = response.json()
+    data = response.json()["data"]
     assert response.status_code == status.HTTP_200_OK
     assert len(data) == 1
     assert "copy_id" in data[0] and data[0]["copy_id"] == borrowed.copy_id
@@ -137,10 +137,10 @@ def test_borrowed_get_all_for_logged_in_user2(test_db: sessionmaker) -> None:
     register_user(new_user)
     new_user_auth = TEST_USER_AUTH.copy()
     new_user_auth["username"] = "newuser1"
-    token = login(new_user_auth).json()["token"]
+    token = login(new_user_auth).json()["data"]["token"]
 
     response = make_request("/borrowed/user", token)
-    data = response.json()
+    data = response.json()["data"]
     assert response.status_code == status.HTTP_200_OK
     assert data == []
 

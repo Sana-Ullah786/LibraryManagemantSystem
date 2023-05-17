@@ -37,8 +37,8 @@ def test_create_genre(test_db) -> None:
         "Tested create genre API with status code: " + str(response.status_code)
     )
     assert response.status_code == status.HTTP_201_CREATED
-    assert response.json()["genre"] == "Test"
-    assert response.json()["id"] == 1
+    assert response.json()["data"]["genre"] == "Test"
+    assert response.json()["data"]["id"] == 1
 
 
 # Test case for get all genre (GET /genre/)
@@ -57,9 +57,9 @@ def test_get_all_genre(test_db) -> None:
         "Tested get all genre API with status code: " + str(response.status_code)
     )
     assert response.status_code == status.HTTP_200_OK
-    assert len(response.json()) == 1
-    assert response.json()[0]["genre"] == "Test"
-    assert response.json()[0]["id"] == 1
+    assert len(response.json()["data"]) == 1
+    assert response.json()["data"][0]["genre"] == "Test"
+    assert response.json()["data"][0]["id"] == 1
 
 
 # Test case for get genre by id (GET /genre/{genre_id})
@@ -78,8 +78,8 @@ def test_get_genre_by_id(test_db) -> None:
         "Tested get genre by id API with status code: " + str(response.status_code)
     )
     assert response.status_code == status.HTTP_200_OK
-    assert response.json()["genre"] == "Test"
-    assert response.json()["id"] == 1
+    assert response.json()["data"]["genre"] == "Test"
+    assert response.json()["data"]["id"] == 1
 
 
 # Test case for update genre by id (PUT /genre/{genre_id})
@@ -111,8 +111,8 @@ def test_update_genre_by_id(test_db) -> None:
         "Tested update genre by id API with status code: " + str(response.status_code)
     )
     assert response.status_code == status.HTTP_200_OK
-    assert response.json()["genre"] == "Test2"
-    assert response.json()["id"] == 1
+    assert response.json()["data"]["genre"] == "Test2"
+    assert response.json()["data"]["id"] == 1
 
 
 # Test case for delete genre by id (DELETE /genre/{genre_id})
@@ -141,4 +141,4 @@ def test_delete_genre_by_id(test_db) -> None:
     assert response.status_code == status.HTTP_204_NO_CONTENT
     response = client.get("/genre/")
     assert response.status_code == status.HTTP_200_OK
-    assert len(response.json()) == 0
+    assert len(response.json()["data"]) == 0

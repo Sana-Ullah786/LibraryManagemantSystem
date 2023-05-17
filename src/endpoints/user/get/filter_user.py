@@ -1,14 +1,15 @@
 import logging
 from typing import List
 
-from fastapi import Depends, HTTPException
+from fastapi import Depends
 from sqlalchemy.orm import Session
 from starlette import status
 
-from src.dependencies import get_current_librarian, get_current_user, get_db
+from src.dependencies import get_current_librarian, get_db
 from src.endpoints.user.exceptions import db_not_available
 from src.endpoints.user.router_init import router
 from src.models.user import User
+from src.responses import custom_response
 
 
 @router.get("", status_code=status.HTTP_200_OK, response_model=None)
@@ -21,7 +22,7 @@ async def filter_user(
     address: str | None = None,
     librarian: dict = Depends(get_current_librarian),
     db: Session = Depends(get_db),
-) -> List[User]:
+) -> dict:
     """
     Filters the users list based on param provided. If None given then it will
     return the complete list.
@@ -37,7 +38,9 @@ async def filter_user(
     filters = {key: value for key, value in params.items() if value}
     try:
         users = db.query(User).filter_by(**filters).all()
-        return users
+        return custom_response(
+            status_code=status.HTTP_200_OK, details="Users found", data=users
+        )
     except Exception:
         logging.exception(f"Exception occured -- {__name__}.filter_user")
         raise db_not_available()

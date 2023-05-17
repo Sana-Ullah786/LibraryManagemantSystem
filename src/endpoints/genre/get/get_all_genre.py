@@ -8,21 +8,24 @@ from sqlalchemy.orm import Session
 from src.dependencies import get_db
 from src.endpoints.genre.router_init import router
 from src.models import all_models
+from src.responses import custom_response
 
 
 @router.get("/", response_model=None, status_code=status.HTTP_200_OK)
-async def get_all_genre(db: Session = Depends(get_db)) -> List[all_models.Genre]:
+async def get_all_genre(db: Session = Depends(get_db)) -> dict:
     """
     This function will be used to get all the Genre.
     Parameters:
         db: The database session.
     Returns:
-        genre: The list of all genre.
+        dict: status code and message and data.
     """
     logging.info("Getting all genre")
     try:
         all_genre = db.scalars(select(all_models.Genre)).all()
-        return all_genre
+        return custom_response(
+            status_code=status.HTTP_200_OK, details="All genre found", data=all_genre
+        )
     except Exception as e:
         logging.exception("Error getting all genre from database. Details = " + str(e))
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(e))

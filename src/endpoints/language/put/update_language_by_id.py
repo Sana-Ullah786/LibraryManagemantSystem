@@ -7,6 +7,7 @@ from sqlalchemy.orm import Session
 from src.dependencies import get_current_librarian, get_db
 from src.endpoints.language.router_init import router
 from src.models import all_models
+from src.responses import custom_response
 from src.schemas import language_schema
 
 
@@ -16,7 +17,7 @@ async def update_language_by_id(
     language_id: int = Path(gt=-1),
     user: dict = Depends(get_current_librarian),
     db: Session = Depends(get_db),
-) -> language_schema.LanguageSchema:
+) -> dict:
     """
     This function will be used to update a language by id.
     Parameters:
@@ -25,7 +26,7 @@ async def update_language_by_id(
         user: The user data. (current librarian)
         db: The database session.
     Returns:
-        language: The updated language.
+        dict: A dictionary with the status code and message and data.
     """
     logging.info("Updating language in database with id: " + str(language_id))
     found_language = db.scalar(
@@ -41,7 +42,9 @@ async def update_language_by_id(
         db.commit()
         logging.info("Updated language in database with id: " + str(language_id))
         language.language_id = language_id
-        return language
+        return custom_response(
+            status_code=status.HTTP_200_OK, details="Language updated", data=language
+        )
     except Exception as e:
         logging.exception("Error updating language in database. Details = " + str(e))
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(e))
