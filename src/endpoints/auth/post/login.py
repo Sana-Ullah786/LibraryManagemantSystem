@@ -1,13 +1,20 @@
+import os
+
 from fastapi import Depends, status
 from fastapi.security import OAuth2PasswordRequestForm
 from sqlalchemy.orm import Session
 
 from src.dependencies import get_db, get_token_exception
 from src.endpoints.auth.auth_utils import authenticate_user  # isort skip
-from src.endpoints.auth.auth_utils import create_access_token  # isort skip
+from src.endpoints.auth.auth_utils import create_token  # isort skip
 from src.endpoints.auth.router_init import router
 from src.responses import custom_response
 from src.schemas.user import UserSchemaToken
+
+EXPIRE_TIME_IN_MINUTES = int(os.getenv("JWT_EXPIRE_TIME_IN_MINUTES"))
+REFRESH_TOKEN_EXPIRE_TIME_IN_MINUTES = int(
+    os.getenv("JWT_REFRESH_EXPIRE_TIME_IN_MINUTES")
+)
 
 
 @router.post("/token", status_code=status.HTTP_200_OK, response_model=None)
@@ -20,8 +27,11 @@ async def login_for_access_token(
     user = authenticate_user(form_data.username, form_data.password, db)
     if not user:
         raise get_token_exception()
-    token = create_access_token(user)
-    user = UserSchemaToken(token=token, **user.__dict__)
+    access_token = create_token(user, EXPIRE_TIME_IN_MINUTES)
+    refresh_token = create_token(user, REFRESH_TOKEN_EXPIRE_TIME_IN_MINUTES)
+    user = UserSchemaToken(
+        access_token=access_token, refresh_token=refresh_token, **user.__dict__
+    )
     return custom_response(
         status_code=status.HTTP_200_OK, details="Login successful.", data=user
     )

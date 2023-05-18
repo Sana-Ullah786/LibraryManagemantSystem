@@ -14,7 +14,6 @@ from src.schemas.user import UserSchemaIn, UserSchemaOut
 
 SECRET_KEY = os.getenv("JWT_SECRET_KEY")
 ALGORITHM = os.getenv("JWT_ALGORITHM")
-EXPIRE_TIME_IN_MINUTES = int(os.getenv("JWT_EXPIRE_TIME_IN_MINUTES"))
 
 
 def create_user(user: UserSchemaIn, is_librarian: bool, db: Session) -> UserSchemaOut:
@@ -69,12 +68,12 @@ def authenticate_user(username: str, password: str, db: Session) -> User | bool:
     return user
 
 
-def create_access_token(user: User) -> str:
+def create_token(user: User, expire_time_in_min: int) -> str:
     """
-    Takes in a username and id and returns a JWT access token for the user
+    Takes in a username, id and expire time and returns a JWT token for the user
     """
     encode = {"sub": user.username, "id": user.id, "is_librarian": user.is_librarian}
-    expire = datetime.utcnow() + timedelta(minutes=EXPIRE_TIME_IN_MINUTES)
+    expire = datetime.utcnow() + timedelta(minutes=expire_time_in_min)
     encode.update({"exp": expire})
     return jwt.encode(encode, SECRET_KEY, algorithm=ALGORITHM)
 
