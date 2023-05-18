@@ -183,17 +183,26 @@ def test_logout(test_db: sessionmaker) -> None:
     """
     Tests the logout functionality
     """
-
+    create_librarian_and_get_token(test_db)
     # setup
-    token = create_librarian_and_get_token(test_db)
-
+    response = login(TEST_USER_AUTH)
+    access_token = response.json().get("data").get("access_token")
+    refresh_token = response.json().get("data").get("refresh_token")
     # test
-    headers = {"Authorization": f"Bearer {token}"}
-    response = client.post("/auth/logout", headers=headers)
+    headers = {"Authorization": f"Bearer {access_token}"}
+    # refresh token should now also be black listed and will not be valid
+    response = client.post(
+        "/auth/logout", headers=headers, json={"refresh_token": refresh_token}
+    )
+    assert response.status_code == status.HTTP_200_OK
 
-    assert response.status_code == 200
-    response = register_librarian(TEST_USER, token)
-    assert response.status_code == 401
+    # this makes sure the access is blacklisted
+    response = register_librarian(TEST_USER, access_token)
+    assert response.status_code == status.HTTP_401_UNAUTHORIZED
+
+    # this makes sure that refresh token is black listed.
+    response = client.post("/auth/refresh_token", json={"refresh_token": refresh_token})
+    assert response.status_code == status.HTTP_401_UNAUTHORIZED
 
 
 # Helper functions
