@@ -1,3 +1,4 @@
+import logging
 import os
 from typing import Generator, Tuple
 
@@ -69,6 +70,7 @@ def check_blacklist_and_decode_jwt(token: str) -> Tuple[str | None]:
     Decodes the given jwt token and returns the sub (username) and id. Raises an exception if any of these are None
     """
     if redis_conn.get(f"bl_{token}"):
+        logging.error(f"black listed token used -- {__name__}")
         raise get_user_exception()
 
     payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
@@ -76,6 +78,7 @@ def check_blacklist_and_decode_jwt(token: str) -> Tuple[str | None]:
     user_id = payload.get("id")
     is_librarian = payload.get("is_librarian")
     if username is None or user_id is None:
+        logging.error(f"invalid username or userid -- {__name__}")
         raise get_user_exception()
     return {"username": username, "id": user_id, "is_librarian": is_librarian}
 
