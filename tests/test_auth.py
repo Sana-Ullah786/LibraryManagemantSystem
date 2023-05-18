@@ -159,6 +159,23 @@ def test_register_librarian_without_librarian_token(test_db: sessionmaker) -> No
     assert response.status_code == status.HTTP_401_UNAUTHORIZED
 
 
+def test_refresh_token(test_db: sessionmaker) -> None:
+    "Test the refresh token route that generates a new jwt"
+
+    refresh_token = create_librarian_and_get_token(test_db)
+    response = client.post("/auth/refresh_token", json={"refresh_token": refresh_token})
+    assert response.status_code == status.HTTP_200_OK
+    data = response.json()["data"]
+    assert "access_token" in data
+    assert "refresh_token" in data
+    assert "is_librarian" in data
+
+    response = client.post(
+        "/auth/refresh_token", json={"refresh_token": "invalid_token"}
+    )
+    assert response.status_code == status.HTTP_401_UNAUTHORIZED
+
+
 # Test logout
 
 
