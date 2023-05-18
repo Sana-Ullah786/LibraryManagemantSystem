@@ -75,7 +75,8 @@ def test_token_valid(test_db: sessionmaker) -> None:
 
     assert response.status_code == status.HTTP_200_OK
     data = response.json()["data"]
-    assert "token" in data
+    assert "access_token" in data
+    assert "refresh_token" in data
     assert "is_librarian" in data
 
 
@@ -214,7 +215,7 @@ def create_librarian_and_get_token(test_db: sessionmaker) -> str:
         db.commit()
 
     response = login(TEST_USER_AUTH)
-    return response.json()["data"]["token"]
+    return response.json()["data"]["access_token"]
 
 
 def register_librarian(librarian: dict, token: str | None = None) -> Response:

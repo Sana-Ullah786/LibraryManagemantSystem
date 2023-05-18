@@ -51,7 +51,7 @@ def get_token_for_user(test_db) -> str:
     data = {"username": "Test", "password": "Test"}
     response = client.post("/auth/token", data=data)
     logging.info("Got token for user in Test DB with username: Test and password: Test")
-    return response.json()["data"]["token"]
+    return response.json()["data"]["access_token"]
 
 
 # Test cases for language API

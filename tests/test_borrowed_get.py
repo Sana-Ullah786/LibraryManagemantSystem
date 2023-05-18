@@ -49,7 +49,7 @@ def test_borrowed_get_all_with_user_token(test_db: sessionmaker) -> None:
     Tests the get all borrowed endpoint with a user token provided. Should return 401
     """
     register_user(TEST_USER)
-    token = login(TEST_USER_AUTH).json()["data"]["token"]
+    token = login(TEST_USER_AUTH).json()["data"]["access_token"]
 
     response = make_request("/borrowed/", token)
     assert response.status_code == status.HTTP_401_UNAUTHORIZED
@@ -61,7 +61,7 @@ def test_borrowed_get_by_id(test_db: sessionmaker) -> None:
     """
 
     borrowed = create_borrowed(test_db)
-    token = login(TEST_USER_AUTH).json()["data"]["token"]
+    token = login(TEST_USER_AUTH).json()["data"]["access_token"]
 
     response = make_request(f"/borrowed/{borrowed.id}", token)
     data = response.json()["data"]
@@ -96,7 +96,7 @@ def test_borrowed_get_by_id_with_different_user_token(test_db: sessionmaker) -> 
     register_user(new_user)
     new_user_auth = TEST_USER_AUTH.copy()
     new_user_auth["username"] = "newuser1"
-    token = login(new_user_auth).json()["data"]["token"]
+    token = login(new_user_auth).json()["data"]["access_token"]
 
     response = make_request(f"/borrowed/{borrowed.id}", token)
     assert response.status_code == status.HTTP_404_NOT_FOUND
@@ -108,7 +108,7 @@ def test_borrowed_get_all_for_logged_in_user(test_db: sessionmaker) -> None:
     """
 
     borrowed = create_borrowed(test_db)
-    token = login(TEST_USER_AUTH).json()["data"]["token"]
+    token = login(TEST_USER_AUTH).json()["data"]["access_token"]
 
     response = make_request("/borrowed/user", token)
     data = response.json()["data"]
@@ -137,7 +137,7 @@ def test_borrowed_get_all_for_logged_in_user2(test_db: sessionmaker) -> None:
     register_user(new_user)
     new_user_auth = TEST_USER_AUTH.copy()
     new_user_auth["username"] = "newuser1"
-    token = login(new_user_auth).json()["data"]["token"]
+    token = login(new_user_auth).json()["data"]["access_token"]
 
     response = make_request("/borrowed/user", token)
     data = response.json()["data"]
@@ -188,7 +188,7 @@ def test_borrowed_get_all_for_any_user_with_user_token(test_db: sessionmaker) ->
     """
 
     user_id = register_user(TEST_USER).json()["data"]["id"]
-    token = login(TEST_USER_AUTH).json()["data"]["token"]
+    token = login(TEST_USER_AUTH).json()["data"]["access_token"]
 
     response = make_request(f"/borrowed/user/{user_id}", token)
     assert response.status_code == status.HTTP_401_UNAUTHORIZED
