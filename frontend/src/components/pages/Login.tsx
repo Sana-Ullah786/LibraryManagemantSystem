@@ -3,7 +3,6 @@ import { client } from "../../axios";
 import { useHistory } from "react-router-dom";
 import jwt_decode from "jwt-decode";
 import { AuthContext, DecodedToken } from "../../contexts/AuthContext";
-import { UserLoginData } from "../../CustomTypes";
 
 function Login() {
   /**
@@ -46,6 +45,7 @@ function Login() {
       const decoded_token: DecodedToken = jwt_decode(Token.access_token);
       //passing the decoded access token to the AuthContext to get the state variables needed to render for the
       //current user
+      console.log(decoded_token);
       LoginFunction(decoded_token);
       history.push("/");
     });
