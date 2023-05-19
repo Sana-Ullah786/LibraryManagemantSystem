@@ -4,7 +4,6 @@ import {
   Book,
   BookSaved,
   Author,
-  UserLoginData,
   AuthorDetails,
   Genre,
   Tokens,
@@ -281,7 +280,7 @@ export class APIClient {
   //the blacklist app
   public Logout(): Promise<boolean> {
     return APIClient.axiosInstance
-      .post("/logout", { refresh: localStorage.getItem("refresh_token") })
+      .post("/auth/logout", { refresh: localStorage.getItem("refresh_token") })
       .then((res) => {
         localStorage.removeItem("access_token");
         localStorage.removeItem("refresh_token");
