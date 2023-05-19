@@ -80,7 +80,8 @@ async def book_create(
         logging.info(
             f"{book.no_of_copies} Copies created with Book ID: {book_model.id} Created by Librarian {librarian['id']}"
         )
-    except IntegrityError:
+    except IntegrityError as e:
+        print(e)
         raise book_exist()
 
     book.id = book_model.id

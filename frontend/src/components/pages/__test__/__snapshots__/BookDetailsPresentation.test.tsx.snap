@@ -56,7 +56,7 @@ exports[`Snapshot tests produces correct snapshot 1`] = `
   <br />
   <br />
   <p
-    data-testid="summaryHeading"
+    data-testid="descriptionHeading"
     style={
       Object {
         "display": "inline",
@@ -64,11 +64,11 @@ exports[`Snapshot tests produces correct snapshot 1`] = `
     }
   >
     <strong>
-      Summary: 
+      Description: 
     </strong>
   </p>
   <p
-    data-testid="summary"
+    data-testid="description"
     style={
       Object {
         "display": "inline",
@@ -76,7 +76,7 @@ exports[`Snapshot tests produces correct snapshot 1`] = `
     }
   >
      
-    summary
+    description
   </p>
   <br />
   <br />
