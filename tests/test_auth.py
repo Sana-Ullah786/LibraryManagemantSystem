@@ -75,7 +75,8 @@ def test_token_valid(test_db: sessionmaker) -> None:
 
     assert response.status_code == status.HTTP_200_OK
     data = response.json()["data"]
-    assert "token" in data
+    assert "access_token" in data
+    assert "refresh_token" in data
     assert "is_librarian" in data
 
 
@@ -158,6 +159,23 @@ def test_register_librarian_without_librarian_token(test_db: sessionmaker) -> No
     assert response.status_code == status.HTTP_401_UNAUTHORIZED
 
 
+def test_refresh_token(test_db: sessionmaker) -> None:
+    "Test the refresh token route that generates a new jwt"
+
+    refresh_token = create_librarian_and_get_token(test_db)
+    response = client.post("/auth/refresh_token", json={"refresh_token": refresh_token})
+    assert response.status_code == status.HTTP_200_OK
+    data = response.json()["data"]
+    assert "access_token" in data
+    assert "refresh_token" in data
+    assert "is_librarian" in data
+
+    response = client.post(
+        "/auth/refresh_token", json={"refresh_token": "invalid_token"}
+    )
+    assert response.status_code == status.HTTP_401_UNAUTHORIZED
+
+
 # Test logout
 
 
@@ -165,17 +183,26 @@ def test_logout(test_db: sessionmaker) -> None:
     """
     Tests the logout functionality
     """
-
+    create_librarian_and_get_token(test_db)
     # setup
-    token = create_librarian_and_get_token(test_db)
-
+    response = login(TEST_USER_AUTH)
+    access_token = response.json().get("data").get("access_token")
+    refresh_token = response.json().get("data").get("refresh_token")
     # test
-    headers = {"Authorization": f"Bearer {token}"}
-    response = client.post("/auth/logout", headers=headers)
+    headers = {"Authorization": f"Bearer {access_token}"}
+    # refresh token should now also be black listed and will not be valid
+    response = client.post(
+        "/auth/logout", headers=headers, json={"refresh_token": refresh_token}
+    )
+    assert response.status_code == status.HTTP_200_OK
 
-    assert response.status_code == 200
-    response = register_librarian(TEST_USER, token)
-    assert response.status_code == 401
+    # this makes sure the access is blacklisted
+    response = register_librarian(TEST_USER, access_token)
+    assert response.status_code == status.HTTP_401_UNAUTHORIZED
+
+    # this makes sure that refresh token is black listed.
+    response = client.post("/auth/refresh_token", json={"refresh_token": refresh_token})
+    assert response.status_code == status.HTTP_401_UNAUTHORIZED
 
 
 # Helper functions
@@ -214,7 +241,7 @@ def create_librarian_and_get_token(test_db: sessionmaker) -> str:
         db.commit()
 
     response = login(TEST_USER_AUTH)
-    return response.json()["data"]["token"]
+    return response.json()["data"]["access_token"]
 
 
 def register_librarian(librarian: dict, token: str | None = None) -> Response:

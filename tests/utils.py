@@ -75,7 +75,7 @@ def get_fresh_token(db: sessionmaker, data) -> str:
             data=data,
         )
         .json()["data"]
-        .get("token")
+        .get("access_token")
     )
     return jwt_token
 

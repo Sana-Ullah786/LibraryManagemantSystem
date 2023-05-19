@@ -75,4 +75,5 @@ class UserSchemaToken(UserSchemaOut):
     A Pydantic user schema that will be used to return the token as well as other user information when a user logs in
     """
 
-    token: str
+    access_token: str
+    refresh_token: str
