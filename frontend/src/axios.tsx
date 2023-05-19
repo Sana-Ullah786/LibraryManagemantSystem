@@ -41,7 +41,7 @@ export class APIClient {
     if (error.response) {
       const err: ErrorObject = {
         status: error.response.status,
-        message: error.response.data.detail,
+        message: error.response.data.data.detail,
       };
       return err;
     }
@@ -53,7 +53,7 @@ export class APIClient {
       APIClient.axiosInstance
         .get("/book/" + id)
         .then((res) => {
-          const book: BookSaved = this.bookDeserialize(res.data);
+          const book: BookSaved = this.bookDeserialize(res.data.data);
           resolve(book);
         })
         .catch((error) => {
@@ -68,7 +68,7 @@ export class APIClient {
       .post("/book/", this.bookSerialize(book))
       .then((res) => {
         // An id is assigned to book once its saved in backend server
-        const id: number = res.data.id;
+        const id: number = res.data.data.id;
         return id;
       });
   }
@@ -124,7 +124,7 @@ export class APIClient {
         .then((response) => {
           let bookList: BookSaved[] = [];
 
-          for (let data of response.data) {
+          for (let data of response.data.data) {
             bookList.push(this.bookDeserialize(data));
           }
 
@@ -142,7 +142,7 @@ export class APIClient {
       APIClient.axiosInstance
         .get(`/genre/${id}`)
         .then((res) => {
-          const genre: Genre = res.data;
+          const genre: Genre = res.data.data;
           resolve(genre);
         })
         .catch((error) => {
@@ -157,7 +157,7 @@ export class APIClient {
       APIClient.axiosInstance
         .get(`/genre`)
         .then((res) => {
-          const genreList: Genre[] = res.data;
+          const genreList: Genre[] = res.data.data;
           resolve(genreList);
         })
         .catch((error) => {
@@ -172,7 +172,7 @@ export class APIClient {
       APIClient.axiosInstance
         .get("/language")
         .then((res) => {
-          const languageList: Language[] = res.data;
+          const languageList: Language[] = res.data.data;
           resolve(languageList);
         })
         .catch((error) => {
@@ -187,7 +187,7 @@ export class APIClient {
       APIClient.axiosInstance
         .get(`/language/${id}`)
         .then((res) => {
-          const language: Language = res.data;
+          const language: Language = res.data.data;
           resolve(language);
         })
         .catch((error) => {
@@ -202,7 +202,7 @@ export class APIClient {
       APIClient.axiosInstance
         .get("/author/" + id)
         .then((res) => {
-          const author: Author = res.data;
+          const author: Author = res.data.data;
           resolve(author);
         })
         .catch((error) => {
@@ -217,7 +217,7 @@ export class APIClient {
       APIClient.axiosInstance
         .get("/author")
         .then((res) => {
-          const authorList: Author[] = res.data;
+          const authorList: Author[] = res.data.data;
           resolve(authorList);
         })
         .catch((error) => {
@@ -232,7 +232,7 @@ export class APIClient {
       APIClient.axiosInstance
         .get("/home")
         .then((res) => {
-          let HomePageData: HomeData = res.data;
+          let HomePageData: HomeData = res.data.data;
           resolve(HomePageData);
         })
         .catch((error) => {
@@ -248,7 +248,7 @@ export class APIClient {
       APIClient.axiosInstance
         .get("/author")
         .then((response) => {
-          authorList = response.data;
+          authorList = response.data.data;
           resolve(authorList);
         })
         .catch((error) => {
@@ -261,8 +261,8 @@ export class APIClient {
   public Login(data: FormData): Promise<Tokens> {
     return APIClient.axiosInstance.post("/auth/token", data).then((res) => {
       let tokens: Tokens = {
-        access_token: res.data.token,
-        refresh_token: "",
+        access_token: res.data.data.access_token,
+        refresh_token: res.data.data.refresh_token,
       };
       localStorage.setItem("access_token", tokens.access_token);
       localStorage.setItem("refresh_token", tokens.refresh_token);
@@ -282,7 +282,7 @@ export class APIClient {
   //the blacklist app
   public Logout(): Promise<boolean> {
     return APIClient.axiosInstance
-      .post("/auth/logout", { refresh: localStorage.getItem("refresh_token") })
+      .post("/auth/logout", { refresh_token: localStorage.getItem("refresh_token") })
       .then((res) => {
         localStorage.removeItem("access_token");
         localStorage.removeItem("refresh_token");
@@ -295,7 +295,7 @@ export class APIClient {
   public PostAuthor(AuthorData: AuthorDetails): Promise<Number> {
     return APIClient.axiosInstance.post("/author/", AuthorData).then((res) => {
       //Redirect to the details page of the currently created author
-      const id: Number = res.data.id;
+      const id: Number = res.data.data.id;
       return id;
     });
   }
@@ -322,7 +322,7 @@ export class APIClient {
     return APIClient.axiosInstance
       .post("/token/refresh/", { refresh: refreshToken })
       .then((response) => {
-        const access_token: string = response.data.access;
+        const access_token: string = response.data.data.access;
         localStorage.setItem("access_token", access_token);
         APIClient.instance.SetAuthorizationHeaders("Bearer " + access_token);
         return access_token;
@@ -394,7 +394,8 @@ export const client = APIClient.getInstance({
   },
   baseURL: "http://127.0.0.1:8000/",
   // transformResponse: [(response) =>{
-  // 	return response.data
+  //   console.log(response.data.data)
+  // 	return response.data.data
   // }]
 });
 
@@ -414,7 +415,7 @@ const axiosInstance = axios.create({
   },
   //baseURL: 'catalog/api/',
   // transformResponse: [(response) =>{
-  // 	return response.data
+  // 	return response.data.data
   // }]
 });
 
