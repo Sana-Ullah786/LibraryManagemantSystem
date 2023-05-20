@@ -39,7 +39,8 @@ async def update_borrowed_by_id(
         )
     try:
         found_borrowed.due_date = borrowed.due_date
-        found_borrowed.return_date = borrowed.return_date
+        if borrowed.return_date:
+            found_borrowed.return_date = borrowed.return_date
         db.commit()
         logging.info("Updated borrowed in database with id: " + str(borrowed_id))
         borrowed.id = borrowed_id

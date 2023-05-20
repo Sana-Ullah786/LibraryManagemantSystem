@@ -38,10 +38,22 @@ async def create_borrowed(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail="Copy with given ID does not exist",
         )
-    if copy.status.status != "available":
+    found_status = (
+        db.scalars(
+            select(all_models.Status).where(all_models.Status.id == copy.status_id)
+        )
+        .unique()
+        .one_or_none()
+    )
+    if found_status is None:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Copy with given ID is not available",
+            detail="Status with given ID does not exist",
+        )
+    if found_status.status != "available":
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Copy is not available",
         )
     try:
         new_borrowed = all_models.Borrowed()
@@ -50,6 +62,7 @@ async def create_borrowed(
         new_borrowed.issue_date = borrowed.issue_date
         new_borrowed.due_date = borrowed.due_date
         new_borrowed.return_date = borrowed.return_date
+        found_status.status = "borrowed"
         db.add(new_borrowed)
         db.commit()
         logging.info(f"Created new borrowed in database with user ID: {user.get('id')}")

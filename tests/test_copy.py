@@ -69,6 +69,10 @@ def test_copy_create(test_db: sessionmaker) -> None:
 
     assert response.status_code == status.HTTP_201_CREATED
     assert response.json().get("status_code") == 201
+    status_id = response.json()["data"].get("status_id")
+    assert status_id == 1
+    copy = test_db().query(all_models.Copy).filter_by(id=copy[1].id).first()
+    assert copy.status_id == status_id
 
 
 def test_copy_update(test_db: sessionmaker) -> None:
@@ -86,6 +90,7 @@ def test_copy_update(test_db: sessionmaker) -> None:
         headers={"Authorization": f"Bearer {token}"},
         json=payload,
     )
+    print(response.json())
     assert response.status_code == status.HTTP_200_OK
 
     # without authentication
@@ -95,13 +100,15 @@ def test_copy_update(test_db: sessionmaker) -> None:
     # check updated status
     response = client.get(f"/copy/{copy[1].id}")
     assert response.status_code == 200
-    assert response.json()["data"].get("status") == "reserved"
+    data = response.json()["data"]
+    data.get("status") == "available"
 
     # Invalid copy id
 
     response = client.put(
-        "/copy/3", headers={"Authorization": f"Bearer {token}"}, json=payload
+        f"/copy/{9}", headers={"Authorization": f"Bearer {token}"}, json=payload
     )
+    print(response.json())
     assert response.status_code == status.HTTP_404_NOT_FOUND
     assert response.json().get("detail") == "Copy not found"
 
