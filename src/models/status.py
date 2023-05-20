@@ -1,9 +1,9 @@
 from datetime import datetime
 
 from sqlalchemy import DateTime, String, func
-from sqlalchemy.orm import Mapped, mapped_column
+from sqlalchemy.orm import Mapped, mapped_column, relationship
 
-from .database import Base
+from src.models.database import Base
 
 
 class Status(Base):
@@ -27,3 +27,5 @@ class Status(Base):
     updated_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True), onupdate=func.now(), nullable=True
     )
+    # relationships with copy model
+    copy = relationship("Copy", back_populates="status")

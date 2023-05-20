@@ -41,4 +41,4 @@ class Copy(Base):
     book = relationship("Book", back_populates="copies", lazy=False)
     language = relationship("Language", back_populates="copies", lazy=False)
     borrowed = relationship("Borrowed", back_populates="copy")
-    status = relationship("Status", lazy=False)
+    status = relationship("Status", back_populates="copy", lazy=False)

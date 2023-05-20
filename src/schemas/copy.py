@@ -30,3 +30,9 @@ class CopySchema(BaseModel):
         if value is not None and value <= 0:
             raise ValueError("Invalid language ID")
         return value
+
+    @validator("status_id")
+    def validate_status_id(cls, value):
+        if value is not None and value <= 0:
+            raise ValueError("Invalid status ID")
+        return value
