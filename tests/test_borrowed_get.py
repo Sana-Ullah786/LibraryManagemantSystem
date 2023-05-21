@@ -226,8 +226,11 @@ def create_borrowed(
     """
 
     with test_db() as db:
+        status = all_models.Status(status="Available")
+
         if not user_dict:
             user_dict = TEST_USER
+
         register_user(user_dict)
         language = all_models.Language(language="English")
         genre = all_models.Genre(genre="Fantasy")
@@ -246,7 +249,7 @@ def create_borrowed(
         )
         book.authors.append(author)
         book.genres.append(genre)
-        copy = all_models.Copy(book=book, language=language, status="available")
+        copy = all_models.Copy(book=book, language=language, status=status)
         user = db.scalar(
             select(all_models.User).where(all_models.User.email == user_dict["email"])
         )
@@ -258,6 +261,6 @@ def create_borrowed(
             return_date=None,
         )
 
-        db.add_all([language, genre, author, book, copy, borrowed])
+        db.add_all([status, language, genre, author, book, copy, borrowed])
         db.commit()
         return borrowed

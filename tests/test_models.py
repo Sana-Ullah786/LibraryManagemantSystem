@@ -105,7 +105,7 @@ def test_book_copy_relationship(test_db: sessionmaker) -> None:
     """
     with test_db() as db:
         # setup
-
+        status = all_models.Status(status="available")
         language = all_models.Language(language="English")
         book = all_models.Book(
             title="Let us C",
@@ -114,8 +114,8 @@ def test_book_copy_relationship(test_db: sessionmaker) -> None:
             date_of_publication=datetime(2008, 1, 1),
             language=language,
         )
-        copy = all_models.Copy(book=book, language=language, status="available")
-        db.add_all([language, book, copy])
+        copy = all_models.Copy(book=book, language=language, status=status)
+        db.add_all([status, language, book, copy])
         db.flush()
 
         # testing
@@ -133,6 +133,7 @@ def test_borrowed(test_db: sessionmaker) -> None:
     """
     with test_db() as db:
         # setup
+        status = all_models.Status(status="available")
         language = all_models.Language(language="English")
         book = all_models.Book(
             title="Let us C",
@@ -141,7 +142,7 @@ def test_borrowed(test_db: sessionmaker) -> None:
             date_of_publication=datetime(2008, 1, 1),
             language=language,
         )
-        copy = all_models.Copy(book=book, language=language, status="available")
+        copy = all_models.Copy(book=book, language=language, status=status)
         user = all_models.User(
             first_name="Mustansir",
             last_name="Muzaffar",
@@ -160,7 +161,7 @@ def test_borrowed(test_db: sessionmaker) -> None:
             issue_date=datetime.now(),
             due_date=datetime(2023, 12, 12),
         )
-        db.add_all([language, book, copy, user, borrowed])
+        db.add_all([status, language, book, copy, user, borrowed])
         db.flush()
 
         # testing

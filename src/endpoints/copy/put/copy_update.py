@@ -7,7 +7,7 @@ from starlette import status
 
 from src.dependencies import get_current_librarian, get_db
 from src.endpoints.copy.router_init import router
-from src.models.copy import Copy
+from src.models import all_models
 from src.responses import custom_response
 from src.schemas.copy import CopySchema
 
@@ -26,15 +26,20 @@ async def copy_update(
         f"Book Update with id :{copy_id} Request by Librarian {librarian['id']}"
     )
 
-    copy_model = db.execute(select(Copy).where(Copy.id == copy_id)).scalars().first()
-
+    copy_model = (
+        db.execute(select(all_models.Copy).where(all_models.Copy.id == copy_id))
+        .scalars()
+        .first()
+    )
     if copy_model is None:
         logging.info(f"Book Update with id :{copy_id} , not found")
-        raise http_exception()
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail="Copy not found"
+        )
 
     copy_model.book_id = copy.book_id
     copy_model.language_id = copy.language_id
-    copy_model.status = copy.status
+    copy_model.status_id = copy.status_id
 
     db.add(copy_model)
     db.commit()
@@ -44,7 +49,3 @@ async def copy_update(
     return custom_response(
         status_code=status.HTTP_200_OK, details="Copy updated successfully!", data=copy
     )
-
-
-def http_exception() -> dict:
-    return HTTPException(status_code=404, detail="Copy not found")
