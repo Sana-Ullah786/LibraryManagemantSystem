@@ -11,8 +11,12 @@ from src.responses import custom_response
 from src.schemas.borrowed import BorrowedSchema
 
 
-@router.put("/{borrowed_id}", response_model=None, status_code=status.HTTP_200_OK)
-async def update_borrowed_by_id(
+@router.put(
+    "/return_borrowed_any_user/{borrowed_id}",
+    response_model=None,
+    status_code=status.HTTP_200_OK,
+)
+async def return_borrowed_for_user(
     borrowed: BorrowedSchema,
     borrowed_id: int = Path(gt=-1),
     db: Session = Depends(get_db),
@@ -23,10 +27,10 @@ async def update_borrowed_by_id(
     Parameters:
         borrowed_id: The id of the borrowed.
         borrowed: The borrowed data.
-        librarian: The librarian data. (current librarian)
+        librarian: The user data. (current librarian)
         db: The database session.
     Returns:
-        dict: A dict with the following keys status_code, details and data.
+        A dict that contains the status_code, detail and the data.
     """
     logging.info("Updating borrowed in database with id: " + str(borrowed_id))
     found_borrowed = db.scalar(
@@ -37,17 +41,26 @@ async def update_borrowed_by_id(
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND, detail="Borrowed not found"
         )
+    found_copy = db.scalar(
+        select(all_models.Copy).where(all_models.Copy.id == found_borrowed.copy_id)
+    )
+    if not found_copy:
+        logging.warning(
+            "Copy not found in database with id: " + str(found_borrowed.copy_id)
+        )
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail="Copy not found"
+        )
     try:
-        found_borrowed.due_date = borrowed.due_date
-        if borrowed.return_date:
-            found_borrowed.return_date = borrowed.return_date
+        found_borrowed.return_date = borrowed.return_date
+        found_copy.status = "available"
         db.commit()
         logging.info("Updated borrowed in database with id: " + str(borrowed_id))
         borrowed.id = borrowed_id
         borrowed.user_id = found_borrowed.user_id
         return custom_response(
             status_code=status.HTTP_200_OK,
-            details="Borrowed updated successfully!",
+            details="Borrowed returned successfully",
             data=borrowed,
         )
     except Exception as e:

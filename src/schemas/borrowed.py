@@ -29,7 +29,7 @@ class BorrowedSchema(BaseModel):
         if (
             "issue_date" in values
             and v is not None
-            and values["issue_date"].date() >= v.date()
+            and values["issue_date"].date() > v.date()
         ):
             raise ValueError("Return Date must be greater than Issue Date")
         return v
