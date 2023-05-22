@@ -18,8 +18,8 @@ const author: AuthorAttributes = {
   id: 1,
   first_name: "firstname",
   last_name: "lastname",
-  date_of_birth: "dateofbirth",
-  date_of_death: "dateofdeath",
+  birth_date: "dateofbirth",
+  death_date: "dateofdeath",
 };
 
 const language: Language = {
