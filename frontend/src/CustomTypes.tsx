@@ -45,8 +45,15 @@ export interface BookSaved extends BookBase {
   genres: Genre[];
 }
 
-// The properties of Genre are stored in this type
+//Genre Interfaces
+
+
 export interface Genre {
+  id: number;
+  genre: string ;
+}
+
+export interface GenreDetails {
   id: number;
   genre: string;
 }
@@ -56,12 +63,31 @@ export interface ErrorObject {
   message: string;
 }
 
-// GenreMap represents a map of Genre items. Id of genre is used as key
 export interface GenreMap {
   [id: number]: Genre;
 }
 
-// The properties of a language are stored in this type
+export interface Language {
+  id: number;
+  language: string;
+}
+//Signup Attrubutes
+export interface SignupData {
+  email: string;
+  username: string;
+  password: string;
+  first_name: string;
+  last_name: string;
+  contact_number: string;
+  address: string;
+}
+
+//Language Attributes
+
+export interface LanguageDetails {
+  language: string | null;
+  // Add other properties specific to the LanguageDetails type
+}
 export interface Language {
   id: number;
   language: string;

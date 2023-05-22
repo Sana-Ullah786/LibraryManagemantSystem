@@ -15,6 +15,7 @@ import {
     ErrorObject
 } from '../../CustomTypes'
 import ErrorComponent from '../ErrorComponent'
+import '../style.css'; // Import the Genres CSS file
 
 function Authors() {
     const {isLibrarian}: {isLibrarian: boolean} = useContext(AuthContext)
@@ -77,7 +78,7 @@ function Authors() {
                 //Passing the link to an authors details page as a prop.
                 //The AuthorListItem component then uses the linksto prop to create a link to the authors details page
                 return(
-                    <li key = {author.id.toString()}>
+                    <li className="genre-list-item" key = {author.id.toString()}>
                         <AuthorListItem 
                             key = {author.id} 
                             item = {author} 
@@ -92,7 +93,7 @@ function Authors() {
     //This creates a link to the librarian creation form page
     function createAuthorLink(){
         return (
-            <Link to = {`${url}/create`}>
+            <Link to = {`${url}/create`} className="genre-link">
                 Create Author
             </Link>
         )
@@ -105,7 +106,7 @@ function Authors() {
     }
 
     return (
-        <div>
+        <div  className="genre-list">
             <h1>Author List</h1>
             <ul>
                 {setAuthorListItemComponent(authorList)}

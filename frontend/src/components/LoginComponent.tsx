@@ -20,7 +20,7 @@ function LoginComponent() {
     function isAuthenticatedIsFalse(){
         return(
             <>
-                <p><Link to = "/Login">Login</Link></p>
+                <Link to = "/Login">Login</Link>
             </>
         )
     }

@@ -52,11 +52,11 @@ function Login() {
   }
 
   return (
-    <div>
-      <form onSubmit={handleSubmit}>
-        <label>
+    <div className="signup-container">
+      <form className="signup-form" onSubmit={handleSubmit}>
+        <label className="form-group">
           User Name
-          <input
+          <input className="form-group"
             type="text"
             value={userName}
             placeholder="Username"
@@ -64,16 +64,20 @@ function Login() {
           />
         </label>
         <br />
-        <label>
+        <label className="form-group">
           Password
-          <input
+          <input className="form-group"
             type="password"
             value={password}
+            placeholder="Password"
             onChange={(e) => setPassword(e.target.value)}
           />
         </label>
         <br />
-        <button>Login</button>
+        <div className="form-group">
+        <button  >Login</button>
+        </div>
+
       </form>
     </div>
   );

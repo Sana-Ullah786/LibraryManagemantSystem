@@ -30,38 +30,38 @@ function AuthorForm(props: Props): ReactElement {
     })
 
     return (
-        <>
+        <div className="signup-container">
             {/* We can pass our custom onSubmit function as an argument to the handleSubmit function provided by react hook forms */}
-            <form onSubmit = {handleSubmit(props.onSubmit)}>
-                <label>First Name
+            <form  className="signup-form" onSubmit = {handleSubmit(props.onSubmit)}>
+                <label className="form-group">First Name
                     {/* to use reacthook forms, we register the input field of the form as shown below by assigning it a name
                     The name must match the names provided in the DefaultValues defined above. If no DefaultValues are defined, the names
                     can be anything */}
-                    <input
+                    <input 
                         {...register('first_name')}
                         type="text"
                         placeholder={"First Name"}
                     />
                 </label>
                 <br/>
-                <label>Last Name
-                    <input
+                <label className="form-group" >Last Name
+                    <input 
                         {...register('last_name')}
                         type="text"
                         placeholder={"Last Name"}
                     />
                 </label>
                 <br/>
-                <label>Date of Birth
-                    <input
+                <label className="form-group">Date of Birth
+                    <input 
                         {...register('date_of_birth')}
                         type="text"
                         placeholder={"yyyy-mm-dd"}
                     />
                 </label>
                 <br/>            
-                <label>Date Of Death
-                    <input
+                <label className="form-group">Date Of Death
+                    <input 
                         {...register('date_of_death')}
                         type="text"
                         placeholder={"yyyy-mm-dd"}
@@ -71,7 +71,7 @@ function AuthorForm(props: Props): ReactElement {
                 <button>Submit</button>
 
             </form>
-        </>
+        </div>
     )
 }
 

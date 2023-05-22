@@ -23,7 +23,13 @@ function Home() {
   //The state of the component is used to store the JSON data recieved fromt the api end point
   const { username }: { username: string } = useContext(AuthContext);
 
-  return <div>Welcome {username}</div>;
+  return(
+
+    <div style={{justifyItems:'center'}}>
+      <h1>Welcome {username}</h1>
+    </div>
+
+  )
 }
 
 export default Home;

@@ -1,21 +1,41 @@
-import React from 'react'
-import { Link } from 'react-router-dom'
-import LoginComponent from './LoginComponent'
+// Navbar.js or Navbar.tsx
+
+import React from 'react';
+import { Link } from 'react-router-dom';
+import "./style.css"; // Import the Languages CSS file
+import LoginComponent from './LoginComponent';
 
 function Navbar() {
-
-    return (
-        <div>
-            {/* The relative URL for the home page */}
-            <p><Link to = '/'>Home</Link></p>
-            {/* Relative URL for the book list page (not implemented yet) */}
-            <p><Link to = "/books">All books</Link></p>
-            {/* Author list page */}
-            <p><Link to = "/authors">All authors</Link></p>
-            {/* Logout Component conditionally renders based on if the user is logged in or not */}
-            <LoginComponent />
-        </div>
-    )
+  return (
+    <nav className="navbar">
+      <ul>
+        <li>
+          <Link to="/">Home</Link>
+        </li>
+        <li>
+          <Link to="/authors">Authors</Link>
+        </li>
+        <li>
+          <Link to="/books">Books</Link>
+        </li>
+        <li>
+          <Link to="/genre">Genres</Link>
+        </li>
+        {/* <li>
+          <Link to="/login">Login</Link>
+        </li> */}
+        <li>
+          <Link to="/signup">Signup</Link>
+        </li>
+        <li>
+          <Link to="/Language">Language</Link>
+        </li>
+        <li>
+          <LoginComponent/>
+        </li>        
+      </ul>
+    </nav>
+  );
 }
 
-export default Navbar
+export default Navbar;
