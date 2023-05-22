@@ -96,7 +96,7 @@ export class APIClient {
     book.authors = json.authors;
     book.language = json.language;
     book.genres = json.genres;
-    book.dateOfPublication = new Date(json.date_of_publication);
+    book.dateOfPublication = json.date_of_publication.substring(0, 10);
     return book;
   }
 
@@ -121,6 +121,25 @@ export class APIClient {
     return new Promise((resolve, reject) => {
       APIClient.axiosInstance
         .get("/book")
+        .then((response) => {
+          let bookList: BookSaved[] = [];
+
+          for (let data of response.data.data) {
+            bookList.push(this.bookDeserialize(data));
+          }
+
+          resolve(bookList);
+        })
+        .catch((error) => {
+          reject(APIClient.instance.handleErrors(error));
+        });
+    });
+  }
+
+  public GetBooksForAuthor(authorId: string): Promise<BookSaved[]> {
+    return new Promise((resolve, reject) => {
+      APIClient.axiosInstance
+        .get(`/book/?author=${authorId}`)
         .then((response) => {
           let bookList: BookSaved[] = [];
 
@@ -282,7 +301,9 @@ export class APIClient {
   //the blacklist app
   public Logout(): Promise<boolean> {
     return APIClient.axiosInstance
-      .post("/auth/logout", { refresh_token: localStorage.getItem("refresh_token") })
+      .post("/auth/logout", {
+        refresh_token: localStorage.getItem("refresh_token"),
+      })
       .then((res) => {
         localStorage.removeItem("access_token");
         localStorage.removeItem("refresh_token");
@@ -320,9 +341,9 @@ export class APIClient {
   //Used to get a new access token using a refresh token
   private UseRefreshToken(refreshToken: string): Promise<string> {
     return APIClient.axiosInstance
-      .post("/token/refresh/", { refresh: refreshToken })
+      .post("/auth/refresh_token", { refresh_token: refreshToken })
       .then((response) => {
-        const access_token: string = response.data.data.access;
+        const access_token: string = response.data.data.access_token;
         localStorage.setItem("access_token", access_token);
         APIClient.instance.SetAuthorizationHeaders("Bearer " + access_token);
         return access_token;

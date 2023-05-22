@@ -94,7 +94,7 @@ export const BookDetailsPresentation = (
         <strong>Date of Publication: </strong>
       </p>
       <p data-testid="dateOfPublication" style={{ display: "inline" }}>
-        {props.book.dateOfPublication.toISOString().substring(0, 10)}
+        {props.book.dateOfPublication}
       </p>
     </div>
   );

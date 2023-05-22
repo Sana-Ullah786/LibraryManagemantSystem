@@ -5,8 +5,8 @@
 export interface AuthorDetails {
   first_name?: string | null;
   last_name?: string | null;
-  date_of_birth?: string | null;
-  date_of_death?: string | null;
+  birth_date?: string | null;
+  death_date?: string | null;
 }
 
 export interface Author extends AuthorDetails {
@@ -28,7 +28,7 @@ export interface BookBase {
   title: string;
   description: string;
   isbn: string;
-  dateOfPublication: Date;
+  dateOfPublication: string;
 }
 
 export interface BookOut extends BookBase {
