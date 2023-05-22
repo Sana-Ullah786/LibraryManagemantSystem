@@ -8,7 +8,8 @@ import LoginComponent from './LoginComponent';
 function Navbar() {
   return (
     <nav className="navbar">
-      <ul>
+      <ul style={{justifyContent:'space-between'}}>
+<div style={{flexDirection:'row', display:'flex'}}>        
         <li>
           <Link to="/">Home</Link>
         </li>
@@ -21,18 +22,21 @@ function Navbar() {
         <li>
           <Link to="/genre">Genres</Link>
         </li>
-        {/* <li>
-          <Link to="/login">Login</Link>
-        </li> */}
-        <li>
-          <Link to="/signup">Signup</Link>
-        </li>
-        <li>
+        <li style={{ justifyContent: 'flex-end' }}>
           <Link to="/Language">Language</Link>
         </li>
-        <li>
-          <LoginComponent/>
-        </li>        
+</div>
+
+        <div style={{flexDirection:'row' , display:'flex'}}>
+          <li style={{ justifyContent: 'flex-end' }}>
+            <Link to="/signup">Signup</Link>
+          </li>
+          <li>
+            <LoginComponent />
+          </li>
+        </div>
+
+
       </ul>
     </nav>
   );

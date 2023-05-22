@@ -51,7 +51,7 @@ function Languages() {
   }
 
   return (
-    <div>
+    <div className="background-image">
       <h1>Language List</h1>
       <ul className="language-list">
         {setLanguageListItemComponent(languageList)}

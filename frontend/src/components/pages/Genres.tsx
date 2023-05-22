@@ -52,7 +52,7 @@ function Genres() {
   }
 
   return (
-    <div>
+    <div className="background-image">
       <h1>Genre List</h1>
       <ul className="genre-list">
         {setGenreListItemComponent(genreList)}

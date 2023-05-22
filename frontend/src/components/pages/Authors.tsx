@@ -106,7 +106,7 @@ function Authors() {
     }
 
     return (
-        <div  className="genre-list">
+        <div  className="genre-list background-image">
             <h1>Author List</h1>
             <ul>
                 {setAuthorListItemComponent(authorList)}
