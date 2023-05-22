@@ -7,6 +7,7 @@ from starlette import status
 
 from src.dependencies import get_db
 from src.endpoints.author.router_init import router
+from src.exceptions import custom_exception
 from src.models.author import Author
 from src.responses import custom_response
 
@@ -30,8 +31,8 @@ async def get_authors_by_id(
     author = db.execute(select(Author).where(Author.id == author_id)).scalars().first()
     if not author:
         logging.error("Author not found -- {__name__}")
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND, detail="Author not found!"
+        raise custom_exception(
+            status_code=status.HTTP_404_NOT_FOUND, details="Author not found."
         )
     return custom_response(
         status_code=status.HTTP_200_OK,

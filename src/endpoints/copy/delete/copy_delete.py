@@ -7,6 +7,7 @@ from starlette import status
 
 from src.dependencies import get_current_librarian, get_db
 from src.endpoints.copy.router_init import router
+from src.exceptions import custom_exception
 from src.models.copy import Copy
 
 
@@ -26,14 +27,12 @@ async def copy_delete(
     copy_model = db.execute(select(Copy).where(Copy.id == copy_id)).scalars().first()
 
     if copy_model is None:
-        raise http_exception()
+        raise custom_exception(
+            status_code=status.HTTP_404_NOT_FOUND, details="Copy not found"
+        )
 
     db.execute(delete(Copy).where(Copy.id == copy_id))
     db.commit()
     logging.info(
         f"Book Updated with id :{copy_id} Request by Librarian {librarian['id']}"
     )
-
-
-def http_exception() -> dict:
-    return HTTPException(status_code=404, detail="Copy not found")
