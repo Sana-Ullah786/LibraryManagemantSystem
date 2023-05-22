@@ -6,6 +6,7 @@ from sqlalchemy.orm import Session
 
 from src.dependencies import get_current_librarian, get_db
 from src.endpoints.borrowed.router_init import router
+from src.exceptions import custom_exception
 from src.models import all_models
 from src.responses import custom_response
 from src.schemas.borrowed import BorrowedSchema
@@ -34,8 +35,8 @@ async def update_borrowed_by_id(
     )
     if not found_borrowed:
         logging.warning("Borrowed not found in database with id: " + str(borrowed_id))
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND, detail="Borrowed not found"
+        raise custom_exception(
+            status_code=status.HTTP_404_NOT_FOUND, details="Borrowed not found."
         )
     try:
         found_borrowed.due_date = borrowed.due_date
@@ -52,4 +53,7 @@ async def update_borrowed_by_id(
         )
     except Exception as e:
         logging.exception("Error updating borrowed in database. Details = " + str(e))
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(e))
+        raise custom_exception(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            details="Error updating borrowed in database. details = " + str(e),
+        )

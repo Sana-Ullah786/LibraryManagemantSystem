@@ -10,6 +10,7 @@ from passlib.context import CryptContext
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
+from src.exceptions import custom_exception
 from src.models.database import SessionLocal
 from src.models.user import User
 
@@ -44,7 +45,11 @@ def get_current_user(token: str = Depends(oauth2_bearer)) -> dict:
     try:
         return check_blacklist_and_decode_jwt(token)
     except JWTError:
-        raise get_user_exception()
+        raise custom_exception(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            details="Could not validate credentials for user",
+            headers={"WWW-Authenticate": "Bearer"},
+        )
 
 
 def get_current_librarian(token: str = Depends(oauth2_bearer)) -> dict:
@@ -55,10 +60,18 @@ def get_current_librarian(token: str = Depends(oauth2_bearer)) -> dict:
     try:
         user_dict = check_blacklist_and_decode_jwt(token)
         if not user_dict.get("is_librarian"):
-            raise get_librarian_exception()
+            raise custom_exception(
+                status_code=status.HTTP_401_UNAUTHORIZED,
+                details="Could not validate credentials for librarian",
+                headers={"WWW-Authenticate": "Bearer"},
+            )
         return user_dict
     except JWTError:
-        raise get_librarian_exception()
+        raise custom_exception(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            details="Could not validate credentials for librarian",
+            headers={"WWW-Authenticate": "Bearer"},
+        )
 
 
 # Helper functions
@@ -71,7 +84,11 @@ def check_blacklist_and_decode_jwt(token: str) -> Tuple[str | None]:
     """
     if redis_conn.get(f"bl_{token}"):
         logging.error(f"black listed token used -- {__name__}")
-        raise get_user_exception()
+        raise custom_exception(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            details="Could not validate credentials for user",
+            headers={"WWW-Authenticate": "Bearer"},
+        )
 
     payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
     username = payload.get("sub")
@@ -79,7 +96,11 @@ def check_blacklist_and_decode_jwt(token: str) -> Tuple[str | None]:
     is_librarian = payload.get("is_librarian")
     if username is None or user_id is None:
         logging.error(f"invalid username or userid -- {__name__}")
-        raise get_user_exception()
+        raise custom_exception(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            details="Could not validate credentials for user",
+            headers={"WWW-Authenticate": "Bearer"},
+        )
     return {"username": username, "id": user_id, "is_librarian": is_librarian}
 
 
@@ -93,36 +114,3 @@ def verify_password(plain_password: str, hashed_password: str) -> bool:
     """A helper function that verifies a given password against a hashed password"""
 
     return bcryp_context.verify(plain_password, hashed_password)
-
-
-# Exceptions
-
-
-def get_user_exception() -> HTTPException:
-    return HTTPException(
-        status_code=status.HTTP_401_UNAUTHORIZED,
-        detail="Could not validate credentials for user",
-        headers={"WWW-Authenticate": "Bearer"},
-    )
-
-
-def get_librarian_exception() -> HTTPException:
-    return HTTPException(
-        status_code=status.HTTP_401_UNAUTHORIZED,
-        detail="Could not validate credentials for librarian",
-        headers={"WWW-Authenticate": "Bearer"},
-    )
-
-
-def get_token_exception() -> HTTPException:
-    return HTTPException(
-        status_code=status.HTTP_401_UNAUTHORIZED,
-        detail="Incorrect username or password",
-        headers={"WWW-Authenticate": "Bearer"},
-    )
-
-
-def get_user_already_exists_exception() -> HTTPException:
-    return HTTPException(
-        status_code=status.HTTP_400_BAD_REQUEST, detail="User already exists"
-    )

@@ -7,6 +7,7 @@ from starlette import status
 
 from src.dependencies import get_current_librarian, get_db
 from src.endpoints.author.router_init import router
+from src.exceptions import custom_exception
 from src.models.author import Author
 from src.responses import custom_response
 from src.schemas.author_schema import AuthorSchema
@@ -34,9 +35,10 @@ async def update_author(
     author = db.execute(select(Author).where(Author.id == author_id)).scalars().first()
     if not author:
         logging.error("Author not found -- {__name__}")
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND, detail="Author not found!"
+        raise custom_exception(
+            status_code=status.HTTP_404_NOT_FOUND, details="Author not found."
         )
+
     author.first_name = new_author.first_name
     author.last_name = new_author.last_name
     author.birth_date = new_author.birth_date

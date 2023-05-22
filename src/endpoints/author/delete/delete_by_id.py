@@ -7,6 +7,7 @@ from starlette import status
 
 from src.dependencies import get_current_librarian, get_db
 from src.endpoints.author.router_init import router
+from src.exceptions import custom_exception
 from src.models.author import Author
 
 
@@ -33,6 +34,6 @@ async def delete_author_by_id(
         db.commit()
     else:
         logging.error("Author not found -- {__name__}")
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND, detail="Author not found!"
+        raise custom_exception(
+            status_code=status.HTTP_404_NOT_FOUND, details="Author not found."
         )

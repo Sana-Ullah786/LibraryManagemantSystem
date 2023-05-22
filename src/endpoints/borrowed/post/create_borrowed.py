@@ -6,6 +6,7 @@ from sqlalchemy.orm import Session
 
 from src.dependencies import get_current_user, get_db
 from src.endpoints.borrowed.router_init import router
+from src.exceptions import custom_exception
 from src.models import all_models
 from src.responses import custom_response
 from src.schemas.borrowed import BorrowedSchema
@@ -35,9 +36,9 @@ async def create_borrowed(
         .one_or_none()
     )
     if copy is None:
-        raise HTTPException(
+        raise custom_exception(
             status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Copy with given ID does not exist",
+            details="Copy with given ID does not exist",
         )
     found_status = (
         db.scalars(
@@ -47,14 +48,13 @@ async def create_borrowed(
         .one_or_none()
     )
     if found_status is None:
-        raise HTTPException(
+        raise custom_exception(
             status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Status with given ID does not exist",
+            details="Status with given ID does not exist",
         )
     if found_status.status != AVAILABLE:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Copy is not available",
+        raise custom_exception(
+            status_code=status.HTTP_400_BAD_REQUEST, details="Copy is not available"
         )
     try:
         new_status_id = db.scalars(
@@ -82,4 +82,7 @@ async def create_borrowed(
         logging.exception(
             "Error getting all borroweds from database. Details = " + str(e)
         )
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(e))
+        raise custom_exception(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            details="Error creating borrowed details  = " + str(e),
+        )
