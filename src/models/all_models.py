@@ -6,4 +6,5 @@ from src.models.borrowed import *  # noqa
 from src.models.copy import *  # noqa
 from src.models.genre import *  # noqa
 from src.models.language import *  # noqa
+from src.models.status import *  # noqa
 from src.models.user import *  # noqa

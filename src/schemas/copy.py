@@ -8,14 +8,14 @@ class CopySchema(BaseModel):
     language_id: Optional[int] = Field(
         None, title="Enter Language Id for book language"
     )
-    status: str = Field(..., title="Specify book status")
+    status_id: int = Field(..., title="Specify book status")
 
     class Config:
         schema_extra = {
             "example": {
                 "book_id": 1,
                 "language_id": 1,
-                "status": "Available",
+                "status_id": 1,
             }
         }
 
@@ -31,11 +31,8 @@ class CopySchema(BaseModel):
             raise ValueError("Invalid language ID")
         return value
 
-    @validator("status")
-    def validate_status(cls, value):
-        statuses = ["available", "reserved", "maintenance", "loaned"]
-        if not value.strip():
-            raise ValueError("Status cannot be empty or contain only whitespace")
-        if value not in statuses:
-            raise ValueError("Status not found")
-        return value.strip()
+    @validator("status_id")
+    def validate_status_id(cls, value):
+        if value is not None and value <= 0:
+            raise ValueError("Invalid status ID")
+        return value

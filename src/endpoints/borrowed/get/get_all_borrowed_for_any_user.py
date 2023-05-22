@@ -28,4 +28,8 @@ async def get_all_borrowed_for_any_user(
     all_borrowed = (
         db.scalars(select(Borrowed).where(Borrowed.user_id == user_id)).unique().all()
     )
-    return custom_response(status_code=status.HTTP_200_OK, details="Fetched All Borrowed",data=all_borrowed)
+    return custom_response(
+        status_code=status.HTTP_200_OK,
+        details="Fetched All Borrowed",
+        data=all_borrowed,
+    )

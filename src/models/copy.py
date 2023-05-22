@@ -28,7 +28,9 @@ class Copy(Base):
     language_id: Mapped[int] = mapped_column(
         Integer(), ForeignKey("language.id"), nullable=False
     )
-    status: Mapped[str] = mapped_column(String(32), nullable=False)
+    status_id: Mapped[int] = mapped_column(
+        Integer(), ForeignKey("status.id"), nullable=False
+    )
     created_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True), server_default=func.now()
     )
@@ -39,3 +41,4 @@ class Copy(Base):
     book = relationship("Book", back_populates="copies", lazy=False)
     language = relationship("Language", back_populates="copies", lazy=False)
     borrowed = relationship("Borrowed", back_populates="copy")
+    status = relationship("Status", back_populates="copy", lazy=False)

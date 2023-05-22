@@ -12,8 +12,12 @@ from tests.utils import insert_copy  # isort skip
 
 
 def test_get_copy(test_db: sessionmaker) -> None:
-    copy = insert_copy(test_db, isbn="qwer", language="English")
-    copy2 = insert_copy(test_db, isbn="qwerty", language="Persian")
+    copy = insert_copy(
+        test_db, isbn="qwer", language="English", status_name="available"
+    )
+    copy2 = insert_copy(
+        test_db, isbn="qwerty", language="Persian", status_name="reserved"
+    )
 
     response = client.get("/copy")
     assert response.status_code == 200
@@ -45,12 +49,14 @@ def test_get_copy(test_db: sessionmaker) -> None:
 
 
 def test_copy_create(test_db: sessionmaker) -> None:
-    copy = insert_copy(test_db, isbn="qwertiuyii", language="English")
+    copy = insert_copy(
+        test_db, isbn="qwertiuyii", language="English", status_name="available"
+    )
 
     check_no_auth("/book", client.post)
     token = get_fresh_token(test_db, SUPER_USER_CRED)
 
-    payload = {"book_id": copy[0].id, "language_id": copy[2].id, "status": "available"}
+    payload = {"book_id": copy[0].id, "language_id": copy[2].id, "status_id": 1}
 
     # without authentication
 
@@ -63,21 +69,28 @@ def test_copy_create(test_db: sessionmaker) -> None:
 
     assert response.status_code == status.HTTP_201_CREATED
     assert response.json().get("status_code") == 201
+    status_id = response.json()["data"].get("status_id")
+    assert status_id == 1
+    copy = test_db().query(all_models.Copy).filter_by(id=copy[1].id).first()
+    assert copy.status_id == status_id
 
 
 def test_copy_update(test_db: sessionmaker) -> None:
     # succesful Update
-    copy = insert_copy(test_db, isbn="qwertutuis", language="English")
+    copy = insert_copy(
+        test_db, isbn="qwertutuis", language="English", status_name="available"
+    )
 
     check_no_auth("/book", client.post)
     token = get_fresh_token(test_db, SUPER_USER_CRED)
 
-    payload = {"book_id": copy[0].id, "language_id": copy[2].id, "status": "reserved"}
+    payload = {"book_id": copy[0].id, "language_id": copy[2].id, "status_id": 1}
     response = client.put(
         f"/copy/{copy[1].id}",
         headers={"Authorization": f"Bearer {token}"},
         json=payload,
     )
+    print(response.json())
     assert response.status_code == status.HTTP_200_OK
 
     # without authentication
@@ -87,20 +100,24 @@ def test_copy_update(test_db: sessionmaker) -> None:
     # check updated status
     response = client.get(f"/copy/{copy[1].id}")
     assert response.status_code == 200
-    assert response.json()["data"].get("status") == "reserved"
+    data = response.json()["data"]
+    data.get("status") == "available"
 
     # Invalid copy id
 
     response = client.put(
-        "/copy/3", headers={"Authorization": f"Bearer {token}"}, json=payload
+        f"/copy/{9}", headers={"Authorization": f"Bearer {token}"}, json=payload
     )
+    print(response.json())
     assert response.status_code == status.HTTP_404_NOT_FOUND
     assert response.json().get("detail") == "Copy not found"
 
 
 def test_copy_delete(test_db: sessionmaker):
     # success delete
-    copy = insert_copy(test_db, isbn="qwdadsaxser", language="English")
+    copy = insert_copy(
+        test_db, isbn="qwdadsaxser", language="English", status_name="available"
+    )
 
     token = get_fresh_token(test_db, SUPER_USER_CRED)
 
