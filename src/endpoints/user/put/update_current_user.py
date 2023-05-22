@@ -6,9 +6,9 @@ from sqlalchemy.orm import Session
 from starlette import status
 
 from src.dependencies import get_current_user, get_db, verify_password
-from src.endpoints.user.exceptions import invalid_data, old_pass_not_matched
 from src.endpoints.user.router_init import router
 from src.endpoints.user.user_utils import update_user
+from src.exceptions import custom_exception
 from src.models.user import User
 from src.schemas.update_user import UpdateUserSchema
 
@@ -31,10 +31,19 @@ async def update_current_user(
     try:
         current_user = db.scalar(select(User).where(User.id == user.get("id")))
         if not verify_password(new_user.old_password, current_user.password):
-            raise old_pass_not_matched()
+            raise custom_exception(
+                status_code=status.HTTP_401_UNAUTHORIZED,
+                details="Old password not matched.",
+            )
         return update_user(new_user, user.get("id"), db)
     except HTTPException:
-        raise old_pass_not_matched()
-    except Exception:
+        raise custom_exception(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            details="Old password not matched.",
+        )
+    except Exception as e:
         logging.exception(f"Exception occured -- {__name__}.update_current_user")
-        raise invalid_data()
+        raise custom_exception(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            details="Error updating user. details = " + str(e),
+        )

@@ -8,6 +8,7 @@ from starlette import status
 
 from src.dependencies import get_current_librarian, get_db
 from src.endpoints.book.router_init import router
+from src.exceptions import custom_exception
 from src.models.author import Author
 from src.models.book import Book
 from src.models.genre import Genre
@@ -33,7 +34,9 @@ async def book_update(
     )
 
     if book_model is None:
-        raise http_exception()
+        raise custom_exception(
+            status_code=status.HTTP_404_NOT_FOUND, details="Book not found"
+        )
 
     language = (
         db.execute(select(Language).where(Language.id == book.language_id))
@@ -66,11 +69,3 @@ async def book_update(
     return custom_response(
         status_code=status.HTTP_200_OK, details="Book Updated", data=book_model
     )
-
-
-def http_exception() -> dict:
-    return HTTPException(status_code=404, detail="Book not found")
-
-
-def succesful_response() -> dict:
-    return {"status": 201, "transaction": "succesful_response"}

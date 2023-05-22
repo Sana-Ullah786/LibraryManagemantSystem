@@ -6,8 +6,8 @@ from sqlalchemy.orm import Session
 from starlette import status
 
 from src.dependencies import get_current_librarian, get_current_user, get_db
-from src.endpoints.user.exceptions import db_not_available, user_not_exist
 from src.endpoints.user.router_init import router
+from src.exceptions import custom_exception
 from src.models.user import User
 
 
@@ -32,9 +32,16 @@ async def delete_user_by_id(
             db.commit()
         else:
             logging.error("User not found -- {__name__}.delete_user_by_id")
-            raise user_not_exist()
+            raise custom_exception(
+                status_code=status.HTTP_404_NOT_FOUND, details="User not found."
+            )
     except HTTPException:
-        raise user_not_exist()
-    except Exception:
+        raise custom_exception(
+            status_code=status.HTTP_404_NOT_FOUND, details="User not found."
+        )
+    except Exception as e:
         logging.exception(f"Exception occured -- {__name__}.delete_current_user")
-        raise db_not_available()
+        raise custom_exception(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            details="Error deleting user. details = " + str(e),
+        )

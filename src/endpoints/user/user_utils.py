@@ -2,9 +2,10 @@ import logging
 
 from sqlalchemy import select
 from sqlalchemy.orm import Session
+from starlette import status
 
 from src.dependencies import get_password_hash
-from src.endpoints.user.exceptions import user_not_exist
+from src.exceptions import custom_exception
 from src.models.user import User
 from src.responses import custom_response
 from src.schemas.update_user import UpdateUserSchema
@@ -21,7 +22,9 @@ def update_user(new_user: UpdateUserSchema, user_id: int, db: Session) -> dict:
     """
     current_user = db.scalar(select(User).where(User.id == user_id))
     if not current_user:
-        raise user_not_exist()
+        raise custom_exception(
+            status_code=status.HTTP_404_NOT_FOUND, details="User not found"
+        )
     current_user.email = new_user.email
     current_user.username = new_user.username
     current_user.password = get_password_hash(new_user.password)
