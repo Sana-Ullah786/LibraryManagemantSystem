@@ -46,10 +46,28 @@ async def return_borrowed_for_user(
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND, detail="Copy not found"
         )
+    found_status = db.scalar(
+        select(all_models.Status).where(all_models.Status.id == found_copy.status_id)
+    )
+    if not found_status:
+        logging.warning(
+            "Status not found in database with id: " + str(found_copy.status_id)
+        )
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail="Status not found"
+        )
+    if found_status.status != "borrowed":
+        logging.warning(
+            "Copy is not borrowed in database with id: " + str(found_borrowed.copy_id)
+        )
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST, detail="Copy is not borrowed"
+        )
+
     try:
         today = datetime.now().date()
         found_borrowed.return_date = today
-        found_copy.status = "available"
+        found_status.status = "available"
         db.commit()
         logging.info("Updated borrowed in database with id: " + str(borrowed_id))
         borrowed.id = borrowed_id

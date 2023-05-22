@@ -245,7 +245,12 @@ def test_return_borrowed_user_with_id(test_db: sessionmaker) -> None:
             all_models.Copy.id == updated_found_borrowed.copy_id
         )
         found_copy = db.scalar(query)
-        assert found_copy.status == "available"
+        found_status = db.scalar(
+            select(all_models.Status).where(
+                all_models.Status.id == found_copy.status_id
+            )
+        )
+        assert found_status.status == "available"
 
         # borrowed with id not found
         response = client.put(
@@ -302,7 +307,12 @@ def test_return_borrowed_any_user_with_id(test_db: sessionmaker) -> None:
             all_models.Copy.id == updated_found_borrowed.copy_id
         )
         found_copy = db.scalar(query)
-        assert found_copy.status == "available"
+        found_status = db.scalar(
+            select(all_models.Status).where(
+                all_models.Status.id == found_copy.status_id
+            )
+        )
+        assert found_status.status == "available"
 
         # borrowed with id not found
         response = client.put(
