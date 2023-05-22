@@ -12,9 +12,12 @@ import {
   SignupData,
   Genre as GenreDetails,
   LanguageDetails,
+  UserDetails,
 } from "./CustomTypes";
 import jwt_decode from "jwt-decode";
 import { DecodedRefreshToken } from "./contexts/AuthContext";
+import { resolve } from "path";
+import { rejects } from "assert";
 
 
 
@@ -366,6 +369,37 @@ export class APIClient {
     });
   }
 
+  
+  public GetUsersList():Promise<UserDetails[]> {
+    return new Promise((resolve, reject) => {
+      let userList: UserDetails[];
+      APIClient.axiosInstance
+        .get("/user")
+        .then((response) => {
+          userList = response.data.data;
+          resolve(userList);
+        })
+        .catch((error) => {
+          reject(APIClient.instance.handleErrors(error));
+        });
+    });
+  }
+
+  public GetUserDetails(id: string): Promise<UserDetails> {
+    return new Promise((resolve, reject) => {
+      APIClient.axiosInstance
+        .get("/user/" + id)
+        .then((res) => {
+          const user: UserDetails = res.data.data;
+          resolve(user);
+        })
+        .catch((error) => {
+          reject(APIClient.instance.handleErrors(error));
+        });
+    });
+  }
+
+  
   //Used to get access and refresh tokens for the login component
   public Login(data: FormData): Promise<Tokens> {
     return APIClient.axiosInstance.post("/auth/token", data).then((res) => {
@@ -515,6 +549,8 @@ export class APIClient {
     );
   }
 }
+
+
 
 export const client = APIClient.getInstance({
   /**

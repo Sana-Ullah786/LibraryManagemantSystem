@@ -191,6 +191,20 @@
     display: flex;
     justify-content: flex-end;
   }
+
+  .modal {
+    background-color: #ececec;
+    border-radius: 10px; 
+    opacity: 0.8; 
+    padding: 30px;
+    margin-bottom: 5px;
+  }
+
+  .inner-modal {
+   
+    color: #000000;
+
+  }
   
   .language-action-button {
     margin-left: 10px;
