@@ -6,6 +6,7 @@ from sqlalchemy import select
 from sqlalchemy.orm import sessionmaker
 
 from src.models import all_models
+from src.status_constants import AVAILABLE, BORROWED, MAINTENANCE, RESERVED
 from tests.client import client
 from tests.test_language_api import create_user_using_model, get_token_for_user
 
@@ -21,7 +22,29 @@ def create_required_entries_in_db(test_db: sessionmaker, copy_status: str) -> in
     """
     logging.info("Creating required entries in database.")
     with test_db() as db:
-        status = all_models.Status(status=copy_status)
+        # create 3 objects of status, as maintenance, borrowed and available and reserved
+        available_status = all_models.Status(status=AVAILABLE)
+        reserved_status = all_models.Status(status=RESERVED)
+        maintenance_status = all_models.Status(status=MAINTENANCE)
+        borrowed_status = all_models.Status(status=BORROWED)
+        db.add_all(
+            [available_status, reserved_status, maintenance_status, borrowed_status]
+        )
+        db.commit()
+        db.refresh(available_status)
+        db.refresh(reserved_status)
+        db.refresh(maintenance_status)
+        db.refresh(borrowed_status)
+        # get status object whose has been passed as parameter
+        new_status = None
+        if copy_status == AVAILABLE:
+            new_status = available_status
+        elif copy_status == RESERVED:
+            new_status = reserved_status
+        elif copy_status == MAINTENANCE:
+            new_status = maintenance_status
+        elif copy_status == BORROWED:
+            new_status = borrowed_status
         language = all_models.Language(language="English")
         genre = all_models.Genre(genre="Fantasy")
         author = all_models.Author(
@@ -39,8 +62,8 @@ def create_required_entries_in_db(test_db: sessionmaker, copy_status: str) -> in
         )
         book.authors.append(author)
         book.genres.append(genre)
-        copy = all_models.Copy(book=book, language=language, status=status)
-        db.add_all([status, language, genre, author, book, copy])
+        copy = all_models.Copy(book=book, language=language, status=new_status)
+        db.add_all([language, genre, author, book, copy])
         db.commit()
         db.refresh(copy)
         logging.info("Created required entries in database for borrowed Testing.")
@@ -59,7 +82,7 @@ def test_create_borrowed_with_correct_due_date(test_db: sessionmaker) -> None:
 
     with test_db() as db:
         user = create_user_using_model(test_db, librarian=True)
-        copy_id = create_required_entries_in_db(test_db, "available")
+        copy_id = create_required_entries_in_db(test_db, AVAILABLE)
         print(copy_id)
         due_date = datetime.now() + timedelta(days=2)
         due_date = due_date.isoformat()
@@ -87,7 +110,6 @@ def test_create_borrowed_with_correct_due_date(test_db: sessionmaker) -> None:
             + " "
             + str(response.status_code)
         )
-        print(response.json())
         assert response.status_code == status.HTTP_201_CREATED
         borrowed = response.json()["data"]
         assert borrowed["copy_id"] == copy_id
@@ -123,7 +145,7 @@ def test_create_borrowed_with_wrong_due_date(test_db: sessionmaker) -> None:
     """
     with test_db():
         create_user_using_model(test_db, librarian=True)
-        copy_id = create_required_entries_in_db(test_db, "available")
+        copy_id = create_required_entries_in_db(test_db, AVAILABLE)
         due_date = datetime.now() - timedelta(days=2)
         due_date = due_date.isoformat()
         data = {
@@ -156,7 +178,7 @@ def test_create_borrowed_with_wrong_return_date(test_db: sessionmaker) -> None:
     """
     with test_db():
         create_user_using_model(test_db, librarian=True)
-        copy_id = create_required_entries_in_db(test_db, "available")
+        copy_id = create_required_entries_in_db(test_db, AVAILABLE)
         due_date = datetime.now() + timedelta(days=2)
         due_date = due_date.isoformat()
         return_date = datetime.now() - timedelta(days=1)
@@ -191,7 +213,7 @@ def test_create_borrowed_with_correct_return_date(test_db: sessionmaker) -> None
     """
     with test_db():
         create_user_using_model(test_db, librarian=True)
-        copy_id = create_required_entries_in_db(test_db, "available")
+        copy_id = create_required_entries_in_db(test_db, AVAILABLE)
         due_date = datetime.now() + timedelta(days=2)
         due_date = due_date.isoformat()
         return_date = datetime.now() + timedelta(days=3)
@@ -227,7 +249,7 @@ def test_with_not_available_copy_id(test_db: sessionmaker) -> None:
     """
     with test_db():
         create_user_using_model(test_db, librarian=True)
-        copy_id = create_required_entries_in_db(test_db, 4)
+        copy_id = create_required_entries_in_db(test_db, RESERVED)
         due_date = datetime.now() + timedelta(days=2)
         due_date = due_date.isoformat()
         return_date = datetime.now() + timedelta(days=3)
@@ -263,7 +285,7 @@ def test_with_simple_user(test_db: sessionmaker) -> None:
     """
     with test_db():
         user = create_user_using_model(test_db, librarian=False)
-        copy_id = create_required_entries_in_db(test_db, "available")
+        copy_id = create_required_entries_in_db(test_db, AVAILABLE)
 
         due_date = datetime.now() + timedelta(days=2)
         due_date = due_date.isoformat()
