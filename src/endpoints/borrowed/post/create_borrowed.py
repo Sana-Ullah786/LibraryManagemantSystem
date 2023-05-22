@@ -9,6 +9,7 @@ from src.endpoints.borrowed.router_init import router
 from src.models import all_models
 from src.responses import custom_response
 from src.schemas.borrowed import BorrowedSchema
+from src.status_constants import AVAILABLE, BORROWED
 
 
 @router.post("/", response_model=None, status_code=status.HTTP_201_CREATED)
@@ -50,19 +51,22 @@ async def create_borrowed(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail="Status with given ID does not exist",
         )
-    if found_status.status != "available":
+    if found_status.status != AVAILABLE:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail="Copy is not available",
         )
     try:
+        new_status_id = db.scalars(
+            select(all_models.Status.id).where(all_models.Status.status == BORROWED)
+        ).first()
+        copy.status_id = new_status_id
         new_borrowed = all_models.Borrowed()
         new_borrowed.copy_id = borrowed.copy_id
         new_borrowed.user_id = user.get("id")
         new_borrowed.issue_date = borrowed.issue_date
         new_borrowed.due_date = borrowed.due_date
         new_borrowed.return_date = borrowed.return_date
-        found_status.status = "borrowed"
         db.add(new_borrowed)
         db.commit()
         logging.info(f"Created new borrowed in database with user ID: {user.get('id')}")

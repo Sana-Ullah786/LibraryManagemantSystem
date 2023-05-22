@@ -10,6 +10,7 @@ from src.endpoints.borrowed.router_init import router
 from src.models import all_models
 from src.responses import custom_response
 from src.schemas.borrowed import BorrowedSchema
+from src.status_constants import AVAILABLE, BORROWED
 
 
 @router.put(
@@ -56,7 +57,7 @@ async def return_borrowed_for_user(
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND, detail="Status not found"
         )
-    if found_status.status != "borrowed":
+    if found_status.status != BORROWED:
         logging.warning(
             "Copy is not borrowed in database with id: " + str(found_borrowed.copy_id)
         )
@@ -67,7 +68,9 @@ async def return_borrowed_for_user(
     try:
         today = datetime.now().date()
         found_borrowed.return_date = today
-        found_status.status = "available"
+        found_copy.status_id = db.scalars(
+            select(all_models.Status.id).where(all_models.Status.status == AVAILABLE)
+        ).first()
         db.commit()
         logging.info("Updated borrowed in database with id: " + str(borrowed_id))
         borrowed.id = borrowed_id
