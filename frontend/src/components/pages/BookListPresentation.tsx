@@ -1,6 +1,7 @@
-import { Link } from "react-router-dom";
-import { BookSaved } from "../../CustomTypes";
-import LibrarianLinks from "../LibrarianLinks";
+import { Link } from 'react-router-dom'
+import { BookSaved } from '../../CustomTypes'
+import LibrarianLinks from '../LibrarianLinks'
+import '../style.css'; // Import the Genres CSS file
 
 export const BookListPresentation = (props: {
   books: BookSaved[];

@@ -9,9 +9,14 @@ import {
   Tokens,
   Language,
   ErrorObject,
+  SignupData,
+  Genre as GenreDetails,
+  LanguageDetails,
 } from "./CustomTypes";
 import jwt_decode from "jwt-decode";
 import { DecodedRefreshToken } from "./contexts/AuthContext";
+
+
 
 export class APIClient {
   /**
@@ -21,7 +26,7 @@ export class APIClient {
 
   private static axiosInstance: AxiosInstance;
   private static instance: APIClient;
-
+  
   //The constructor creates an axiosInstance
   private constructor(options: AxiosRequestConfig) {
     APIClient.axiosInstance = axios.create(options);
@@ -136,6 +141,12 @@ export class APIClient {
     });
   }
 
+  public genreSerialize(genre: Genre): any {
+    return {
+      genre: genre.genre,
+    };
+  }
+  
   public GetBooksForAuthor(authorId: string): Promise<BookSaved[]> {
     return new Promise((resolve, reject) => {
       APIClient.axiosInstance
@@ -156,7 +167,7 @@ export class APIClient {
   }
 
   // This method fetches and returns the genre using its id.
-  public GetGenreDetails(id: string): Promise<Genre> {
+  public GetGenreDetails(id: number): Promise<Genre> {
     return new Promise((resolve, reject) => {
       APIClient.axiosInstance
         .get(`/genre/${id}`)
@@ -174,7 +185,7 @@ export class APIClient {
   public GetAllGenres(): Promise<Genre[]> {
     return new Promise((resolve, reject) => {
       APIClient.axiosInstance
-        .get(`/genre`)
+        .get(`/genre/`)
         .then((res) => {
           const genreList: Genre[] = res.data.data;
           resolve(genreList);
@@ -182,6 +193,26 @@ export class APIClient {
         .catch((error) => {
           reject(APIClient.instance.handleErrors(error));
         });
+    });
+  }
+  public PostGenre(GenreData: GenreDetails): Promise<number> {
+    return APIClient.axiosInstance.post("/genre/", GenreData).then((res) => {
+      // Redirect to the details page of the currently created genre
+      const id: number = res.data.data.id;
+      return id;
+    });
+  }
+  public PutGenre(genre: Genre, id: number): Promise<boolean> {
+    return APIClient.axiosInstance
+      .put(`/genre/${id}`, this.genreSerialize(genre))
+      .then((res) => {
+        return true;
+      });
+  }
+  // This method deletes book using delete api for book
+  public DeleteGenre(id: string): Promise<boolean> {
+    return APIClient.axiosInstance.delete("/genre/" + id + "/").then((res) => {
+      return true;
     });
   }
 
@@ -199,6 +230,28 @@ export class APIClient {
         });
     });
   }
+
+  public DeleteLanguage(id: string): Promise<boolean> {
+    return APIClient.axiosInstance.delete("/language/" + id + "/").then((res) => {
+      return true;
+    });
+  }
+
+  public PutLanguage(id: string, data: Language): Promise<Boolean> {
+    return APIClient.axiosInstance
+      .put("/language/" + id + "/", data)
+      .then((res) => {
+        return true;
+      });
+  }  
+
+  // public PutAuthor(id: string, data: AuthorDetails): Promise<Boolean> {
+  //   return APIClient.axiosInstance
+  //     .put("/author/" + id + "/", data)
+  //     .then((res) => {
+  //       return true;
+  //     });
+  // }  
 
   // This method fetches and returns the language using its id.
   public GetLanguageDetails(id: string): Promise<Language> {
@@ -292,6 +345,24 @@ export class APIClient {
     });
   }
 
+
+  public Signup(data: SignupData): Promise<Tokens> {
+    return APIClient.axiosInstance.post("/auth/register", data)
+      .then((res) => {
+        let tokens: Tokens = {
+          access_token: res.data.data.access_token,
+          refresh_token: res.data.data.refresh_token,
+        };
+        localStorage.setItem("access_token", tokens.access_token);
+        localStorage.setItem("refresh_token", tokens.refresh_token);
+        APIClient.instance.SetAuthorizationHeaders(
+          "Bearer " + tokens.access_token
+        );
+        return tokens;
+      });
+  }
+
+
   //Used to set the authorization headers with the access token for the axios instant
   private SetAuthorizationHeaders(TokenHeader: String | null): void {
     APIClient.axiosInstance.defaults.headers["Authorization"] = TokenHeader;
@@ -336,6 +407,15 @@ export class APIClient {
         return true;
       });
   }
+
+  public PostLanguage(Language: Language): Promise<Number> {
+    return APIClient.axiosInstance.post("/language/", Language).then((res) => {
+      //Redirect to the details page of the currently created language
+      const id: Number = res.data.data.id;
+      return id;
+    });
+  }
+
 
   //Helper function for the axios interceptors.
   //Used to get a new access token using a refresh token

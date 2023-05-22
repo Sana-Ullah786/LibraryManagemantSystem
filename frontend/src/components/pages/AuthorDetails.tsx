@@ -73,7 +73,7 @@ function AuthorDetails() {
   }
 
   return (
-    <div>
+    <div className='background-image'>
       <h1>
         Author: {lastName}, {firstName}
       </h1>

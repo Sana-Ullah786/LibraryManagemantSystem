@@ -16,10 +16,10 @@ interface LibrarianLinksProps {
  */
 function LibrarianLinks(props: LibrarianLinksProps): ReactElement {
     return (
-        <>
-            <Link to={`${props.url}/update`} style={{ color: 'orange' }}> Update </Link>
-            <Link to={`${props.url}/delete`} style={{ color: 'red' }}> Delete </Link>
-        </>
+        <div className="genre-list-item-buttons">
+            <Link to={`${props.url}/update`}className="genre-list-update-button"> Update </Link>
+            <Link to={`${props.url}/delete`} className="genre-list-delete-button"> Delete </Link>
+        </div>
     )
 }
 

@@ -58,7 +58,7 @@ function AuthorCreate(props: Props): ReactElement {
   }
 
   return (
-    <div>
+    <div className='background-image'>
       {/* We senf the onSubmit function as a prop to the AuthorForm component */}
       <AuthorForm onSubmit={onSubmit} />
     </div>

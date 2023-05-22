@@ -24,13 +24,12 @@ function AuthorForm(props: Props): ReactElement {
     },
   });
 
-  return (
-    <>
-      {/* We can pass our custom onSubmit function as an argument to the handleSubmit function provided by react hook forms */}
-      <form onSubmit={handleSubmit(props.onSubmit)}>
-        <label>
-          First Name
-          {/* to use reacthook forms, we register the input field of the form as shown below by assigning it a name
+    return (
+        <div className="signup-container">
+            {/* We can pass our custom onSubmit function as an argument to the handleSubmit function provided by react hook forms */}
+            <form  className="signup-form" onSubmit = {handleSubmit(props.onSubmit)}>
+                <label className="form-group">First Name
+                    {/* to use reacthook forms, we register the input field of the form as shown below by assigning it a name
                     The name must match the names provided in the DefaultValues defined above. If no DefaultValues are defined, the names
                     can be anything */}
           <input
@@ -61,7 +60,7 @@ function AuthorForm(props: Props): ReactElement {
         <br />
         <button>Submit</button>
       </form>
-    </>
+    </div>
   );
 }
 

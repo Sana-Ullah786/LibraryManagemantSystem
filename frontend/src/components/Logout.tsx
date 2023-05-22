@@ -25,7 +25,7 @@ function Logout() {
 
     return (
         <>
-            <button onClick={handleClick}>Logout</button>   
+            <button className='genre-list-delete-button'  onClick={handleClick}>Logout</button>   
         </>
     )
 }
