@@ -62,7 +62,7 @@ function GenreCreate(props: Props): ReactElement {
   }
 
   return (
-    <div>
+    <div className='background-image'>
         <h1>
         Create Genre
         </h1>

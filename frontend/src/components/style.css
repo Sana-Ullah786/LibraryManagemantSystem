@@ -183,10 +183,13 @@
   
   .language-name {
     font-size: 23px;
+    display: flex;
+    justify-content:center;
   }
   
   .language-actions {
     display: flex;
+    justify-content: flex-end;
   }
   
   .language-action-button {

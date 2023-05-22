@@ -2,8 +2,9 @@ import React, { useEffect, useState, useContext } from 'react';
 import { useParams, Link, useRouteMatch } from 'react-router-dom';
 import { client } from '../../axios';
 import { AuthContext } from '../../contexts/AuthContext';
-import { ErrorObject } from '../../CustomTypes';
+import { BookSaved, ErrorObject } from '../../CustomTypes';
 import ErrorComponent from '../ErrorComponent';
+import { BookListPresentation } from './BookListPresentation';
 
 function GenreDetails() {
   const { id }: { id: string } = useParams();
@@ -12,7 +13,7 @@ function GenreDetails() {
   const { url }: { url: string } = useRouteMatch();
 
   const { isLibrarian }: { isLibrarian: boolean } = useContext(AuthContext);
-
+  const [books, setBooks] = useState<BookSaved[]>([]);
   const [genre, setGenre] = useState<string | null | undefined>('');
   const [error, setError] = useState<ErrorObject>();
 
@@ -27,7 +28,20 @@ function GenreDetails() {
       .catch((error) => {
         setError(error);
       });
+      client
+      .GetBooksForLanguages(id)
+      .then((bookList) => {
+        setBooks(bookList);
+      })
+      .catch((error) => {
+        setError(error);
+      });
+  
+  
+
+
   }, [genreId]);
+
 
   function librarianLinks() {
     return (
@@ -48,10 +62,13 @@ function GenreDetails() {
   }
 
   return (
-    <div>
+    <div className='background-image'>
       <h1>Genre: {genre}</h1>
       {isLibrarian === true ? librarianLinks() : null}
-      {/* Placeholder for genre details */}
+      <div>
+        <h3>Books</h3>
+        <BookListPresentation showLinks={false} books={books} url={url} />
+      </div>
     </div>
   );
 }

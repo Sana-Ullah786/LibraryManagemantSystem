@@ -53,18 +53,16 @@ function LanguageUpdate(props: Props): ReactElement {
   }, [isAuthenticated, isLibrarian]);
 
   const onSubmit: SubmitHandler<Language> = (data) => {
-    data = cleanData(data)
+
     client
-      .PutLanguage(id, data) 
+      .PutLanguage(id, cleanData(data)) 
       .then((response) => {
         history.push('/language/' + languageId); 
-      });   3
+      });   
   };
 
   function cleanData(data: Language) {
     data.language = data.language !== null ? data.language : '';
-
- 
     return data;
   }
 

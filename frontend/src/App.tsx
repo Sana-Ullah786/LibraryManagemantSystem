@@ -25,8 +25,7 @@ import Languages from './components/pages/Languages';
 import LanguageCreate from './components/pages/LanguageCreate';
 import LanguageDetails from './components/pages/LanguageDetails';
 import LanguageDelete from './components/pages/LanguageDelete';
-import LanguageUpdate from './components/pages/LanguageDelete';
-
+import LanguageUpdate from './components/pages/LanguageUpdate';
 function App() {
   return (
     /**
@@ -122,9 +121,11 @@ function App() {
             <Route exact path="/language/create">
               <LanguageCreate />
             </Route> 
+            
             <Route exact path="/language/:id(\d+)/update">
               <LanguageUpdate />
             </Route>
+            
             <Route exact path="/language/:id(\d+)/delete">
               <LanguageDelete />
             </Route>

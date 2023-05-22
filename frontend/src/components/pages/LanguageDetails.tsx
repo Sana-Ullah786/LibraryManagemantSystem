@@ -2,14 +2,16 @@ import React, { useEffect, useState, useContext } from 'react';
 import { useParams, Link, useRouteMatch } from 'react-router-dom';
 import { client } from '../../axios';
 import { AuthContext } from '../../contexts/AuthContext';
-import { ErrorObject } from '../../CustomTypes';
+import { BookSaved, ErrorObject } from '../../CustomTypes';
 import ErrorComponent from '../ErrorComponent';
 import "../style.css"; // Import the Languages CSS file
+import { BookListPresentation } from "./BookListPresentation";
 
 function LanguageDetails() {
   // Getting the id of the language from the URL of the current page as a parameter
   let {id}:{id: string} = useParams();
   const { url } = useRouteMatch();
+  const [books, setBooks] = useState<BookSaved[]>([]);
 
   const { isLibrarian } = useContext(AuthContext);
 
@@ -32,7 +34,18 @@ function LanguageDetails() {
       .catch((error) => {
         setError(error);
       });
+    client
+    .GetBooksForLanguages(id)
+    .then((bookList) => {
+      setBooks(bookList);
+    })
+    .catch((error) => {
+      setError(error);
+    });    
   }, [id]);
+
+
+
 
   // This creates links to the update and delete librarian pages
   function librarianLinks() {
@@ -58,11 +71,10 @@ function LanguageDetails() {
       <h1>Language: {language}</h1>
       {isLibrarian === true ? librarianLinks() : null}
       <div>
+      <div>
         <h3>Books</h3>
-        <ul>
-          <li style={{ fontWeight: 'bold' }}>Placeholder for book title</li>
-          <p>Book description</p>
-        </ul>
+        <BookListPresentation showLinks={false} books={books} url={url} />
+      </div>
       </div>
     </div>
   );

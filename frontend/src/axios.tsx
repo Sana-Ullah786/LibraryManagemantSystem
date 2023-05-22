@@ -150,7 +150,7 @@ export class APIClient {
   public GetBooksForAuthor(authorId: string): Promise<BookSaved[]> {
     return new Promise((resolve, reject) => {
       APIClient.axiosInstance
-        .get(`/book/?author=${authorId}`)
+        .get(`/book/?author=${authorId}&page_number=1&page_size=10`)
         .then((response) => {
           let bookList: BookSaved[] = [];
 
@@ -166,6 +166,43 @@ export class APIClient {
     });
   }
 
+  public GetBooksForGenre(genreId: string): Promise<BookSaved[]> {
+    return new Promise((resolve, reject) => {
+      APIClient.axiosInstance
+        .get(`/book/?author=${genreId}&page_number=1&page_size=10`)
+        .then((response) => {
+          let bookList: BookSaved[] = [];
+
+          for (let data of response.data.data) {
+            bookList.push(this.bookDeserialize(data));
+          }
+
+          resolve(bookList);
+        })
+        .catch((error) => {
+          reject(APIClient.instance.handleErrors(error));
+        });
+    });
+  }
+
+  public GetBooksForLanguages(languageid: string): Promise<BookSaved[]> {
+    return new Promise((resolve, reject) => {
+      APIClient.axiosInstance
+        .get(`/book/?language=${languageid}&page_number=1&page_size=10`)
+        .then((response) => {
+          let bookList: BookSaved[] = [];
+
+          for (let data of response.data.data) {
+            bookList.push(this.bookDeserialize(data));
+          }
+
+          resolve(bookList);
+        })
+        .catch((error) => {
+          reject(APIClient.instance.handleErrors(error));
+        });
+    });
+  }
   // This method fetches and returns the genre using its id.
   public GetGenreDetails(id: number): Promise<Genre> {
     return new Promise((resolve, reject) => {
@@ -232,14 +269,14 @@ export class APIClient {
   }
 
   public DeleteLanguage(id: string): Promise<boolean> {
-    return APIClient.axiosInstance.delete("/language/" + id + "/").then((res) => {
+    return APIClient.axiosInstance.delete("/language/" + id ).then((res) => {
       return true;
     });
   }
 
   public PutLanguage(id: string, data: Language): Promise<Boolean> {
     return APIClient.axiosInstance
-      .put("/language/" + id + "/", data)
+      .put("/language/" + id, data)
       .then((res) => {
         return true;
       });

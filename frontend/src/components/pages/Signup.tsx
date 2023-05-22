@@ -63,6 +63,7 @@ function Signup() {
   };
 
   return (
+    <div className='background-image'>
     <div className="signup-container">
       <form className="signup-form" onSubmit={handleSubmit}>
         <h1>Signup</h1>
@@ -134,6 +135,7 @@ function Signup() {
         </div>
       </form>
       <div className="error-message">{error}</div>
+    </div>
     </div>
   );
 }
