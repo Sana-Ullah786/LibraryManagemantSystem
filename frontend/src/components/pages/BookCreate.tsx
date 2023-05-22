@@ -37,7 +37,7 @@ function BookCreate(): ReactElement {
         genres: [],
         description: "",
         isbn: "",
-        dateOfPublication: new Date(),
+        dateOfPublication: "",
       }}
       submitHandler={submitHandler}
     ></BookForm>

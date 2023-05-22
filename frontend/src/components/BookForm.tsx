@@ -15,7 +15,10 @@ function BookForm(props: {
   console.log(props.book);
   // A form for book
   let { register, handleSubmit } = useForm<BookOut>({
-    defaultValues: { ...props.book },
+    defaultValues: {
+      ...props.book,
+      dateOfPublication: props.book.dateOfPublication,
+    },
   });
 
   // Details of all authors present in the system.
