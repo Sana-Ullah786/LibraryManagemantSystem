@@ -1,7 +1,7 @@
 import { ReactElement, useEffect, useState } from "react";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { client } from "../axios";
-import { Author, BookOut, BookSaved, Genre, Language } from "../CustomTypes";
+import { Author, BookOut, BookIn, Genre, Language } from "../CustomTypes";
 
 /**
  * The BookForm component displays a form for getting all book details from user.
@@ -9,7 +9,7 @@ import { Author, BookOut, BookSaved, Genre, Language } from "../CustomTypes";
  * @returns The rendered component.
  */
 function BookForm(props: {
-  book: BookSaved;
+  book: BookIn;
   submitHandler: SubmitHandler<BookOut>;
 }): ReactElement {
   console.log(props.book);

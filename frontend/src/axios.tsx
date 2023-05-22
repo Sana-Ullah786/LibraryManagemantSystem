@@ -2,13 +2,14 @@ import axios, { AxiosInstance, AxiosRequestConfig } from "axios";
 import { HomeData } from "./components/pages/Home";
 import {
   BookOut,
-  BookSaved,
+  BookIn,
   Author,
   AuthorDetails,
   Genre,
   Tokens,
   Language,
   ErrorObject,
+  CopyIn,
 } from "./CustomTypes";
 import jwt_decode from "jwt-decode";
 import { DecodedRefreshToken } from "./contexts/AuthContext";
@@ -48,12 +49,12 @@ export class APIClient {
   }
 
   //This method uses api call to get book details using id. It returns the received details.
-  public GetBookDetails(id: string): Promise<BookSaved> {
+  public GetBookDetails(id: string): Promise<BookIn> {
     return new Promise((resolve, reject) => {
       APIClient.axiosInstance
         .get("/book/" + id)
         .then((res) => {
-          const book: BookSaved = this.bookDeserialize(res.data.data);
+          const book: BookIn = this.bookDeserialize(res.data.data);
           resolve(book);
         })
         .catch((error) => {
@@ -90,8 +91,8 @@ export class APIClient {
   }
 
   // This method converts a Book object from json to Book interface
-  private bookDeserialize(json: any): BookSaved {
-    let book: BookSaved = json;
+  private bookDeserialize(json: any): BookIn {
+    let book: BookIn = json;
 
     book.authors = json.authors;
     book.language = json.language;
@@ -117,18 +118,32 @@ export class APIClient {
   }
 
   //This method uses api call to fetch list of books. It returns this list.
-  public GetBookList(): Promise<BookSaved[]> {
+  public GetBookList(): Promise<BookIn[]> {
     return new Promise((resolve, reject) => {
       APIClient.axiosInstance
         .get("/book")
         .then((response) => {
-          let bookList: BookSaved[] = [];
+          let bookList: BookIn[] = [];
 
           for (let data of response.data.data) {
             bookList.push(this.bookDeserialize(data));
           }
 
           resolve(bookList);
+        })
+        .catch((error) => {
+          reject(APIClient.instance.handleErrors(error));
+        });
+    });
+  }
+
+  public GetCopiesofBook(bookId: string): Promise<CopyIn[]> {
+    return new Promise((resolve, reject) => {
+      APIClient.axiosInstance
+        .get(`/copy/book/${bookId}`)
+        .then((res) => {
+          const copies: CopyIn[] = res.data.data;
+          resolve(copies);
         })
         .catch((error) => {
           reject(APIClient.instance.handleErrors(error));
@@ -282,7 +297,9 @@ export class APIClient {
   //the blacklist app
   public Logout(): Promise<boolean> {
     return APIClient.axiosInstance
-      .post("/auth/logout", { refresh_token: localStorage.getItem("refresh_token") })
+      .post("/auth/logout", {
+        refresh_token: localStorage.getItem("refresh_token"),
+      })
       .then((res) => {
         localStorage.removeItem("access_token");
         localStorage.removeItem("refresh_token");

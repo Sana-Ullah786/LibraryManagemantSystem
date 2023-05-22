@@ -2,7 +2,7 @@ import { ReactElement, useState } from "react";
 import { useHistory, useParams } from "react-router-dom";
 import { useEffect } from "react";
 import { client } from "../../axios";
-import { BookOut, BookSaved } from "../../CustomTypes";
+import { BookOut, BookIn } from "../../CustomTypes";
 import BookForm from "../BookForm";
 
 /**
@@ -15,15 +15,15 @@ function BookUpdate(): ReactElement {
 
   // Fetching the book to be edited
   let [currBook, setCurrBook]: [
-    BookSaved | undefined,
-    React.Dispatch<React.SetStateAction<BookSaved | undefined>>
+    BookIn | undefined,
+    React.Dispatch<React.SetStateAction<BookIn | undefined>>
   ] = useState();
 
   // This effect fetches the book
   useEffect(() => {
     client
       .GetBookDetails(id)
-      .then((bookResponse: BookSaved) => {
+      .then((bookResponse: BookIn) => {
         let book: any = { ...bookResponse };
         setCurrBook(book);
       })

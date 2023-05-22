@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useContext } from "react";
-import { BookIn, ErrorObject } from "../../CustomTypes";
+import { BookIn, CopyIn, ErrorObject } from "../../CustomTypes";
 import { useParams } from "react-router";
 import { BookDetailsPresentation } from "./BookDetailsPresentation";
 import { client } from "../../axios";
@@ -7,7 +7,7 @@ import { AuthContext } from "../../contexts/AuthContext";
 import { useRouteMatch } from "react-router-dom";
 import ErrorComponent from "../ErrorComponent";
 
-export const BookDetailsContainer = (props: { showLinks?: boolean }) => {
+export const Copies = (props: { showLinks?: boolean }) => {
   /*
    * BookDetailsContainer performs all the computation and api calls to fetch book details.
    * It delegates the task of actually displaying the data to BookDetailsPresentation.
@@ -21,20 +21,20 @@ export const BookDetailsContainer = (props: { showLinks?: boolean }) => {
 
   // book, genre and language are intentially allowed to be undefined. We display the page once these values are loaded
 
-  let [book, setBook]: [
-    BookIn | undefined,
-    React.Dispatch<React.SetStateAction<BookIn | undefined>>
-  ] = useState(); //The book to be displayed
+  let [copies, setCopies]: [
+    CopyIn[] | undefined,
+    React.Dispatch<React.SetStateAction<CopyIn[] | undefined>>
+  ] = useState(); //The copies to be displayed
 
   const [error, setError] = useState<ErrorObject>();
 
   useEffect(() => {
     // Getting value of book from the api
     client
-      .GetBookDetails(id)
+      .GetCopiesofBook(id)
       .then(
-        (bookDetails: BookIn) => {
-          setBook(bookDetails);
+        (copies: CopyIn[]) => {
+          setCopies(copies);
         }
         //(error) => { console.log(`Error! The book with id ${id} does not exist.`); }
       )
@@ -43,7 +43,9 @@ export const BookDetailsContainer = (props: { showLinks?: boolean }) => {
       });
   }, [id]);
 
-  if (!book) {
+  console.log("here");
+
+  if (copies?.length === 0) {
     if (error) {
       return <ErrorComponent error={error} />;
     }
@@ -52,17 +54,13 @@ export const BookDetailsContainer = (props: { showLinks?: boolean }) => {
     // The book details are presented once all details have been received
     return (
       <>
-        <BookDetailsPresentation
-          url={url}
-          showLinks={props.showLinks}
-          isLibrarian={isLibrarian}
-          id={parseInt(id)}
-          book={book}
-        />
+        {copies?.map((copy: CopyIn) => {
+          return copy.bookId;
+        })}
       </>
     );
   }
 };
 
 // By default links are always shown if the user is a librarian
-BookDetailsContainer.defaultProps = { showLinks: true };
+Copies.defaultProps = { showLinks: true };

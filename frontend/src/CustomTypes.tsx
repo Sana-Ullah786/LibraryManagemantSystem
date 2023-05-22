@@ -38,11 +38,29 @@ export interface BookOut extends BookBase {
   numberOfCopies: number;
 }
 
-export interface BookSaved extends BookBase {
+export interface BookIn extends BookBase {
   id: number;
   authors: Author[];
   language: Language;
   genres: Genre[];
+}
+
+export interface Status {
+  id: number;
+  status: string;
+}
+
+export interface CopyBase {
+  bookId: number;
+  status: Status;
+}
+
+export interface CopyOut extends CopyBase {
+  languageId: number;
+}
+
+export interface CopyIn extends CopyBase {
+  language: Language;
 }
 
 // The properties of Genre are stored in this type
