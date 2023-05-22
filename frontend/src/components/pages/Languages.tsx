@@ -6,6 +6,7 @@ import { AuthContext } from '../../contexts/AuthContext';
 import { Language, ErrorObject } from '../../CustomTypes';
 import ErrorComponent from '../ErrorComponent';
 import "../style.css"; // Import the Languages CSS file
+import ScrollView from '../Scrollview';
 
 function Languages() {
   const { isLibrarian }: { isLibrarian: boolean } = useContext(AuthContext);
@@ -52,11 +53,15 @@ function Languages() {
 
   return (
     <div className="background-image">
+      <div className='modal'>
       <h1>Language List</h1>
+      <ScrollView>
       <ul className="language-list">
         {setLanguageListItemComponent(languageList)}
       </ul>
+      </ScrollView> 
       {isLibrarian ? createLanguageLink() : null}
+    </div>
     </div>
   );
 }

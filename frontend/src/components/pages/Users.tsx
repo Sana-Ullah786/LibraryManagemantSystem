@@ -6,72 +6,76 @@ import { AuthContext } from '../../contexts/AuthContext';
 import { UserDetails, ErrorObject } from '../../CustomTypes';
 import ErrorComponent from '../ErrorComponent';
 import '../style.css'; // Import the Users CSS file
-
+import ScrollView from '../Scrollview';
 function Users() {
-  const { isLibrarian }: { isLibrarian: boolean } = useContext(AuthContext);
+    const { isLibrarian }: { isLibrarian: boolean } = useContext(AuthContext);
 
-  let { url }: { url: string } = useRouteMatch();
+    let { url }: { url: string } = useRouteMatch();
 
-  const [userList, setUserList] = useState<UserDetails[]>([]);
-  const [error, setError] = useState<ErrorObject>();
+    const [userList, setUserList] = useState<UserDetails[]>([]);
+    const [error, setError] = useState<ErrorObject>();
 
-  useEffect(() => {
-    client
-      .GetUsersList()
-      .then((userList) => {
-        if (userList) {
-          setUserList(userList);
-        }
-      })
-      .catch((error) => {
-        setError(error);
-      });
-  }, []);
+    useEffect(() => {
+        client
+            .GetUsersList()
+            .then((userList) => {
+                if (userList) {
+                    setUserList(userList);
+                }
+            })
+            .catch((error) => {
+                setError(error);
+            });
+    }, []);
 
-  function setUserListItemComponent(userList: UserDetails[]) {
-    const userListItemComponent: JSX.Element[] = userList.map((user) => {
-      if (!user.id) {
+    function setUserListItemComponent(userList: UserDetails[]) {
+        const userListItemComponent: JSX.Element[] = userList.map((user) => {
+            if (!user.id) {
+                return (
+                    <li key={null}>
+                        No items
+                    </li>
+                );
+            } else {
+                return (
+                    <li className="user-list-item" key={user.id.toString()}>
+                        <UserListItem
+                            key={user.id}
+                            item={user}
+                            linksto={`${url}/${user.id}`}
+                        />
+                    </li>
+                );
+            }
+        });
+        return userListItemComponent;
+    }
+
+    function createUserLink() {
         return (
-          <li key={null}>
-            No items
-          </li>
+            <Link to={`/users/create`} className="genre-link">
+                Create User
+            </Link>
         );
-      } else {
-        return (
-          <li className="user-list-item" key={user.id.toString()}>
-            <UserListItem
-              key={user.id} 
-              item={user} 
-              linksto={`${url}/${user.id}`}
-            />
-          </li>
-        );
-      }
-    });
-    return userListItemComponent;
-  }
+    }
 
-  function createUserLink() {
+    if (error != null) {
+        return <ErrorComponent error={error} />;
+    }
+
     return (
-      <Link to={`/signup`} className="genre-link">
-        Create User
-      </Link>
+        <div className="user-list background-image">
+            <div className='modal'>
+                <h1>User List</h1>
+                <ScrollView>
+                    <ul>
+                        {setUserListItemComponent(userList)}
+                    </ul>
+                </ScrollView>
+                {isLibrarian ? createUserLink() : null}
+            </div>
+        </div>
     );
-  }
-
-  if (error != null) {
-    return <ErrorComponent error={error} />;
-  }
-
-  return (
-    <div className="user-list background-image">
-      <h1>User List</h1>
-      <ul>
-        {setUserListItemComponent(userList)}
-      </ul>
-      {isLibrarian ? createUserLink() : null}
-    </div>
-  );
 }
 
 export default Users;

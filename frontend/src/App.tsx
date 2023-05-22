@@ -28,6 +28,7 @@ import LanguageDelete from './components/pages/LanguageDelete';
 import LanguageUpdate from './components/pages/LanguageUpdate';
 import Users from './components/pages/Users';
 import UserDetails from './components/pages/UserDetails';
+import UserCreate from './components/pages/UserCreate';
 function App() {
   return (
     /**
@@ -139,6 +140,10 @@ function App() {
             <Route exact path="/users/:id(\d+)"> 
               <UserDetails />
             </Route> 
+            <Route exact path="/users/create">
+              <UserCreate />
+            </Route> 
+
 
             <Route>
               <ErrorComponent error={{ status: 404, message: "Not found." }} />

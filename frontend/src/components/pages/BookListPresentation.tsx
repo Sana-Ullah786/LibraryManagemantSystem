@@ -2,6 +2,7 @@ import { Link } from 'react-router-dom'
 import { BookSaved } from '../../CustomTypes'
 import LibrarianLinks from '../LibrarianLinks'
 import '../style.css'; // Import the Genres CSS file
+import ScrollView from '../Scrollview';
 
 export const BookListPresentation = (props: {
   books: BookSaved[];
@@ -14,7 +15,10 @@ export const BookListPresentation = (props: {
    */
 
   return (
-    <div>
+    <div className='modal'>
+      <h1>Books</h1>
+      <ScrollView>
+        
       <ul>
         {props.books.map((book) => (
           <li
@@ -29,9 +33,10 @@ export const BookListPresentation = (props: {
           </li>
         ))}
       </ul>
+      </ScrollView>
       {props.showLinks && (
         <>
-          <Link to={`${props.url}/create`}> Create Book </Link>
+          <Link to={`${props.url}/create`} className='genre-link'> Create Book </Link>
         </>
       )}
     </div>
