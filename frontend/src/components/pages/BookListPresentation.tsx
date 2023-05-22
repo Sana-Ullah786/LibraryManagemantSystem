@@ -12,11 +12,12 @@ export const BookListPresentation = (props: { books: BookSaved[], url: string,
     */
 
     return (
-        <div className="genre-list" >
-            <ul  className="genre-list">
+        <div  >
+        <div  >
+            <ul >
                 {
                     props.books.map((book) => (
-                        <li key={book.id.toString()} data-testid={ "item" + book.id.toString() }>
+                        <li className="genre-list-item" key={book.id.toString()} data-testid={ "item" + book.id.toString() }>
                             <Link to={props.url + "/" + book.id.toString()}>
 
                                 {book.title}
@@ -34,11 +35,11 @@ export const BookListPresentation = (props: { books: BookSaved[], url: string,
             {
                 props.showLinks &&
                 <>
-                    <Link to={`${props.url}/create`}> Create Book </Link>
+                    <Link className="genre-link" to={`${props.url}/create`}> Create Book </Link>
                 </>
             }
         </div>
-
+        </div>
     )
 
 

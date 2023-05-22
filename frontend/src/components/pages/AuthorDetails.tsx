@@ -76,7 +76,7 @@ function AuthorDetails() {
     }
 
     return (
-        <div>
+        <div className='background-image'>
             <h1>Author: {lastName}, {firstName}</h1>
             {isLibrarian === true? librarianLinks(): null}
             <p>({dateOfBirth ? dateOfBirth.replace(/-/g,"/") : "-"} to {dateOfDeath ? dateOfDeath.replace(/-/g,"/") : "-"})</p>

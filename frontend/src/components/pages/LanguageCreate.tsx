@@ -63,7 +63,7 @@ function LanguageCreate(props: Props): ReactElement {
   }
 
   return (
-    <div>
+    <div className='background-image'>
       <h1>Create Language</h1>
       <LanguageForm language="" onSubmit={onSubmit} /> {/* Pass empty string as the language prop */}
     </div>

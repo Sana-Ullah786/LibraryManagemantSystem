@@ -38,10 +38,10 @@ function LanguageDetails() {
   function librarianLinks() {
     return (
       <>
-        <Link to={`${url}/update`} style={{ color: 'orange' }}>
+        <Link to={`${url}/update`} className="genre-list-update-button">
           Update
         </Link>
-        <Link to={`${url}/delete`} style={{ color: 'red' }}>
+        <Link to={`${url}/delete`}className="genre-list-delete-button">
           Delete
         </Link>
       </>
@@ -54,7 +54,7 @@ function LanguageDetails() {
   }
 
   return (
-    <div>
+    <div className='background-image'>
       <h1>Language: {language}</h1>
       {isLibrarian === true ? librarianLinks() : null}
       <div>

@@ -58,7 +58,7 @@ function LanguageDelete(props: Props): ReactElement {
   }
 
   return (
-    <div>
+    <div className='background-image'>
       <h1>Delete Language: {language}</h1>
       <button onClick={handleDelete} className="language-list-danger-button">
         Yes, Delete

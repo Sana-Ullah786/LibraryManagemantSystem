@@ -78,7 +78,7 @@ function AuthorDelete(props: Props): ReactElement {
     }
     
     return (
-        <div >
+        <div className='background-image'>
             <h1>DELETE Author {lastName}, {firstName}  ?</h1>
             <button className='genre-list-danger-button' onClick = {handleClick}>Yes, Delete</button>
         </div>

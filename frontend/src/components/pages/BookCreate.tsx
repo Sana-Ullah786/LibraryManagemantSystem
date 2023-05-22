@@ -28,7 +28,8 @@ function BookCreate(): ReactElement {
   }
 
   return (
-    <BookForm
+    <div className='background-image'>
+          <BookForm
       book={{
         id: -1,
         title: "",
@@ -41,6 +42,7 @@ function BookCreate(): ReactElement {
       }}
       submitHandler={submitHandler}
     ></BookForm>
+    </div>
   );
 }
 
