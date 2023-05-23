@@ -93,6 +93,8 @@ function CopyForm(props: {
           }
           {!languages && <>No Languages!</>}
         </label>
+        <br></br>
+        <br></br>
         <label className="form-group">
           {" "}
           Status
@@ -117,6 +119,8 @@ function CopyForm(props: {
           }
           {!statuses && <>No statuses!</>}
         </label>
+        <br></br>
+        <br></br>
         <button>Submit</button>
       </form>
     </div>

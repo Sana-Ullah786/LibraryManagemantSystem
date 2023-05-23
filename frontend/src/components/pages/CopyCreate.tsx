@@ -40,8 +40,8 @@ function CopyCreate(): ReactElement {
   function submitHandler(copy: CopyOut) {
     client
       .CreateCopy(copy)
-      .then((createdCopy: CopyIn) => {
-        history.push(`/books/${createdCopy.book.id}/copies`);
+      .then((id: number) => {
+        history.push(`/books/${book?.id}/copies`);
       })
       .catch((error) => {
         alert(error);
@@ -58,7 +58,7 @@ function CopyCreate(): ReactElement {
         <CopyForm
           copy={{
             id: -1,
-            language: { language: "", id: -1 },
+            language: book.language,
             book: book,
             status: { status: "", id: -1 },
           }}

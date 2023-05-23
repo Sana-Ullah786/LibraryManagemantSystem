@@ -243,13 +243,13 @@ export class APIClient {
     });
   }
 
-  public CreateCopy(copy: CopyOut): Promise<CopyIn> {
+  public CreateCopy(copy: CopyOut): Promise<number> {
     return APIClient.axiosInstance
       .post("/copy/", this.copySerializer(copy))
       .then((res) => {
         // An id is assigned to copy once its saved in backend server
-        const returnedCopy: CopyIn = this.copyDeserialize(res.data.data);
-        return returnedCopy;
+        const id: number = res.data.data.id;
+        return id;
       });
   }
 
