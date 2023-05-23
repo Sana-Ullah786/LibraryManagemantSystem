@@ -46,7 +46,7 @@ function Users() {
                         />
                     </li>
                 );
-            }
+            }    
         });
         return userListItemComponent;
     }
@@ -59,6 +59,13 @@ function Users() {
         );
     }
 
+    function updateUserLink(id : number) {
+        return (
+            <Link to={`/users/${id}/update`}>
+
+            </Link>
+        )
+    }
     if (error != null) {
         return <ErrorComponent error={error} />;
     }

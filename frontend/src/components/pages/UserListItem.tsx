@@ -15,7 +15,8 @@ function UserListItem({ item, linksto }: UserListItemProps) {
     <div className='modal'>
       <h2>{item.username}</h2>
       <p>Email: {item.email}</p>
-      <Link to={linksto}>View Details</Link>
+      <Link to={linksto}>View Details</Link><br/>
+      <Link to={`/users/${item.id}/update`}>Update</Link>  
     </div>
   );
 }

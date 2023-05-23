@@ -1,20 +1,20 @@
 import React, { ReactElement, useEffect, useState, useContext } from 'react';
 import { client } from '../../axios';
 import { useParams, useHistory } from 'react-router-dom';
-import GenreForm from './GenreForm';
+import UserForm from './UserForm';
 import { SubmitHandler } from 'react-hook-form';
-import { ErrorObject, GenreDetails } from '../../CustomTypes';
+import { ErrorObject, UserDetails } from '../../CustomTypes';
 import ErrorComponent from '../ErrorComponent';
 import { AuthContext } from '../../contexts/AuthContext';
 
-interface Props { }
+interface Props {}
 
-function GenreUpdate(props: Props): ReactElement {
+function UserUpdate(props: Props): ReactElement {
   const { id }: { id: string } = useParams();
-  const genreId: number = parseInt(id); // Parse id as a number
+  const userId: number = parseInt(id); // Parse id as a number
   const history = useHistory();
 
-  const [genre, setGenre] = useState<string | null | undefined>();
+  const [user, setUser] = useState<UserDetails | null>(null);
   const [loaded, setLoaded] = useState<boolean>(false);
   const [error, setError] = useState<ErrorObject>();
   const { isLibrarian }: { isLibrarian: boolean } = useContext(AuthContext);
@@ -22,17 +22,17 @@ function GenreUpdate(props: Props): ReactElement {
 
   useEffect(() => {
     client
-      .GetGenreDetails(genreId)
-      .then((genreData) => {
-        if (genreData) {
-          setGenre(genreData.genre);
+      .GetUserDetails(id)
+      .then((userData) => {
+        if (userData) {
+          setUser(userData);
           setLoaded(true);
         }
       })
       .catch((error) => {
         setError(error);
       });
-  }, [genreId]);
+  }, [userId]);
 
   useEffect(() => {
     if (isAuthenticated === true) {
@@ -52,20 +52,13 @@ function GenreUpdate(props: Props): ReactElement {
     }
   }, [isAuthenticated, isLibrarian]);
 
-  const onSubmit: SubmitHandler<GenreDetails> = (data) => {
+  const onSubmit: SubmitHandler<UserDetails> = (data) => {
     client
-      .PutGenre(cleanData(data), genreId)
+      .PutUser(id,data)
       .then((response) => {
-        history.push('/genre/' + genreId);
+        history.push('/user/' + userId);
       });
   };
-
-  function cleanData(data: GenreDetails) {
-    data.genre = data.genre !== null ? data.genre : '';
-
-
-    return data;
-  }
 
   if (error != null) {
     return <ErrorComponent error={error} />;
@@ -73,16 +66,13 @@ function GenreUpdate(props: Props): ReactElement {
 
   return (
     <div className='background-image'>
-                <div className='modal'>
-      <h1>Update Genre</h1>
       {loaded === true ? (
-        <GenreForm genre={genre || ''} onSubmit={onSubmit} />
+        <UserForm user={user} onSubmit={onSubmit} />
       ) : (
         <h1>--Loading--</h1>
       )}
     </div>
-    </div>
   );
 }
 
-export default GenreUpdate;
+export default UserUpdate;

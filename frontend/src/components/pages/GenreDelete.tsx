@@ -59,8 +59,11 @@ function GenreDelete(props: Props): ReactElement {
 
   return (
     <div className='background-image'>
+                <div className='modal'>
+
       <h1>Delete Genre: {genre}</h1>
       <button onClick={handleDelete} className='genre-list-danger-button'> Yes, Delete</button>
+    </div>
     </div>
   );
 }

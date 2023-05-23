@@ -399,6 +399,12 @@ export class APIClient {
     });
   }
 
+  public async PutUser(id: string, data: UserDetails): Promise<Boolean> {
+    const res = await APIClient.axiosInstance
+      .put("/user/" + id + "/", data);
+    return true;
+  }
+
   
   //Used to get access and refresh tokens for the login component
   public Login(data: FormData): Promise<Tokens> {

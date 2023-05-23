@@ -8,7 +8,7 @@ import { BookListPresentation } from './BookListPresentation';
 
 function GenreDetails() {
   const { id }: { id: string } = useParams();
-  const genreId: number = parseInt(id); 
+  const genreId: number = parseInt(id);
 
   const { url }: { url: string } = useRouteMatch();
 
@@ -19,7 +19,7 @@ function GenreDetails() {
 
   useEffect(() => {
     client
-      .GetGenreDetails(genreId) 
+      .GetGenreDetails(genreId)
       .then((response) => {
         if (response) {
           setGenre(response.genre);
@@ -28,7 +28,7 @@ function GenreDetails() {
       .catch((error) => {
         setError(error);
       });
-      client
+    client
       .GetBooksForLanguages(id)
       .then((bookList) => {
         setBooks(bookList);
@@ -36,8 +36,8 @@ function GenreDetails() {
       .catch((error) => {
         setError(error);
       });
-  
-  
+
+
 
 
   }, [genreId]);
@@ -63,12 +63,15 @@ function GenreDetails() {
 
   return (
     <div className='background-image'>
-      <h1>Genre: {genre}</h1>
-      {isLibrarian === true ? librarianLinks() : null}
-      <div>
-        <h3>Books</h3>
-        <BookListPresentation showLinks={false} books={books} url={url} />
+      <div className='modal'>
+        <h1>Genre: {genre}</h1>
+        {isLibrarian === true ? librarianLinks() : null}
+        <div>
+          <h3>Books</h3>  
+          <BookListPresentation showLinks={false} books={books} url={url} />
+        </div>
       </div>
+
     </div>
   );
 }
