@@ -15,6 +15,7 @@ import {
   LanguageDetails,
   UserDetails,
   CopyOut,
+  Status,
 } from "./CustomTypes";
 import jwt_decode from "jwt-decode";
 import { DecodedRefreshToken } from "./contexts/AuthContext";
@@ -242,6 +243,16 @@ export class APIClient {
     });
   }
 
+  public CreateCopy(copy: CopyOut): Promise<CopyIn> {
+    return APIClient.axiosInstance
+      .post("/copy/", this.copySerializer(copy))
+      .then((res) => {
+        // An id is assigned to copy once its saved in backend server
+        const returnedCopy: CopyIn = this.copyDeserialize(res.data.data);
+        return returnedCopy;
+      });
+  }
+
   // This method fetches and returns the genre using its id.
   public GetGenreDetails(id: number): Promise<Genre> {
     return new Promise((resolve, reject) => {
@@ -289,6 +300,20 @@ export class APIClient {
   public DeleteGenre(id: string): Promise<boolean> {
     return APIClient.axiosInstance.delete("/genre/" + id + "/").then((res) => {
       return true;
+    });
+  }
+
+  public GetAllStatuses(): Promise<Status[]> {
+    return new Promise((resolve, reject) => {
+      APIClient.axiosInstance
+        .get("/status/")
+        .then((res) => {
+          const statuses: Status[] = res.data.data;
+          resolve(statuses);
+        })
+        .catch((error) => {
+          reject(APIClient.instance.handleErrors(error));
+        });
     });
   }
 
@@ -516,7 +541,8 @@ export class APIClient {
   public PostLanguage(Language: Language): Promise<Number> {
     return APIClient.axiosInstance.post("/language/", Language).then((res) => {
       //Redirect to the details page of the currently created language
-      const id: Number = res.data.data.id;
+      const id: Number = res.data.data.language_id;
+      console.log(id);
       return id;
     });
   }

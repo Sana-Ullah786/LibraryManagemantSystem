@@ -76,7 +76,7 @@ const Copies = (props: { showLinks?: boolean }) => {
           ))}
         </ul>
         {isLibrarian && (
-          <Link to={`books/${id}/copies/add`} className="genre-link">
+          <Link to={`/books/${id}/copies/add`} className="genre-link">
             Add Copy
           </Link>
         )}
