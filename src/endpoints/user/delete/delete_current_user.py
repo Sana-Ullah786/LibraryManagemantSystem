@@ -8,8 +8,8 @@ from starlette import status
 from src.dependencies import get_current_user, get_db
 from src.endpoints.user.exceptions import db_not_available
 from src.endpoints.user.router_init import router
+from src.exceptions import custom_exception
 from src.models.user import User
-from src.responses import custom_response
 
 
 @router.delete("/", status_code=status.HTTP_204_NO_CONTENT)
@@ -28,7 +28,7 @@ async def delete_current_user(
     try:
         user_to_delete = db.scalar(select(User).where(User.id == user.get("id")))
         if user_to_delete is None:
-            raise custom_response(status.HTTP_404_NOT_FOUND, "User not found")
+            raise custom_exception(status.HTTP_404_NOT_FOUND, "User not found")
         user_to_delete.is_deleted = True
         db.commit()
         logging.info(
