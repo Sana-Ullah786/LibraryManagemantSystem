@@ -7,6 +7,7 @@ from starlette import status
 
 from src.dependencies import get_current_librarian, get_db
 from src.endpoints.copy.router_init import router
+from src.exceptions import custom_exception
 from src.models import all_models
 from src.responses import custom_response
 from src.schemas.copy import CopySchema
@@ -33,8 +34,8 @@ async def copy_update(
     )
     if copy_model is None:
         logging.info(f"Book Update with id :{copy_id} , not found")
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND, detail="Copy not found"
+        raise custom_exception(
+            status_code=status.HTTP_404_NOT_FOUND, details="Copy not found"
         )
 
     copy_model.book_id = copy.book_id

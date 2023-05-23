@@ -4,10 +4,11 @@ from fastapi import Depends, status
 from fastapi.security import OAuth2PasswordRequestForm
 from sqlalchemy.orm import Session
 
-from src.dependencies import get_db, get_token_exception
+from src.dependencies import get_db
 from src.endpoints.auth.auth_utils import authenticate_user  # isort skip
 from src.endpoints.auth.auth_utils import create_token  # isort skip
 from src.endpoints.auth.router_init import router
+from src.exceptions import custom_exception
 from src.responses import custom_response
 from src.schemas.user import UserSchemaToken
 
@@ -26,7 +27,9 @@ async def login_for_access_token(
     """
     user = authenticate_user(form_data.username, form_data.password, db)
     if not user:
-        raise get_token_exception()
+        raise custom_exception(
+            status_code=status.HTTP_401_UNAUTHORIZED, details="Invalid credentials."
+        )
     access_token = create_token(user, EXPIRE_TIME_IN_MINUTES)
     refresh_token = create_token(user, REFRESH_TOKEN_EXPIRE_TIME_IN_MINUTES)
     user = UserSchemaToken(

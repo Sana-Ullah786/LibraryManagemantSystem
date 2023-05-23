@@ -7,6 +7,7 @@ from sqlalchemy.orm import Session
 
 from src.dependencies import get_current_user, get_db
 from src.endpoints.borrowed.router_init import router
+from src.exceptions import custom_exception
 from src.models.borrowed import Borrowed
 from src.models.user import User
 from src.responses import custom_response
@@ -30,8 +31,8 @@ async def get_borrowed_by_id(
 
     borrowed = db.scalar(query)
     if borrowed is None:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND, detail="Borrowed not found"
+        raise custom_exception(
+            status_code=status.HTTP_404_NOT_FOUND, details="Borrowed not found."
         )
     return custom_response(
         status_code=status.HTTP_200_OK,

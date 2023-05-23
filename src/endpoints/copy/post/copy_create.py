@@ -6,6 +6,7 @@ from starlette import status
 
 from src.dependencies import get_current_librarian, get_db
 from src.endpoints.copy.router_init import router
+from src.exceptions import custom_exception
 from src.models.copy import Copy
 from src.responses import custom_response
 from src.schemas.copy import CopySchema
@@ -38,7 +39,7 @@ async def copy_create(
         )
     except Exception as e:
         logging.error(f"Error: {e}")
-        raise HTTPException(
+        raise custom_exception(
             status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Error while creating copy",
+            details=f"Error in creating copy details = {e}",
         )

@@ -7,6 +7,7 @@ from starlette import status
 
 from src.dependencies import get_db
 from src.endpoints.copy.router_init import router
+from src.exceptions import custom_exception
 from src.models.copy import Copy
 from src.responses import custom_response
 
@@ -24,8 +25,6 @@ async def get_copy_by_id(copy_id: int, db: Session = Depends(get_db)) -> dict:
         )
     if not copy:
         logging.info(f"No Copy with copy id : {copy_id}")
-        raise http_exception()
-
-
-def http_exception() -> dict:
-    return HTTPException(status_code=404, detail="Copy not found")
+        raise custom_exception(
+            status_code=status.HTTP_404_NOT_FOUND, details="Copy not found"
+        )
