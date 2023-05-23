@@ -1,6 +1,6 @@
 import logging
 
-from sqlalchemy import and_, select
+from sqlalchemy import and_, not_, select
 from sqlalchemy.orm import Session
 
 from src.dependencies import get_password_hash
@@ -20,7 +20,7 @@ def update_user(new_user: UpdateUserSchema, user_id: int, db: Session) -> dict:
     user_id: int id of the user to update the data of.
     """
     current_user = db.scalar(
-        select(User).where(and_(User.id == user_id, User.is_deleted is False))
+        select(User).where(and_(User.id == user_id, not_(User.is_deleted)))
     )
     if not current_user:
         raise user_not_exist()

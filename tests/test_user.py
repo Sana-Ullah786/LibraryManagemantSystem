@@ -1,8 +1,9 @@
+from sqlalchemy import select
 from sqlalchemy.orm import sessionmaker
 from starlette import status
 
+from src.models.user import User
 from tests.client import client
-
 # fmt: off
 from tests.utils import (
     LIB_USER,
@@ -57,6 +58,11 @@ def test_delete_user_by_id(test_db: sessionmaker) -> None:
     token = get_fresh_token(test_db, SUPER_USER_CRED)
     response = client.delete("/user/2", headers={"Authorization": f"Bearer {token}"})
     assert response.status_code == status.HTTP_204_NO_CONTENT
+
+    # Checking if the soft delete column is toggled by the soft delete api.
+    with test_db() as db:
+        deleted_user = db.scalar(select(User).where(User.id == 2))
+        assert deleted_user.is_deleted is True
 
     response = client.delete("/user/2", headers={"Authorization": f"Bearer {token}"})
     assert response.status_code == status.HTTP_404_NOT_FOUND

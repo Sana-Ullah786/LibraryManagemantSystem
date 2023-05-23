@@ -1,7 +1,7 @@
 import logging
 
 from fastapi import Depends, HTTPException, Path
-from sqlalchemy import and_, delete, select
+from sqlalchemy import and_, not_, select
 from sqlalchemy.orm import Session
 from starlette import status
 
@@ -29,7 +29,7 @@ async def delete_user_by_id(
     """
     try:
         user_to_delete = db.scalar(
-            select(User).where(and_(User.id == user_id, User.is_deleted is False))
+            select(User).where(and_(User.id == user_id, not_(User.is_deleted)))
         )
         if user_to_delete is None:
             logging.error("User not found -- {__name__}.delete_user_by_id")

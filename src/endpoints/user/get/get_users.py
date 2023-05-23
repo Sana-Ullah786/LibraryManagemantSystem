@@ -1,7 +1,7 @@
 import logging
 
 from fastapi import Depends, Path
-from sqlalchemy import and_, select
+from sqlalchemy import and_, not_, select
 from sqlalchemy.orm import Session
 from starlette import status
 
@@ -32,7 +32,7 @@ async def get_user_by_id(
     try:
         user = (
             db.execute(
-                select(User).where(and_(User.id == user_id, User.is_deleted is False))
+                select(User).where(and_(User.id == user_id, not_(User.is_deleted)))
             )
             .scalars()
             .first()
