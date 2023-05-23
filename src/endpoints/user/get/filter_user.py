@@ -38,6 +38,8 @@ async def filter_user(
         "address": address,
     }
     filters = {key: value for key, value in params.items() if value}
+    # Adding a condition that only allow non deleted users.
+    filters["is_deleted"] = False
     try:
         starting_index = (page_number - 1) * page_size
         users = (
