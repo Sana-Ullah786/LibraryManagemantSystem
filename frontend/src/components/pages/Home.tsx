@@ -27,7 +27,9 @@ function Home() {
     <div
       className="background-image"
     >
+      <div className="modal">
       <h1>Welcome {username}</h1>
+    </div>
     </div>
   );
 }

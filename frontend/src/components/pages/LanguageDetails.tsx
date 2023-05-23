@@ -68,12 +68,14 @@ function LanguageDetails() {
 
   return (
     <div className='background-image'>
+      < div className='modal'>
       <h1>Language: {language}</h1>
       {isLibrarian === true ? librarianLinks() : null}
       <div>
       <div>
-        <h3>Books</h3>
+  
         <BookListPresentation showLinks={false} books={books} url={url} />
+      </div>
       </div>
       </div>
     </div>
