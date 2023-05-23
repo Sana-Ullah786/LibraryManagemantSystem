@@ -4,8 +4,9 @@ import { useParams } from "react-router";
 import { BookDetailsPresentation } from "./BookDetailsPresentation";
 import { client } from "../../axios";
 import { AuthContext } from "../../contexts/AuthContext";
-import { useRouteMatch } from "react-router-dom";
+import { useRouteMatch, Link } from "react-router-dom";
 import ErrorComponent from "../ErrorComponent";
+import LibrarianLinks from "../LibrarianLinks";
 
 export const Copies = (props: { showLinks?: boolean }) => {
   /*
@@ -25,6 +26,10 @@ export const Copies = (props: { showLinks?: boolean }) => {
     CopyIn[] | undefined,
     React.Dispatch<React.SetStateAction<CopyIn[] | undefined>>
   ] = useState(); //The copies to be displayed
+  let [book, setBook]: [
+    BookIn | undefined,
+    React.Dispatch<React.SetStateAction<BookIn | undefined>>
+  ] = useState();
 
   const [error, setError] = useState<ErrorObject>();
 
@@ -35,6 +40,9 @@ export const Copies = (props: { showLinks?: boolean }) => {
       .then(
         (copies: CopyIn[]) => {
           setCopies(copies);
+          if (copies.length > 0) {
+            setBook(copies[0].book);
+          }
         }
         //(error) => { console.log(`Error! The book with id ${id} does not exist.`); }
       )
@@ -43,7 +51,7 @@ export const Copies = (props: { showLinks?: boolean }) => {
       });
   }, [id]);
 
-  console.log("here");
+  console.log(copies);
 
   if (copies?.length === 0) {
     if (error) {
@@ -53,11 +61,26 @@ export const Copies = (props: { showLinks?: boolean }) => {
   } else {
     // The book details are presented once all details have been received
     return (
-      <>
-        {copies?.map((copy: CopyIn) => {
-          return copy.bookId;
-        })}
-      </>
+      <div className="background-image">
+        <h1>Copies for {book?.title}</h1>
+        <ul>
+          {copies?.map((copy: CopyIn, index: number) => (
+            <li>
+              <h2>Copy {index + 1}</h2>
+              <p>Status: {copy.status.status}</p>
+              <p>Language: {copy.language.language}</p>
+              {isLibrarian && (
+                <LibrarianLinks url={`books/${id}/copies/${copy.id}`} />
+              )}
+            </li>
+          ))}
+        </ul>
+        {isLibrarian && (
+          <Link to={`books/${id}/copies/add`} className="genre-link">
+            Add Copy
+          </Link>
+        )}
+      </div>
     );
   }
 };

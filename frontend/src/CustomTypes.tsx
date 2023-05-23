@@ -50,17 +50,17 @@ export interface Status {
   status: string;
 }
 
-export interface CopyBase {
-  bookId: number;
-  status: Status;
-}
-
-export interface CopyOut extends CopyBase {
+export interface CopyOut {
   languageId: number;
+  bookId: number;
+  statusId: number;
 }
 
-export interface CopyIn extends CopyBase {
+export interface CopyIn {
+  id: number;
   language: Language;
+  book: BookIn;
+  status: Status;
 }
 
 // The properties of Genre are stored in this type

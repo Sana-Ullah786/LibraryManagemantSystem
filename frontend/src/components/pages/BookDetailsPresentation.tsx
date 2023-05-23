@@ -96,6 +96,11 @@ export const BookDetailsPresentation = (
       <p data-testid="dateOfPublication" style={{ display: "inline" }}>
         {props.book.dateOfPublication}
       </p>
+      <br></br>
+      <br></br>
+      {props.isLibrarian && (
+        <Link to={`/books/${props.book.id}/copies`}>Manage Copies</Link>
+      )}
     </div>
   );
 };

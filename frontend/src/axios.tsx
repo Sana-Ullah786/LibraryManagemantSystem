@@ -13,6 +13,7 @@ import {
   SignupData,
   Genre as GenreDetails,
   LanguageDetails,
+  CopyOut,
 } from "./CustomTypes";
 import jwt_decode from "jwt-decode";
 import { DecodedRefreshToken } from "./contexts/AuthContext";
@@ -114,7 +115,7 @@ export class APIClient {
       language_id: book.languageId,
       genre_ids: book.genreIds,
       date_of_publication: book.dateOfPublication,
-      number_of_copies: book.numberOfCopies,
+      no_of_copies: book.numberOfCopies,
     };
 
     return serialized;
@@ -165,12 +166,35 @@ export class APIClient {
     });
   }
 
+  private copyDeserialize(json: any): CopyIn {
+    let copy: CopyIn = json;
+
+    copy.id = json.id;
+    copy.book = this.bookDeserialize(json.book);
+    copy.language = json.language;
+    copy.status = json.status;
+    return copy;
+  }
+
+  // This method converts a Book object from json to Book interface
+  public copySerializer(copy: CopyOut) {
+    let serialized = {
+      book_id: copy.bookId,
+      language_id: copy.languageId,
+      status_id: copy.statusId,
+    };
+
+    return serialized;
+  }
+
   public GetCopiesofBook(bookId: string): Promise<CopyIn[]> {
     return new Promise((resolve, reject) => {
       APIClient.axiosInstance
         .get(`/copy/book/${bookId}`)
         .then((res) => {
-          const copies: CopyIn[] = res.data.data;
+          const copies: CopyIn[] = res.data.data.map((copy: any) =>
+            this.copyDeserialize(copy)
+          );
           resolve(copies);
         })
         .catch((error) => {
