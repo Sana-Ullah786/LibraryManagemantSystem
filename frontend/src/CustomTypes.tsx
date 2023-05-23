@@ -9,6 +9,17 @@ export interface AuthorDetails {
   death_date?: string | null;
 }
 
+export interface UserDetails {
+  id : number;
+  email: string;
+  username: string;
+  password: string;
+  first_name: string;
+  last_name: string;
+  contact_number: string;
+  address: string;
+}
+
 export interface Author extends AuthorDetails {
   id: number;
 }

@@ -25,6 +25,9 @@ function Navbar() {
         <li style={{ justifyContent: 'flex-end' }}>
           <Link to="/Language">Language</Link>
         </li>
+        <li style={{ justifyContent: 'flex-end' }}>
+          <Link to="/users">Users</Link>
+        </li>        
 </div>
 
         <div style={{flexDirection:'row' , display:'flex'}}>

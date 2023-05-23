@@ -12,9 +12,12 @@ import {
   SignupData,
   Genre as GenreDetails,
   LanguageDetails,
+  UserDetails,
 } from "./CustomTypes";
 import jwt_decode from "jwt-decode";
 import { DecodedRefreshToken } from "./contexts/AuthContext";
+import { resolve } from "path";
+import { rejects } from "assert";
 
 
 
@@ -150,7 +153,7 @@ export class APIClient {
   public GetBooksForAuthor(authorId: string): Promise<BookSaved[]> {
     return new Promise((resolve, reject) => {
       APIClient.axiosInstance
-        .get(`/book/?author=${authorId}`)
+        .get(`/book/?author=${authorId}&page_number=1&page_size=10`)
         .then((response) => {
           let bookList: BookSaved[] = [];
 
@@ -166,6 +169,43 @@ export class APIClient {
     });
   }
 
+  public GetBooksForGenre(genreId: string): Promise<BookSaved[]> {
+    return new Promise((resolve, reject) => {
+      APIClient.axiosInstance
+        .get(`/book/?author=${genreId}&page_number=1&page_size=10`)
+        .then((response) => {
+          let bookList: BookSaved[] = [];
+
+          for (let data of response.data.data) {
+            bookList.push(this.bookDeserialize(data));
+          }
+
+          resolve(bookList);
+        })
+        .catch((error) => {
+          reject(APIClient.instance.handleErrors(error));
+        });
+    });
+  }
+
+  public GetBooksForLanguages(languageid: string): Promise<BookSaved[]> {
+    return new Promise((resolve, reject) => {
+      APIClient.axiosInstance
+        .get(`/book/?language=${languageid}&page_number=1&page_size=10`)
+        .then((response) => {
+          let bookList: BookSaved[] = [];
+
+          for (let data of response.data.data) {
+            bookList.push(this.bookDeserialize(data));
+          }
+
+          resolve(bookList);
+        })
+        .catch((error) => {
+          reject(APIClient.instance.handleErrors(error));
+        });
+    });
+  }
   // This method fetches and returns the genre using its id.
   public GetGenreDetails(id: number): Promise<Genre> {
     return new Promise((resolve, reject) => {
@@ -232,14 +272,14 @@ export class APIClient {
   }
 
   public DeleteLanguage(id: string): Promise<boolean> {
-    return APIClient.axiosInstance.delete("/language/" + id + "/").then((res) => {
+    return APIClient.axiosInstance.delete("/language/" + id ).then((res) => {
       return true;
     });
   }
 
   public PutLanguage(id: string, data: Language): Promise<Boolean> {
     return APIClient.axiosInstance
-      .put("/language/" + id + "/", data)
+      .put("/language/" + id, data)
       .then((res) => {
         return true;
       });
@@ -329,6 +369,43 @@ export class APIClient {
     });
   }
 
+  
+  public GetUsersList():Promise<UserDetails[]> {
+    return new Promise((resolve, reject) => {
+      let userList: UserDetails[];
+      APIClient.axiosInstance
+        .get("/user")
+        .then((response) => {
+          userList = response.data.data;
+          resolve(userList);
+        })
+        .catch((error) => {
+          reject(APIClient.instance.handleErrors(error));
+        });
+    });
+  }
+
+  public GetUserDetails(id: string): Promise<UserDetails> {
+    return new Promise((resolve, reject) => {
+      APIClient.axiosInstance
+        .get("/user/" + id)
+        .then((res) => {
+          const user: UserDetails = res.data.data;
+          resolve(user);
+        })
+        .catch((error) => {
+          reject(APIClient.instance.handleErrors(error));
+        });
+    });
+  }
+
+  public async PutUser(id: string, data: UserDetails): Promise<Boolean> {
+    const res = await APIClient.axiosInstance
+      .put("/user/" + id + "/", data);
+    return true;
+  }
+
+  
   //Used to get access and refresh tokens for the login component
   public Login(data: FormData): Promise<Tokens> {
     return APIClient.axiosInstance.post("/auth/token", data).then((res) => {
@@ -478,6 +555,8 @@ export class APIClient {
     );
   }
 }
+
+
 
 export const client = APIClient.getInstance({
   /**
