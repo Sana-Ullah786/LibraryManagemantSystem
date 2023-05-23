@@ -1,7 +1,7 @@
 import logging
 
 from fastapi import Depends, HTTPException, Path
-from sqlalchemy import delete, select
+from sqlalchemy import and_, delete, select
 from sqlalchemy.orm import Session
 from starlette import status
 
@@ -28,7 +28,9 @@ async def delete_user_by_id(
     HTTP_STATUS_CODE_204
     """
     try:
-        user_to_delete = db.scalar(select(User).where(User.id == user_id))
+        user_to_delete = db.scalar(
+            select(User).where(and_(User.id == user_id, User.is_deleted is False))
+        )
         if user_to_delete is None:
             logging.error("User not found -- {__name__}.delete_user_by_id")
             raise custom_exception(status.HTTP_404_NOT_FOUND, "User not found")
