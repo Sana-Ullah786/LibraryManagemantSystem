@@ -38,10 +38,11 @@ const Copies = (props: { showLinks?: boolean }) => {
     client
       .GetCopiesofBook(id)
       .then(
-        (copies: CopyIn[]) => {
-          setCopies(copies);
-          if (copies.length > 0) {
-            setBook(copies[0].book);
+        (newCopies: CopyIn[]) => {
+          newCopies.sort((a, b) => (a.id > b.id ? 1 : -1));
+          setCopies(newCopies);
+          if (newCopies.length > 0) {
+            setBook(newCopies[0].book);
           }
         }
         //(error) => { console.log(`Error! The book with id ${id} does not exist.`); }
@@ -69,9 +70,7 @@ const Copies = (props: { showLinks?: boolean }) => {
               <h2>Copy {index + 1}</h2>
               <p>Status: {copy.status.status}</p>
               <p>Language: {copy.language.language}</p>
-              {isLibrarian && (
-                <LibrarianLinks url={`books/${id}/copies/${copy.id}`} />
-              )}
+              {isLibrarian && <LibrarianLinks url={`/copies/${copy.id}`} />}
             </li>
           ))}
         </ul>

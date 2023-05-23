@@ -32,6 +32,8 @@ import UserCreate from "./components/pages/UserCreate";
 import UserUpdate from "./components/pages/UserUpdate";
 import Copies from "./components/pages/Copies";
 import CopyCreate from "./components/pages/CopyCreate";
+import CopyUpdate from "./components/pages/CopyUpdate";
+import CopyDelete from "./components/pages/CopyDelete";
 
 function App() {
   return (
@@ -88,6 +90,12 @@ function App() {
             {/* URL for book list page */}
             <Route exact path="/books">
               <BookListContainer />
+            </Route>
+            <Route path="/copies/:id(\d+)/update">
+              <CopyUpdate />
+            </Route>
+            <Route path="/copies/:id(\d+)/delete">
+              <CopyDelete />
             </Route>
             <Route path="/books/:id(\d+)/copies/add">
               <CopyCreate />

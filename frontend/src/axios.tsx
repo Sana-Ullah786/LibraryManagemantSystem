@@ -253,6 +253,34 @@ export class APIClient {
       });
   }
 
+  public GetCopyDetails(id: string): Promise<CopyIn> {
+    return new Promise((resolve, reject) => {
+      APIClient.axiosInstance
+        .get("/copy/" + id)
+        .then((res) => {
+          const copy: CopyIn = this.copyDeserialize(res.data.data);
+          resolve(copy);
+        })
+        .catch((error) => {
+          reject(APIClient.instance.handleErrors(error));
+        });
+    });
+  }
+
+  public UpdateCopy(copy: CopyOut, id: number): Promise<boolean> {
+    return APIClient.axiosInstance
+      .put("/copy/" + String(id) + "/", this.copySerializer(copy))
+      .then((res) => {
+        return true;
+      });
+  }
+
+  public DeleteCopy(id: string): Promise<boolean> {
+    return APIClient.axiosInstance.delete("/copy/" + id + "/").then((res) => {
+      return true;
+    });
+  }
+
   // This method fetches and returns the genre using its id.
   public GetGenreDetails(id: number): Promise<Genre> {
     return new Promise((resolve, reject) => {
