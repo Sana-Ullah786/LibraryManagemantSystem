@@ -52,8 +52,10 @@ function Login() {
   }
 
   return (
+    <div className='background-image'>
     <div className="signup-container">
       <form className="signup-form" onSubmit={handleSubmit}>
+      <h1>Login</h1>
         <label className="form-group">
           User Name
           <input className="form-group"
@@ -79,6 +81,7 @@ function Login() {
         </div>
 
       </form>
+    </div>
     </div>
   );
 }

@@ -106,13 +106,15 @@ function Authors() {
     }
 
     return (
-        <div  className="genre-list background-image">
-            <h1>Author List</h1>
+        <div  className="genre-list background-image ">
+            <div  className='modal'>             <h1>Author List</h1>
             <ul>
                 {setAuthorListItemComponent(authorList)}
             </ul>
             {isLibrarian?createAuthorLink():null}
         </div>
+        </div>
+
     )
 }
 

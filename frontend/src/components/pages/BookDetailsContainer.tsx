@@ -52,6 +52,8 @@ export const BookDetailsContainer = (props: { showLinks?: boolean }) => {
     // The book details are presented once all details have been received
     return (
       <>
+      <div className="background-image">
+      <div className="modal">
         <BookDetailsPresentation
           url={url}
           showLinks={props.showLinks}
@@ -59,6 +61,8 @@ export const BookDetailsContainer = (props: { showLinks?: boolean }) => {
           id={parseInt(id)}
           book={book}
         />
+        </div>  
+        </div>
       </>
     );
   }

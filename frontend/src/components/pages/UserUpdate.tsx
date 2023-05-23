@@ -1,20 +1,20 @@
 import React, { ReactElement, useEffect, useState, useContext } from 'react';
 import { client } from '../../axios';
 import { useParams, useHistory } from 'react-router-dom';
-import LanguageForm from './LanguageForm';
+import UserForm from './UserForm';
 import { SubmitHandler } from 'react-hook-form';
-import { ErrorObject, Language } from '../../CustomTypes';
+import { ErrorObject, UserDetails } from '../../CustomTypes';
 import ErrorComponent from '../ErrorComponent';
 import { AuthContext } from '../../contexts/AuthContext';
 
 interface Props {}
 
-function LanguageUpdate(props: Props): ReactElement {
+function UserUpdate(props: Props): ReactElement {
   const { id }: { id: string } = useParams();
-  const languageId: number = parseInt(id); // Parse id as a number
+  const userId: number = parseInt(id); // Parse id as a number
   const history = useHistory();
 
-  const [language, setLanguage] = useState<string | null | undefined>();
+  const [user, setUser] = useState<UserDetails | null>(null);
   const [loaded, setLoaded] = useState<boolean>(false);
   const [error, setError] = useState<ErrorObject>();
   const { isLibrarian }: { isLibrarian: boolean } = useContext(AuthContext);
@@ -22,17 +22,17 @@ function LanguageUpdate(props: Props): ReactElement {
 
   useEffect(() => {
     client
-      .GetLanguageDetails(id)
-      .then((languageData) => {
-        if (languageData) {
-          setLanguage(languageData.language);
+      .GetUserDetails(id)
+      .then((userData) => {
+        if (userData) {
+          setUser(userData);
           setLoaded(true);
         }
       })
       .catch((error) => {
         setError(error);
       });
-  }, [languageId]);
+  }, [userId]);
 
   useEffect(() => {
     if (isAuthenticated === true) {
@@ -52,28 +52,22 @@ function LanguageUpdate(props: Props): ReactElement {
     }
   }, [isAuthenticated, isLibrarian]);
 
-  const onSubmit: SubmitHandler<Language> = (data) => {
-
+  const onSubmit: SubmitHandler<UserDetails> = (data) => {
     client
-      .PutLanguage(id, cleanData(data)) 
+      .PutUser(id,data)
       .then((response) => {
-        history.push('/language/' + languageId); 
-      });   
+        history.push('/user/' + userId);
+      });
   };
-
-  function cleanData(data: Language) {
-    data.language = data.language !== null ? data.language : '';
-    return data;
-  }
 
   if (error != null) {
     return <ErrorComponent error={error} />;
   }
 
   return (
-    <div>
+    <div className='background-image'>
       {loaded === true ? (
-        <LanguageForm language={language || ''} onSubmit={onSubmit} />
+        <UserForm user={user} onSubmit={onSubmit} />
       ) : (
         <h1>--Loading--</h1>
       )}
@@ -81,4 +75,4 @@ function LanguageUpdate(props: Props): ReactElement {
   );
 }
 
-export default LanguageUpdate;
+export default UserUpdate;

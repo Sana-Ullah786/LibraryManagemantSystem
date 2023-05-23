@@ -7,7 +7,7 @@ import { ErrorObject, GenreDetails } from '../../CustomTypes';
 import ErrorComponent from '../ErrorComponent';
 import { AuthContext } from '../../contexts/AuthContext';
 
-interface Props {}
+interface Props { }
 
 function GenreUpdate(props: Props): ReactElement {
   const { id }: { id: string } = useParams();
@@ -54,16 +54,16 @@ function GenreUpdate(props: Props): ReactElement {
 
   const onSubmit: SubmitHandler<GenreDetails> = (data) => {
     client
-      .PutGenre(cleanData(data), genreId) 
+      .PutGenre(cleanData(data), genreId)
       .then((response) => {
-        history.push('/genre/' + genreId); 
+        history.push('/genre/' + genreId);
       });
   };
 
   function cleanData(data: GenreDetails) {
     data.genre = data.genre !== null ? data.genre : '';
 
- 
+
     return data;
   }
 
@@ -72,12 +72,15 @@ function GenreUpdate(props: Props): ReactElement {
   }
 
   return (
-    <div>
+    <div className='background-image'>
+                <div className='modal'>
+      <h1>Update Genre</h1>
       {loaded === true ? (
         <GenreForm genre={genre || ''} onSubmit={onSubmit} />
       ) : (
         <h1>--Loading--</h1>
       )}
+    </div>
     </div>
   );
 }

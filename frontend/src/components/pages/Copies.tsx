@@ -8,7 +8,7 @@ import { useRouteMatch, Link } from "react-router-dom";
 import ErrorComponent from "../ErrorComponent";
 import LibrarianLinks from "../LibrarianLinks";
 
-export const Copies = (props: { showLinks?: boolean }) => {
+const Copies = (props: { showLinks?: boolean }) => {
   /*
    * BookDetailsContainer performs all the computation and api calls to fetch book details.
    * It delegates the task of actually displaying the data to BookDetailsPresentation.
@@ -87,3 +87,5 @@ export const Copies = (props: { showLinks?: boolean }) => {
 
 // By default links are always shown if the user is a librarian
 Copies.defaultProps = { showLinks: true };
+
+export default Copies;

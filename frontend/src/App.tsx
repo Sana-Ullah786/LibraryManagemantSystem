@@ -15,7 +15,6 @@ import ErrorComponent from "./components/ErrorComponent";
 import BookDelete from "./components/pages/BookDelete";
 import BookUpdate from "./components/pages/BookUpdate";
 import BookCreate from "./components/pages/BookCreate";
-import { Copies } from "./components/pages/Copies";
 import Signup from "./components/pages/Signup";
 import Genres from "./components/pages/Genres";
 import GenreCreate from "./components/pages/GenreCreate";
@@ -26,8 +25,12 @@ import Languages from "./components/pages/Languages";
 import LanguageCreate from "./components/pages/LanguageCreate";
 import LanguageDetails from "./components/pages/LanguageDetails";
 import LanguageDelete from "./components/pages/LanguageDelete";
-import LanguageUpdate from "./components/pages/LanguageDelete";
-
+import LanguageUpdate from "./components/pages/LanguageUpdate";
+import Users from "./components/pages/Users";
+import UserDetails from "./components/pages/UserDetails";
+import UserCreate from "./components/pages/UserCreate";
+import UserUpdate from "./components/pages/UserUpdate";
+import Copies from "./components/pages/Copies";
 function App() {
   return (
     /**
@@ -125,6 +128,18 @@ function App() {
             </Route>
             <Route exact path="/language/:id(\d+)/delete">
               <LanguageDelete />
+            </Route>
+            <Route exact path="/users">
+              <Users />
+            </Route>
+            <Route exact path="/users/:id(\d+)">
+              <UserDetails />
+            </Route>
+            <Route exact path="/users/create">
+              <UserCreate />
+            </Route>
+            <Route exact path="/users/:id(\d+)/update">
+              <UserUpdate />
             </Route>
             <Route>
               <ErrorComponent error={{ status: 404, message: "Not found." }} />
