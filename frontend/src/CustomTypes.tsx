@@ -5,8 +5,8 @@
 export interface AuthorDetails {
   first_name?: string | null;
   last_name?: string | null;
-  date_of_birth?: string | null;
-  date_of_death?: string | null;
+  birth_date?: string | null;
+  death_date?: string | null;
 }
 
 export interface Author extends AuthorDetails {
@@ -28,7 +28,7 @@ export interface BookBase {
   title: string;
   description: string;
   isbn: string;
-  dateOfPublication: Date;
+  dateOfPublication: string;
 }
 
 export interface BookOut extends BookBase {
@@ -69,17 +69,41 @@ export interface Genre {
   genre: string;
 }
 
+export interface GenreDetails {
+  id: number;
+  genre: string;
+}
+
 export interface ErrorObject {
   status: number;
   message: string;
 }
 
-// GenreMap represents a map of Genre items. Id of genre is used as key
 export interface GenreMap {
   [id: number]: Genre;
 }
 
-// The properties of a language are stored in this type
+export interface Language {
+  id: number;
+  language: string;
+}
+//Signup Attrubutes
+export interface SignupData {
+  email: string;
+  username: string;
+  password: string;
+  first_name: string;
+  last_name: string;
+  contact_number: string;
+  address: string;
+}
+
+//Language Attributes
+
+export interface LanguageDetails {
+  language: string | null;
+  // Add other properties specific to the LanguageDetails type
+}
 export interface Language {
   id: number;
   language: string;

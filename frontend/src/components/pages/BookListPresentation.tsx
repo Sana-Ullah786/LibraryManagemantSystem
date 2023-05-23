@@ -1,6 +1,7 @@
 import { Link } from "react-router-dom";
 import { BookIn } from "../../CustomTypes";
 import LibrarianLinks from "../LibrarianLinks";
+import "../style.css"; // Import the Genres CSS file
 
 export const BookListPresentation = (props: {
   books: BookIn[];
@@ -20,7 +21,7 @@ export const BookListPresentation = (props: {
             key={book.id.toString()}
             data-testid={"item" + book.id.toString()}
           >
-            <Link to={props.url + "/" + book.id.toString()}>{book.title}</Link>
+            <Link to={"/books/" + book.id.toString()}>{book.title}</Link>
 
             {props.showLinks && (
               <LibrarianLinks url={`${props.url}/${book.id}`} />

@@ -12,6 +12,7 @@ import {client} from '../../axios'
 import {ErrorObject} from '../../CustomTypes'
 import ErrorComponent from '../ErrorComponent'
 import {AuthContext} from '../../contexts/AuthContext'
+import '../style.css'; // Import the Genres CSS file
 
 interface Props {
 
@@ -77,9 +78,9 @@ function AuthorDelete(props: Props): ReactElement {
     }
     
     return (
-        <div>
+        <div className='background-image'>
             <h1>DELETE Author {lastName}, {firstName}  ?</h1>
-            <button onClick = {handleClick}>Yes, Delete</button>
+            <button className='genre-list-danger-button' onClick = {handleClick}>Yes, Delete</button>
         </div>
     )
 }

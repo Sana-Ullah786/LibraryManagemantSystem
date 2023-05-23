@@ -59,7 +59,7 @@ def test_register_user_already_exists(test_db: sessionmaker) -> None:
     register_user(TEST_USER)
     response = register_user(TEST_USER)
 
-    assert response.status_code == status.HTTP_400_BAD_REQUEST
+    assert response.status_code == status.HTTP_409_CONFLICT
 
 
 ## Token Tests
@@ -147,7 +147,7 @@ def test_register_librarian_already_exists(test_db: sessionmaker) -> None:
     token = create_librarian_and_get_token(test_db)
 
     response = register_librarian(TEST_USER, token)
-    assert response.status_code == status.HTTP_400_BAD_REQUEST
+    assert response.status_code == status.HTTP_409_CONFLICT
 
 
 def test_register_librarian_without_librarian_token(test_db: sessionmaker) -> None:

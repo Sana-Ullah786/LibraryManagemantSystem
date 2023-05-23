@@ -29,7 +29,7 @@ function BookDelete(): ReactElement {
   }
 
   return (
-    <div>
+    <div className='background-image'>
       <h1>DELETE Book?</h1>
       {/* Displaying the book details component to show which book is being deleted */}
       <BookDetailsContainer showLinks={false} />

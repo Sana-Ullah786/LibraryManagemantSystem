@@ -39,9 +39,9 @@ export const BookListContainer = () => {
     return <div>Loading...</div>;
   }
   return (
-    <>
+    <div className="background-image">
       {/* Book list is presented once the list of books is properly initialized */}
       <BookListPresentation showLinks={isLibrarian} books={books} url={url} />
-    </>
+    </div>
   );
 };

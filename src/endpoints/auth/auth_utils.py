@@ -2,13 +2,14 @@ import os
 from datetime import datetime, timedelta
 
 import pytz
+from fastapi import status
 from jose import jwt
 from sqlalchemy import or_, select
 from sqlalchemy.orm import Session
 
 from src.dependencies import get_password_hash  # isort skip
-from src.dependencies import get_user_already_exists_exception  # isort skip
 from src.dependencies import verify_password  # isort skip; isort skip
+from src.exceptions import custom_exception
 from src.models.user import User
 from src.schemas.user import UserSchemaIn, UserSchemaOut
 
@@ -54,7 +55,9 @@ def check_user_already_exists(user: UserSchemaIn, db: Session) -> None:
         )
     )
     if fetched_user:
-        raise get_user_already_exists_exception()
+        raise custom_exception(
+            status_code=status.HTTP_409_CONFLICT, details="User already exists"
+        )
 
 
 def authenticate_user(username: str, password: str, db: Session) -> User | bool:

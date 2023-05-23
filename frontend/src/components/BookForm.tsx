@@ -2,6 +2,7 @@ import { ReactElement, useEffect, useState } from "react";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { client } from "../axios";
 import { Author, BookOut, BookIn, Genre, Language } from "../CustomTypes";
+import "./style.css"; // Import the Genres CSS file
 
 /**
  * The BookForm component displays a form for getting all book details from user.
@@ -15,7 +16,10 @@ function BookForm(props: {
   console.log(props.book);
   // A form for book
   let { register, handleSubmit } = useForm<BookOut>({
-    defaultValues: { ...props.book },
+    defaultValues: {
+      ...props.book,
+      dateOfPublication: props.book.dateOfPublication,
+    },
   });
 
   // Details of all authors present in the system.
@@ -73,20 +77,24 @@ function BookForm(props: {
   }, []);
 
   return (
-    <div>
-      <form onSubmit={handleSubmit(props.submitHandler)}>
-        <label>
+    <div className="signup-container">
+      <form
+        className="signup-form"
+        onSubmit={handleSubmit(props.submitHandler)}
+      >
+        <label className="form-group">
           Title
           <input {...register("title")} type="text" placeholder={"Title"} />
         </label>
         <br></br>
-        <label>
+        <label className="form-group">
           {" "}
           Author (Multiple allowed)
           {
             /* A dropdown menu for selecting from all authors */
             authors && (
               <select
+                className="form-group"
                 multiple
                 {...register("authorIds")}
                 id="authors"
@@ -108,7 +116,7 @@ function BookForm(props: {
           {!authors && <>No Authors!</>}
         </label>
         <br></br>
-        <label>
+        <label className="form-group">
           Description
           <input
             {...register("description")}
@@ -117,12 +125,12 @@ function BookForm(props: {
           />
         </label>
         <br></br>
-        <label>
+        <label className="form-group">
           ISBN
           <input {...register("isbn")} type="number" placeholder={"ISBN"} />
         </label>
         <br></br>
-        <label>
+        <label className="form-group">
           {" "}
           Language
           {
@@ -147,13 +155,14 @@ function BookForm(props: {
           {!languages && <>No Languages!</>}
         </label>
         <br></br>
-        <label>
+        <label className="form-group">
           {" "}
           Genre (multiple allowed)
           {
             /* A dropdown menu for selecting from all genres */
             genres && (
               <select
+                className="form-group"
                 multiple
                 {...register("genreIds")}
                 id="genres"
@@ -175,14 +184,14 @@ function BookForm(props: {
           {!languages && <>No Languages!</>}
         </label>
         <br></br>
-        <label>
+        <label className="form-group">
           Date of Publication
           <input {...register("dateOfPublication")} type="date" />
         </label>
         <br></br>
         {props.book.id === -1 && (
           <>
-            <label>
+            <label className="form-group">
               Number of Copies
               <input {...register("numberOfCopies")} type="number" />
             </label>

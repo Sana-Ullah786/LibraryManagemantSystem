@@ -54,12 +54,12 @@ function BookUpdate(): ReactElement {
   }
 
   return (
-    <>
+    <div className='background-image'>
       {currBook !== undefined && (
         <BookForm book={currBook} submitHandler={submitHandler}></BookForm>
       )}
       {currBook === undefined && <p>Invalid Id!</p>}
-    </>
+    </div>
   );
 }
 

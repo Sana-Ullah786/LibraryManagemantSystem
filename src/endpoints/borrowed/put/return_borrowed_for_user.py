@@ -7,9 +7,11 @@ from sqlalchemy.orm import Session
 
 from src.dependencies import get_current_user, get_db
 from src.endpoints.borrowed.router_init import router
+from src.exceptions import custom_exception
 from src.models import all_models
 from src.responses import custom_response
 from src.schemas.borrowed import BorrowedSchema
+from src.status_constants import AVAILABLE, BORROWED
 
 
 @router.put(
@@ -43,13 +45,33 @@ async def return_borrowed_for_user(
         logging.warning(
             "Copy not found in database with id: " + str(found_borrowed.copy_id)
         )
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND, detail="Copy not found"
+        raise custom_exception(
+            status_code=status.HTTP_404_NOT_FOUND, details="Copy not found."
         )
+    found_status = db.scalar(
+        select(all_models.Status).where(all_models.Status.id == found_copy.status_id)
+    )
+    if not found_status:
+        logging.warning(
+            "Status not found in database with id: " + str(found_copy.status_id)
+        )
+        raise custom_exception(
+            status_code=status.HTTP_404_NOT_FOUND, details="Status not found."
+        )
+    if found_status.status != BORROWED:
+        logging.warning(
+            "Copy is not borrowed in database with id: " + str(found_borrowed.copy_id)
+        )
+        raise custom_exception(
+            status_code=status.HTTP_400_BAD_REQUEST, details="Copy is not borrowed."
+        )
+
     try:
         today = datetime.now().date()
         found_borrowed.return_date = today
-        found_copy.status = "available"
+        found_copy.status_id = db.scalars(
+            select(all_models.Status.id).where(all_models.Status.status == AVAILABLE)
+        ).first()
         db.commit()
         logging.info("Updated borrowed in database with id: " + str(borrowed_id))
         borrowed.id = borrowed_id
@@ -62,7 +84,10 @@ async def return_borrowed_for_user(
         )
     except Exception as e:
         logging.exception("Error updating borrowed in database. Details = " + str(e))
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(e))
+        raise custom_exception(
+            status.HTTP_400_BAD_REQUEST,
+            "Error updating borrowed in database. details = " + str(e),
+        )
 
 
 def check_borrowed_exist(
@@ -82,15 +107,15 @@ def check_borrowed_exist(
     )
     if not found_borrowed:
         logging.warning("Borrowed not found in database with id: " + str(borrowed_id))
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND, detail="Borrowed not found"
+        raise custom_exception(
+            status_code=status.HTTP_404_NOT_FOUND, details="Borrowed not found."
         )
     if found_borrowed.user_id != user_id:
         logging.warning(
             "Borrowed not found in database with id for this user: " + str(borrowed_id)
         )
-        raise HTTPException(
+        raise custom_exception(
             status_code=status.HTTP_404_NOT_FOUND,
-            detail="Borrowed not found in the user borrowed list",
+            details="Borrowed not found for this user.",
         )
     return found_borrowed

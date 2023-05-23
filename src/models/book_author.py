@@ -1,6 +1,6 @@
 from datetime import datetime
 
-from sqlalchemy import DateTime, ForeignKey, func
+from sqlalchemy import Boolean, DateTime, ForeignKey, func
 from sqlalchemy.orm import Mapped, mapped_column
 
 from src.models.database import Base
@@ -21,6 +21,7 @@ class BookAuthor(Base):
 
     author_id: Mapped[int] = mapped_column(ForeignKey("author.id"), primary_key=True)
     book_id: Mapped[int] = mapped_column(ForeignKey("book.id"), primary_key=True)
+    is_deleted: Mapped[bool] = mapped_column(Boolean, default=False, nullable=False)
     created_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True), server_default=func.now()
     )

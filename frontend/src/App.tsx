@@ -16,6 +16,17 @@ import BookDelete from "./components/pages/BookDelete";
 import BookUpdate from "./components/pages/BookUpdate";
 import BookCreate from "./components/pages/BookCreate";
 import { Copies } from "./components/pages/Copies";
+import Signup from "./components/pages/Signup";
+import Genres from "./components/pages/Genres";
+import GenreCreate from "./components/pages/GenreCreate";
+import GenreUpdate from "./components/pages/GenreUpdate";
+import GenreDetails from "./components/pages/GenreDetails";
+import GenreDelete from "./components/pages/GenreDelete";
+import Languages from "./components/pages/Languages";
+import LanguageCreate from "./components/pages/LanguageCreate";
+import LanguageDetails from "./components/pages/LanguageDetails";
+import LanguageDelete from "./components/pages/LanguageDelete";
+import LanguageUpdate from "./components/pages/LanguageDelete";
 
 function App() {
   return (
@@ -80,7 +91,41 @@ function App() {
             <Route path="/books/:id(\d+)">
               <BookDetailsContainer />
             </Route>
-
+            <Route exact path="/signup">
+              <Signup />
+            </Route>
+            <Route exact path="/genre">
+              <Genres />
+            </Route>
+            <Route exact path="/genre/:id(\d+)">
+              <GenreDetails />
+            </Route>
+            URL for the deletion page of a specific author
+            <Route exact path="/genre/:id(\d+)/delete">
+              <GenreDelete />
+            </Route>
+            URL for the update page of a specific author
+            <Route exact path="/genre/:id(\d+)/update">
+              <GenreUpdate />
+            </Route>
+            <Route exact path="/genre/create">
+              <GenreCreate />
+            </Route>
+            <Route exact path="/language">
+              <Languages />
+            </Route>
+            <Route exact path="/language/:id(\d+)">
+              <LanguageDetails />
+            </Route>
+            <Route exact path="/language/create">
+              <LanguageCreate />
+            </Route>
+            <Route exact path="/language/:id(\d+)/update">
+              <LanguageUpdate />
+            </Route>
+            <Route exact path="/language/:id(\d+)/delete">
+              <LanguageDelete />
+            </Route>
             <Route>
               <ErrorComponent error={{ status: 404, message: "Not found." }} />
             </Route>
