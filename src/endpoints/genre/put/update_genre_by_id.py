@@ -1,7 +1,7 @@
 import logging
 
-from fastapi import Depends, HTTPException, Path, status
-from sqlalchemy import select
+from fastapi import Depends, Path, status
+from sqlalchemy import and_, not_, select
 from sqlalchemy.orm import Session
 
 from src.dependencies import get_current_librarian, get_db
@@ -31,7 +31,9 @@ async def update_genre_by_id(
     """
     logging.info("Updating genre in database with id: " + str(genre_id))
     found_genre = db.scalar(
-        select(all_models.Genre).where(all_models.Genre.id == genre_id)
+        select(all_models.Genre).where(
+            and_(all_models.Genre.id == genre_id, not_(all_models.Genre.is_deleted))
+        )
     )
     if not found_genre:
         logging.warning("Genre not found in database")
