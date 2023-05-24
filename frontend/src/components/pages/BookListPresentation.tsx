@@ -1,6 +1,7 @@
-import { Link } from 'react-router-dom'
-import { BookSaved } from '../../CustomTypes'
-import LibrarianLinks from '../LibrarianLinks'
+import React, { useState } from 'react';
+import { Link } from 'react-router-dom';
+import { BookSaved } from '../../CustomTypes';
+import LibrarianLinks from '../LibrarianLinks';
 import '../style.css'; // Import the Genres CSS file
 import ScrollView from '../Scrollview';
 
@@ -9,35 +10,55 @@ export const BookListPresentation = (props: {
   url: string;
   showLinks: boolean;
 }) => {
-  /*
-   * BookListPresentation displays the list of books. It does not have to perform any api calls
-   * or computations. It simply displays the content received as properties.
-   */
+  const [searchTerm, setSearchTerm] = useState<string>(''); // State for the search term
+
+  // Filtered books based on search term
+  const filteredBooks = props.books.filter(book =>
+    book.title.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
+  const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setSearchTerm(e.target.value);
+  };
 
   return (
     <div className='modal'>
+      <div style={{display:'flex',   justifyContent:'center'}}>
       <h1>Books</h1>
+      </div>
+      <div style={{display:'flex', flexDirection:'row', justifyContent:'space-evenly'}}>
+      <div>
+      <h3>Search Book: </h3>
+      </div>
+      <div style={{marginTop:18}}>
+      <input
+        type="text"
+        placeholder="Search books..."
+        value={searchTerm}
+        onChange={handleSearchChange}
+      />
+      </div>
+      </div>
+      <br/>
       <ScrollView>
-        
-      <ul>
-        {props.books.map((book) => (
-          <li
-            key={book.id.toString()}
-            data-testid={"item" + book.id.toString()}
-          >
-            <Link to={"/books/" + book.id.toString()}>{book.title}</Link>
-
-            {props.showLinks && (
-              <LibrarianLinks url={`${props.url}/${book.id}`} />
-            )}
-          </li>
-        ))}
-      </ul>
+        <div className="card-container">
+          {filteredBooks.map((book) => (
+            <div key={book.id.toString()} className="card" data-testid={"item" + book.id.toString()}>
+              <Link to={"/books/" + book.id.toString()}>{book.title}</Link>
+              <p>{book.description}</p>
+              {props.showLinks && (
+                <LibrarianLinks url={`${props.url}/${book.id}`} />
+              )}
+            </div>
+          ))}
+        </div>
       </ScrollView>
       {props.showLinks && (
-        <>
+        <div style={{display:'flex', justifyContent:'center'}}>
+          <div>
           <Link to={`${props.url}/create`} className='genre-link'> Create Book </Link>
-        </>
+        </div>
+        </div>
       )}
     </div>
   );

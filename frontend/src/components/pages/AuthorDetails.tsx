@@ -54,15 +54,15 @@ function AuthorDetails() {
   //This creates links to the update and delete librarian pages
   function librarianLinks() {
     return (
-      <>
-        <Link to={`${url}/update`} style={{ color: "orange" }}>
-          {" "}
-          Update{" "}
+      <div style={{display:'flex', justifyContent:'center'}}>
+        <Link to={`${url}/update`} className="genre-list-update-button">
+          {' '}
+          Update{' '}
         </Link>
-        <Link to={`${url}/delete`} style={{ color: "red" }}>
+        <Link to={`${url}/delete`} className="genre-list-delete-button">
           Delete
         </Link>
-      </>
+      </div>
     );
   }
 
@@ -74,7 +74,8 @@ function AuthorDetails() {
 
   return (
     <div className='background-image'>
-      <h1>
+      <div className="modal">
+        <h1>
         Author: {lastName}, {firstName}
       </h1>
       {isLibrarian === true ? librarianLinks() : null}
@@ -88,6 +89,8 @@ function AuthorDetails() {
         <BookListPresentation showLinks={false} books={books} url={url} />
       </div>
     </div>
+    </div>
+
   );
 }
 
