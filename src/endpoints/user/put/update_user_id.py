@@ -35,6 +35,7 @@ async def update_current_user_by_id(
     Params
     ------
     Requires user to be logged in using JWT as librarian\n
+    old_password is the librarian's password\n
     Returns
     ------
     dict : A dict with status code, details and data

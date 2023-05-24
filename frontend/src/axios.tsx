@@ -16,6 +16,8 @@ import {
   UserDetails,
   CopyOut,
   Status,
+  BorrowedIn,
+  BorrowedOut,
 } from "./CustomTypes";
 import jwt_decode from "jwt-decode";
 import { DecodedRefreshToken } from "./contexts/AuthContext";
@@ -48,7 +50,7 @@ export class APIClient {
     if (error.response) {
       const err: ErrorObject = {
         status: error.response.status,
-        message: error.response.data.data.detail,
+        message: error.response.data.detail,
       };
       return err;
     }
@@ -573,6 +575,57 @@ export class APIClient {
       console.log(id);
       return id;
     });
+  }
+
+  private borrowedDeserialize(json: any): BorrowedIn {
+    let borrowed: BorrowedIn = json;
+
+    borrowed.id = json.id;
+    borrowed.copy = this.copyDeserialize(json.copy);
+    borrowed.user = json.user;
+    borrowed.dueDate = json.due_date;
+    borrowed.issueDate = json.issue_date;
+    borrowed.returnDate = json.return_date;
+    return borrowed;
+  }
+
+  public borrowedSerialize(borrowed: BorrowedOut) {
+    let serialized = {
+      copy_id: borrowed.copyId,
+      user_id: borrowed.userId,
+      due_date: borrowed.dueDate,
+      issue_date: borrowed.issueDate,
+      return_date: borrowed.returnDate,
+    };
+
+    return serialized;
+  }
+
+  public GetMyBorrowed(): Promise<BorrowedIn[]> {
+    return new Promise((resolve, reject) => {
+      let myBorrowed: BorrowedIn[];
+      APIClient.axiosInstance
+        .get("/borrowed/user")
+        .then((response) => {
+          myBorrowed = response.data.data.map((borrowed: any) =>
+            this.borrowedDeserialize(borrowed)
+          );
+          resolve(myBorrowed);
+        })
+        .catch((error) => {
+          reject(APIClient.instance.handleErrors(error));
+        });
+    });
+  }
+
+  public CreateBorrowed(borrowed: BorrowedOut): Promise<number> {
+    return APIClient.axiosInstance
+      .post("/borrowed/", this.borrowedSerialize(borrowed))
+      .then((res) => {
+        // An id is assigned to book once its saved in backend server
+        const id: number = res.data.data.id;
+        return id;
+      });
   }
 
   //Helper function for the axios interceptors.

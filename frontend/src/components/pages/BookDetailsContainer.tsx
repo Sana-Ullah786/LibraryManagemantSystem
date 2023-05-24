@@ -16,7 +16,11 @@ export const BookDetailsContainer = (props: { showLinks?: boolean }) => {
   //id is extracted from url
   let { id }: { id: string } = useParams();
 
-  const { isLibrarian }: { isLibrarian: boolean } = useContext(AuthContext);
+  const {
+    isLibrarian,
+    isAuthenticated,
+  }: { isLibrarian: boolean; isAuthenticated: boolean } =
+    useContext(AuthContext);
   let { url }: { url: string } = useRouteMatch(); // The url of this page
 
   // book, genre and language are intentially allowed to be undefined. We display the page once these values are loaded
@@ -52,16 +56,17 @@ export const BookDetailsContainer = (props: { showLinks?: boolean }) => {
     // The book details are presented once all details have been received
     return (
       <>
-      <div className="background-image">
-      <div className="modal">
-        <BookDetailsPresentation
-          url={url}
-          showLinks={props.showLinks}
-          isLibrarian={isLibrarian}
-          id={parseInt(id)}
-          book={book}
-        />
-        </div>  
+        <div className="background-image">
+          <div className="modal">
+            <BookDetailsPresentation
+              url={url}
+              showLinks={props.showLinks}
+              isLibrarian={isLibrarian}
+              id={parseInt(id)}
+              book={book}
+              isAuthenticated={isAuthenticated}
+            />
+          </div>
         </div>
       </>
     );

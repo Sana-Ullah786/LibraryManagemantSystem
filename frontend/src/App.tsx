@@ -34,6 +34,8 @@ import Copies from "./components/pages/Copies";
 import CopyCreate from "./components/pages/CopyCreate";
 import CopyUpdate from "./components/pages/CopyUpdate";
 import CopyDelete from "./components/pages/CopyDelete";
+import MyBorrowed from "./components/pages/MyBorrowed";
+import BorrowBook from "./components/pages/BorrowBook";
 
 function App() {
   return (
@@ -82,6 +84,9 @@ function App() {
             {/* URL for the update page of a specific book */}
             <Route exact path="/books/:id(\d+)/update">
               <BookUpdate />
+            </Route>
+            <Route exact path="/books/:id(\d+)/borrow">
+              <BorrowBook />
             </Route>
             {/* URL for the book Creation page */}
             <Route exact path="/books/create">
@@ -153,6 +158,9 @@ function App() {
             </Route>
             <Route exact path="/users/:id(\d+)/update">
               <UserUpdate />
+            </Route>
+            <Route exact path="/my_borrowed">
+              <MyBorrowed />
             </Route>
             <Route>
               <ErrorComponent error={{ status: 404, message: "Not found." }} />
