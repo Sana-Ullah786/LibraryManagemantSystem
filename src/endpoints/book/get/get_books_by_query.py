@@ -2,7 +2,7 @@ import logging
 from typing import Annotated, List
 
 from fastapi import Depends, HTTPException, Query
-from sqlalchemy import and_, asc, select
+from sqlalchemy import and_, asc, not_, select
 from sqlalchemy.orm import Session
 from starlette import status
 
@@ -61,6 +61,8 @@ async def get_books_by_query(
                 status_code=status.HTTP_404_NOT_FOUND, details="Language not found"
             )
         query = query.filter(Book.language_id == language)
+    # get all those books which are not deleted
+    query = query.filter(not_(Book.is_deleted))
     books = query.offset(starting_index).limit(page_size).all()
     return custom_response(
         status_code=status.HTTP_200_OK,
