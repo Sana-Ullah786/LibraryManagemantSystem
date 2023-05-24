@@ -2,7 +2,7 @@ import logging
 from typing import List
 
 from fastapi import Depends, Path, status
-from sqlalchemy import select
+from sqlalchemy import and_, not_, select
 from sqlalchemy.orm import Session
 
 from src.dependencies import get_current_librarian, get_db
@@ -26,7 +26,13 @@ async def get_all_borrowed_for_any_user(
     )
 
     all_borrowed = (
-        db.scalars(select(Borrowed).where(Borrowed.user_id == user_id)).unique().all()
+        db.scalars(
+            select(Borrowed).where(
+                and_(Borrowed.user_id == user_id, not_(Borrowed.is_deleted))
+            )
+        )
+        .unique()
+        .all()
     )
     return custom_response(
         status_code=status.HTTP_200_OK,

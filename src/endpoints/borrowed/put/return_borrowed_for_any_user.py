@@ -1,7 +1,7 @@
 import logging
 
-from fastapi import Depends, HTTPException, Path, status
-from sqlalchemy import select
+from fastapi import Depends, Path, status
+from sqlalchemy import and_, not_, select
 from sqlalchemy.orm import Session
 
 from src.dependencies import get_current_librarian, get_db
@@ -18,7 +18,7 @@ from src.status_constants import AVAILABLE, BORROWED
     response_model=None,
     status_code=status.HTTP_200_OK,
 )
-async def return_borrowed_for_user(
+async def return_borrowed_any_for_user(
     borrowed: BorrowedSchema,
     borrowed_id: int = Path(gt=-1),
     db: Session = Depends(get_db),
@@ -36,7 +36,12 @@ async def return_borrowed_for_user(
     """
     logging.info("Updating borrowed in database with id: " + str(borrowed_id))
     found_borrowed = db.scalar(
-        select(all_models.Borrowed).where(all_models.Borrowed.id == borrowed_id)
+        select(all_models.Borrowed).where(
+            and_(
+                all_models.Borrowed.id == borrowed_id,
+                not_(all_models.Borrowed.is_deleted),
+            )
+        )
     )
     if not found_borrowed:
         logging.warning("Borrowed not found in database with id: " + str(borrowed_id))
@@ -44,7 +49,12 @@ async def return_borrowed_for_user(
             status_code=status.HTTP_404_NOT_FOUND, details="Borrowed not found."
         )
     found_copy = db.scalar(
-        select(all_models.Copy).where(all_models.Copy.id == found_borrowed.copy_id)
+        select(all_models.Copy).where(
+            and_(
+                all_models.Copy.id == found_borrowed.copy_id,
+                not_(all_models.Copy.is_deleted),
+            )
+        )
     )
     if not found_copy:
         logging.warning(
@@ -54,7 +64,12 @@ async def return_borrowed_for_user(
             status_code=status.HTTP_404_NOT_FOUND, details="Copy not found."
         )
     found_status = db.scalar(
-        select(all_models.Status).where(all_models.Status.id == found_copy.status_id)
+        select(all_models.Status).where(
+            and_(
+                all_models.Status.id == found_copy.status_id,
+                not_(all_models.Status.is_deleted),
+            )
+        )
     )
     if not found_status:
         logging.warning(
@@ -73,7 +88,12 @@ async def return_borrowed_for_user(
     try:
         found_borrowed.return_date = borrowed.return_date
         found_copy.status_id = db.scalars(
-            select(all_models.Status.id).where(all_models.Status.status == AVAILABLE)
+            select(all_models.Status.id).where(
+                and_(
+                    all_models.Status.status == AVAILABLE,
+                    not_(all_models.Status.is_deleted),
+                )
+            )
         ).first()
         db.commit()
         logging.info("Updated borrowed in database with id: " + str(borrowed_id))
