@@ -2,6 +2,7 @@ from sqlalchemy import select
 from sqlalchemy.orm import sessionmaker
 from starlette import status
 
+from src.dependencies import redis_conn
 from src.models.user import User
 from tests.client import client
 # fmt: off
@@ -35,36 +36,6 @@ def test_get_user_by_id(test_db: sessionmaker) -> None:
     assert response.json()["data"].get("username") == "user1"
 
     response = client.get("/user/3", headers={"Authorization": f"Bearer {token}"})
-    assert response.status_code == status.HTTP_404_NOT_FOUND
-
-
-def test_delete_current_user(test_db: sessionmaker) -> None:
-    check_no_auth("/user/", client.delete)
-    token = get_fresh_token(test_db, TEST_USER_CRED)
-    response = client.delete("/user/", headers={"Authorization": f"Bearer {token}"})
-    assert response.status_code == status.HTTP_204_NO_CONTENT
-
-    token = get_fresh_token(test_db, SUPER_USER_CRED)
-    response = client.delete("/user/", headers={"Authorization": f"Bearer {token}"})
-    assert response.status_code == status.HTTP_204_NO_CONTENT
-
-
-def test_delete_user_by_id(test_db: sessionmaker) -> None:
-    check_no_auth("/user/2", client.delete)
-    token = get_fresh_token(test_db, TEST_USER_CRED)
-    response = client.delete("/user/2", headers={"Authorization": f"Bearer {token}"})
-    assert response.status_code == status.HTTP_401_UNAUTHORIZED
-
-    token = get_fresh_token(test_db, SUPER_USER_CRED)
-    response = client.delete("/user/2", headers={"Authorization": f"Bearer {token}"})
-    assert response.status_code == status.HTTP_204_NO_CONTENT
-
-    # Checking if the soft delete column is toggled by the soft delete api.
-    with test_db() as db:
-        deleted_user = db.scalar(select(User).where(User.id == 2))
-        assert deleted_user.is_deleted is True
-
-    response = client.delete("/user/2", headers={"Authorization": f"Bearer {token}"})
     assert response.status_code == status.HTTP_404_NOT_FOUND
 
 
@@ -162,3 +133,38 @@ def test_filter_user(test_db: sessionmaker) -> None:
     assert response.status_code == status.HTTP_200_OK
     assert len(response.json()["data"]) == 1
     assert response.json()["data"][0].get("username") == LIB_USER.get("username")
+
+
+def test_delete_current_user(test_db: sessionmaker) -> None:
+    check_no_auth("/user/", client.delete)
+    token = get_fresh_token(test_db, TEST_USER_CRED)
+    response = client.delete("/user/", headers={"Authorization": f"Bearer {token}"})
+    assert response.status_code == status.HTTP_204_NO_CONTENT
+
+    token = get_fresh_token(test_db, SUPER_USER_CRED)
+    response = client.delete("/user/", headers={"Authorization": f"Bearer {token}"})
+    assert response.status_code == status.HTTP_204_NO_CONTENT
+    # removeing black listed user from redis for further test
+    redis_conn.delete("bl_user_2")
+    redis_conn.delete("bl_user_1")
+
+
+def test_delete_user_by_id(test_db: sessionmaker) -> None:
+    check_no_auth("/user/2", client.delete)
+    token = get_fresh_token(test_db, TEST_USER_CRED)
+    response = client.delete("/user/2", headers={"Authorization": f"Bearer {token}"})
+    assert response.status_code == status.HTTP_401_UNAUTHORIZED
+
+    token = get_fresh_token(test_db, SUPER_USER_CRED)
+    response = client.delete("/user/2", headers={"Authorization": f"Bearer {token}"})
+    assert response.status_code == status.HTTP_204_NO_CONTENT
+
+    # Checking if the soft delete column is toggled by the soft delete api.
+    with test_db() as db:
+        deleted_user = db.scalar(select(User).where(User.id == 2))
+        assert deleted_user.is_deleted is True
+
+    response = client.delete("/user/2", headers={"Authorization": f"Bearer {token}"})
+    assert response.status_code == status.HTTP_404_NOT_FOUND
+    redis_conn.delete("bl_user_2")
+    redis_conn.delete("bl_user_1")
