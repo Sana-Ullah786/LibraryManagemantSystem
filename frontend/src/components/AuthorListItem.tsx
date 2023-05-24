@@ -38,7 +38,9 @@ function AuthorListItem(props: AuthorListItemProps) {
   return (
     <>
       <Link to={props.linksto}>
-        {props.item.last_name},{props.item.first_name}
+        {props.item.last_name}, {props.item.first_name}
+        <br></br>
+        <br></br>
         <span>
           {"("}
           <span style={{ fontWeight: "bold" }}>
@@ -54,6 +56,8 @@ function AuthorListItem(props: AuthorListItemProps) {
           </span>
           {")"}
         </span>
+        <br></br>
+        <br></br>
       </Link>
       {isLibrarian === true ? librarianLinks() : null}
     </>

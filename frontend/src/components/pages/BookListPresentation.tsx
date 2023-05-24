@@ -1,11 +1,11 @@
-import { Link } from 'react-router-dom'
-import { BookSaved } from '../../CustomTypes'
-import LibrarianLinks from '../LibrarianLinks'
-import '../style.css'; // Import the Genres CSS file
-import ScrollView from '../Scrollview';
+import { Link } from "react-router-dom";
+import { BookIn } from "../../CustomTypes";
+import LibrarianLinks from "../LibrarianLinks";
+import "../style.css"; // Import the Genres CSS file
+import ScrollView from "../Scrollview";
 
 export const BookListPresentation = (props: {
-  books: BookSaved[];
+  books: BookIn[];
   url: string;
   showLinks: boolean;
 }) => {
@@ -15,28 +15,30 @@ export const BookListPresentation = (props: {
    */
 
   return (
-    <div className='modal'>
+    <div className="modal">
       <h1>Books</h1>
       <ScrollView>
-        
-      <ul>
-        {props.books.map((book) => (
-          <li
-            key={book.id.toString()}
-            data-testid={"item" + book.id.toString()}
-          >
-            <Link to={"/books/" + book.id.toString()}>{book.title}</Link>
+        <ul>
+          {props.books.map((book) => (
+            <li
+              key={book.id.toString()}
+              data-testid={"item" + book.id.toString()}
+            >
+              <Link to={"/books/" + book.id.toString()}>{book.title}</Link>
 
-            {props.showLinks && (
-              <LibrarianLinks url={`${props.url}/${book.id}`} />
-            )}
-          </li>
-        ))}
-      </ul>
+              {props.showLinks && (
+                <LibrarianLinks url={`${props.url}/${book.id}`} />
+              )}
+            </li>
+          ))}
+        </ul>
       </ScrollView>
       {props.showLinks && (
         <>
-          <Link to={`${props.url}/create`} className='genre-link'> Create Book </Link>
+          <Link to={`${props.url}/create`} className="genre-link">
+            {" "}
+            Create Book{" "}
+          </Link>
         </>
       )}
     </div>
