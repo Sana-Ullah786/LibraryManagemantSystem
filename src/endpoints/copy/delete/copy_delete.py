@@ -1,7 +1,7 @@
 import logging
 
-from fastapi import Depends, HTTPException
-from sqlalchemy import delete, select
+from fastapi import Depends
+from sqlalchemy import and_, not_, select
 from sqlalchemy.orm import Session
 from starlette import status
 
@@ -24,14 +24,18 @@ async def copy_delete(
         f"Book Delete with id :{copy_id} Request by Librarian {librarian['id']}"
     )
 
-    copy_model = db.execute(select(Copy).where(Copy.id == copy_id)).scalars().first()
+    copy_model = (
+        db.execute(select(Copy).where(and_(Copy.id == copy_id, not_(Copy.is_deleted))))
+        .scalars()
+        .first()
+    )
 
     if copy_model is None:
         raise custom_exception(
             status_code=status.HTTP_404_NOT_FOUND, details="Copy not found"
         )
 
-    db.execute(delete(Copy).where(Copy.id == copy_id))
+    copy_model.is_deleted = True
     db.commit()
     logging.info(
         f"Book Updated with id :{copy_id} Request by Librarian {librarian['id']}"
