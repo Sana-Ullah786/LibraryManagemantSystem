@@ -53,11 +53,13 @@ function Genres() {
 
   return (
     <div className="background-image">
+      <div className='modal'>
       <h1>Genre List</h1>
       <ul className="genre-list">
         {setGenreListItemComponent(genreList)}
       </ul>
       {isLibrarian ? createGenreLink() : null}
+    </div>
     </div>
   );
 }

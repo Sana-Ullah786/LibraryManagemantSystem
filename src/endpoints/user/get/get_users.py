@@ -1,7 +1,7 @@
 import logging
 
 from fastapi import Depends, Path
-from sqlalchemy import select
+from sqlalchemy import and_, not_, select
 from sqlalchemy.orm import Session
 from starlette import status
 
@@ -30,7 +30,13 @@ async def get_user_by_id(
     dict : A dict with status code, details and data
     """
     try:
-        user = db.execute(select(User).where(User.id == user_id)).scalars().first()
+        user = (
+            db.execute(
+                select(User).where(and_(User.id == user_id, not_(User.is_deleted)))
+            )
+            .scalars()
+            .first()
+        )
     except Exception as e:
         logging.exception(f"Exception occured -- {__name__}.get_user_by_id")
         raise custom_exception(

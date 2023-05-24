@@ -9,6 +9,17 @@ export interface AuthorDetails {
   death_date?: string | null;
 }
 
+export interface UserDetails {
+  id : number;
+  email: string;
+  username: string;
+  password: string;
+  first_name: string;
+  last_name: string;
+  contact_number: string;
+  address: string;
+}
+
 export interface Author extends AuthorDetails {
   id: number;
 }
@@ -38,19 +49,35 @@ export interface BookOut extends BookBase {
   numberOfCopies: number;
 }
 
-export interface BookSaved extends BookBase {
+export interface BookIn extends BookBase {
   id: number;
   authors: Author[];
   language: Language;
   genres: Genre[];
 }
 
-//Genre Interfaces
+export interface Status {
+  id: number;
+  status: string;
+}
 
+export interface CopyOut {
+  languageId: number;
+  bookId: number;
+  statusId: number;
+}
 
+export interface CopyIn {
+  id: number;
+  language: Language;
+  book: BookIn;
+  status: Status;
+}
+
+// The properties of Genre are stored in this type
 export interface Genre {
   id: number;
-  genre: string ;
+  genre: string;
 }
 
 export interface GenreDetails {

@@ -1,31 +1,39 @@
-import './App.css';
-import Navbar from './components/Navbar';
+import "./App.css";
+import Navbar from "./components/Navbar";
 import Authors from "./components/pages/Authors";
 import Home from "./components/pages/Home";
-import Login from "./components/pages/Login"
-import AuthorDetails from './components/pages/AuthorDetails';
-import { BrowserRouter as Router, Route, Switch } from 'react-router-dom';
-import AuthContextProvider from './contexts/AuthContext';
-import AuthorDelete from './components/pages/AuthorDelete';
-import AuthorUpdate from './components/pages/AuthorUpdate';
-import AuthorCreate from './components/pages/AuthorCreate';
-import { BookListContainer } from './components/pages/BookListContainer';
-import { BookDetailsContainer } from './components/pages/BookDetailsContainer';
-import ErrorComponent from './components/ErrorComponent';
-import BookDelete from './components/pages/BookDelete';
-import BookUpdate from './components/pages/BookUpdate';
-import BookCreate from './components/pages/BookCreate';
-import Signup from './components/pages/Signup';
-import Genres from './components/pages/Genres';
-import GenreCreate from './components/pages/GenreCreate';
-import GenreUpdate from './components/pages/GenreUpdate';
-import GenreDetails from './components/pages/GenreDetails';
-import GenreDelete from './components/pages/GenreDelete';
-import Languages from './components/pages/Languages';
-import LanguageCreate from './components/pages/LanguageCreate';
-import LanguageDetails from './components/pages/LanguageDetails';
-import LanguageDelete from './components/pages/LanguageDelete';
-import LanguageUpdate from './components/pages/LanguageDelete';
+import Login from "./components/pages/Login";
+import AuthorDetails from "./components/pages/AuthorDetails";
+import { BrowserRouter as Router, Route, Switch } from "react-router-dom";
+import AuthContextProvider from "./contexts/AuthContext";
+import AuthorDelete from "./components/pages/AuthorDelete";
+import AuthorUpdate from "./components/pages/AuthorUpdate";
+import AuthorCreate from "./components/pages/AuthorCreate";
+import { BookListContainer } from "./components/pages/BookListContainer";
+import { BookDetailsContainer } from "./components/pages/BookDetailsContainer";
+import ErrorComponent from "./components/ErrorComponent";
+import BookDelete from "./components/pages/BookDelete";
+import BookUpdate from "./components/pages/BookUpdate";
+import BookCreate from "./components/pages/BookCreate";
+import Signup from "./components/pages/Signup";
+import Genres from "./components/pages/Genres";
+import GenreCreate from "./components/pages/GenreCreate";
+import GenreUpdate from "./components/pages/GenreUpdate";
+import GenreDetails from "./components/pages/GenreDetails";
+import GenreDelete from "./components/pages/GenreDelete";
+import Languages from "./components/pages/Languages";
+import LanguageCreate from "./components/pages/LanguageCreate";
+import LanguageDetails from "./components/pages/LanguageDetails";
+import LanguageDelete from "./components/pages/LanguageDelete";
+import LanguageUpdate from "./components/pages/LanguageUpdate";
+import Users from "./components/pages/Users";
+import UserDetails from "./components/pages/UserDetails";
+import UserCreate from "./components/pages/UserCreate";
+import UserUpdate from "./components/pages/UserUpdate";
+import Copies from "./components/pages/Copies";
+import CopyCreate from "./components/pages/CopyCreate";
+import CopyUpdate from "./components/pages/CopyUpdate";
+import CopyDelete from "./components/pages/CopyDelete";
 
 function App() {
   return (
@@ -83,27 +91,35 @@ function App() {
             <Route exact path="/books">
               <BookListContainer />
             </Route>
+            <Route path="/copies/:id(\d+)/update">
+              <CopyUpdate />
+            </Route>
+            <Route path="/copies/:id(\d+)/delete">
+              <CopyDelete />
+            </Route>
+            <Route path="/books/:id(\d+)/copies/add">
+              <CopyCreate />
+            </Route>
+            <Route path="/books/:id(\d+)/copies">
+              <Copies />
+            </Route>
             {/* URL for book details page*/}
             <Route path="/books/:id(\d+)">
               <BookDetailsContainer />
             </Route>
-
-
             <Route exact path="/signup">
               <Signup />
             </Route>
-
-
             <Route exact path="/genre">
               <Genres />
             </Route>
-            <Route exact path="/genre/:id(\d+)"> 
+            <Route exact path="/genre/:id(\d+)">
               <GenreDetails />
-            </Route> 
+            </Route>
             URL for the deletion page of a specific author
             <Route exact path="/genre/:id(\d+)/delete">
               <GenreDelete />
-            </Route> 
+            </Route>
             URL for the update page of a specific author
             <Route exact path="/genre/:id(\d+)/update">
               <GenreUpdate />
@@ -111,35 +127,40 @@ function App() {
             <Route exact path="/genre/create">
               <GenreCreate />
             </Route>
-
-
             <Route exact path="/language">
               <Languages />
-            </Route>       
-            <Route exact path="/language/:id(\d+)"> 
+            </Route>
+            <Route exact path="/language/:id(\d+)">
               <LanguageDetails />
-            </Route>                  
+            </Route>
             <Route exact path="/language/create">
               <LanguageCreate />
-            </Route> 
+            </Route>
             <Route exact path="/language/:id(\d+)/update">
               <LanguageUpdate />
             </Route>
             <Route exact path="/language/:id(\d+)/delete">
               <LanguageDelete />
             </Route>
-
-
-
+            <Route exact path="/users">
+              <Users />
+            </Route>
+            <Route exact path="/users/:id(\d+)">
+              <UserDetails />
+            </Route>
+            <Route exact path="/users/create">
+              <UserCreate />
+            </Route>
+            <Route exact path="/users/:id(\d+)/update">
+              <UserUpdate />
+            </Route>
             <Route>
               <ErrorComponent error={{ status: 404, message: "Not found." }} />
             </Route>
           </Switch>
         </AuthContextProvider>
-
       </div>
     </Router>
-
   );
 }
 

@@ -76,6 +76,7 @@ async def book_create(
         )
         book_id = book_model.id
         copy_models = []
+        print(book.no_of_copies)
         for i in range(book.no_of_copies):
             copy = Copy(book_id=book_id, language_id=book.language_id, status_id=1)
             copy_models.append(copy)

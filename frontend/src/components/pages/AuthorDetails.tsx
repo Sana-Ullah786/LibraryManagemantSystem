@@ -3,7 +3,7 @@ import { useParams, Link, useRouteMatch } from "react-router-dom";
 
 import { client } from "../../axios";
 import { AuthContext } from "../../contexts/AuthContext";
-import { BookSaved, ErrorObject } from "../../CustomTypes";
+import { BookIn, ErrorObject } from "../../CustomTypes";
 import ErrorComponent from "../ErrorComponent";
 import { BookListPresentation } from "./BookListPresentation";
 
@@ -18,7 +18,7 @@ function AuthorDetails() {
   const [lastName, setLastName] = useState<string | null | undefined>("");
   const [dateOfBirth, setDateOfBirth] = useState<string | null | undefined>("");
   const [dateOfDeath, setDateOfDeath] = useState<string | null | undefined>("");
-  const [books, setBooks] = useState<BookSaved[]>([]);
+  const [books, setBooks] = useState<BookIn[]>([]);
   const [error, setError] = useState<ErrorObject>();
 
   //Getting the details of a specific author from the api endpoint
@@ -73,7 +73,7 @@ function AuthorDetails() {
   }
 
   return (
-    <div className='background-image'>
+    <div className="background-image">
       <h1>
         Author: {lastName}, {firstName}
       </h1>

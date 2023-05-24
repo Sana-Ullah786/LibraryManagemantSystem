@@ -2,30 +2,28 @@ import { ReactElement, useState } from "react";
 import { useHistory, useParams } from "react-router-dom";
 import { useEffect } from "react";
 import { client } from "../../axios";
-import { BookOut, BookIn } from "../../CustomTypes";
-import BookForm from "../BookForm";
-
+import { CopyIn, CopyOut } from "../../CustomTypes";
+import CopyForm from "../CopyForm";
 /**
  * The BookUpdate component displays a form for updating book details.
  * @returns The component to be rendered
  */
-function BookUpdate(): ReactElement {
+function CopyUpdate(): ReactElement {
   const history = useHistory();
   let { id }: { id: string } = useParams(); // id is extracted from url
 
   // Fetching the book to be edited
-  let [currBook, setCurrBook]: [
-    BookIn | undefined,
-    React.Dispatch<React.SetStateAction<BookIn | undefined>>
+  let [currCopy, setCurrCopy]: [
+    CopyIn | undefined,
+    React.Dispatch<React.SetStateAction<CopyIn | undefined>>
   ] = useState();
 
   // This effect fetches the book
   useEffect(() => {
     client
-      .GetBookDetails(id)
-      .then((bookResponse: BookIn) => {
-        let book: any = { ...bookResponse };
-        setCurrBook(book);
+      .GetCopyDetails(id)
+      .then((copyResponse: CopyIn) => {
+        setCurrCopy(copyResponse);
       })
       .catch((error) => {
         console.log(error);
@@ -38,12 +36,12 @@ function BookUpdate(): ReactElement {
    * Once updated, we navigate to the details page for the book.
    * @param book The updated details of the book that were entered into the form.
    */
-  function submitHandler(book: BookOut) {
-    if (currBook) {
+  function submitHandler(copy: CopyOut) {
+    if (currCopy) {
       client
-        .UpdateBook(book, currBook.id)
-        .then((bookId) => {
-          history.push("/books/" + currBook?.id);
+        .UpdateCopy(copy, currCopy.id)
+        .then((copyId) => {
+          history.push(`/books/${currCopy?.book.id}/copies`);
         })
         .catch((error) => {
           alert(error);
@@ -54,16 +52,15 @@ function BookUpdate(): ReactElement {
   }
 
   return (
-    <div className='background-image'>
-                <div className='modal'>
-
-      {currBook !== undefined && (
-        <BookForm book={currBook} submitHandler={submitHandler}></BookForm>
-      )}
-      {currBook === undefined && <p>Invalid Id!</p>}
-    </div>
+    <div className="background-image">
+      <div className="modal">
+        {currCopy !== undefined && (
+          <CopyForm copy={currCopy} submitHandler={submitHandler}></CopyForm>
+        )}
+        {currCopy === undefined && <p>Invalid Id!</p>}
+      </div>
     </div>
   );
 }
 
-export default BookUpdate;
+export default CopyUpdate;

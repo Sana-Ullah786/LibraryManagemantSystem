@@ -62,12 +62,15 @@ function GenreCreate(props: Props): ReactElement {
   }
 
   return (
-    <div>
+
+    <div className='background-image'>
+    <div className='modal'>
         <h1>
         Create Genre
         </h1>
         <p>{Error}</p>
       <GenreForm genre="" onSubmit={onSubmit} /> {/* Pass empty string as the genre prop */}
+    </div>
     </div>
   );
 }
