@@ -6,6 +6,7 @@ from sqlalchemy.orm import Session
 
 from src.dependencies import get_current_librarian, get_db
 from src.endpoints.genre.router_init import router
+from src.exceptions import custom_exception
 from src.models import all_models
 from src.responses import custom_response
 from src.schemas import genre
@@ -34,8 +35,8 @@ async def update_genre_by_id(
     )
     if not found_genre:
         logging.warning("Genre not found in database")
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND, detail="Genre not found"
+        raise custom_exception(
+            status_code=status.HTTP_404_NOT_FOUND, details="Genre not found."
         )
     try:
         found_genre.genre = new_genre.genre
@@ -49,4 +50,7 @@ async def update_genre_by_id(
         )
     except Exception as e:
         logging.exception("Error updating Genre in database. Details = " + str(e))
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(e))
+        raise custom_exception(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            details="Error updating Genre in database. details = " + str(e),
+        )

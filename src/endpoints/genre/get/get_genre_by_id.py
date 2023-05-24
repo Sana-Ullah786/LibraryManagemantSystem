@@ -6,6 +6,7 @@ from sqlalchemy.orm import Session
 
 from src.dependencies import get_db
 from src.endpoints.genre.router_init import router
+from src.exceptions import custom_exception
 from src.models import all_models
 from src.responses import custom_response
 
@@ -30,8 +31,8 @@ async def get_genre_by_id(
     ).first()
     if not genre:
         logging.warning("genre not found in database")
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND, detail="Genre not found"
+        raise custom_exception(
+            status_code=status.HTTP_404_NOT_FOUND, details="Genre not found."
         )
     logging.info("Genre found in database and returned")
     return custom_response(

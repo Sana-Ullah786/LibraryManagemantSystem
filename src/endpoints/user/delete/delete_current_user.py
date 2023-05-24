@@ -8,7 +8,6 @@ from sqlalchemy.orm import Session
 from starlette import status
 
 from src.dependencies import get_current_user, get_db, redis_conn
-from src.endpoints.user.exceptions import db_not_available
 from src.endpoints.user.router_init import router
 from src.exceptions import custom_exception
 from src.models.user import User
@@ -42,6 +41,9 @@ async def delete_current_user(
         # Black listing the user so if user is already logged in it wont be able to make further request.
         expire_time = timedelta(minutes=TOKEN_EXPIRE_TIME)
         redis_conn.setex(f"bl_user_{user.get('id')}", expire_time, user.get("id"))
-    except Exception:
+    except Exception as e:
         logging.exception(f"Exception occured -- {__name__}.delete_current_user")
-        raise db_not_available()
+        raise custom_exception(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            details="Error deleting user. details = " + str(e),
+        )

@@ -7,6 +7,7 @@ from starlette import status
 
 from src.dependencies import get_current_librarian, get_db
 from src.endpoints.book.router_init import router
+from src.exceptions import custom_exception
 from src.models.book import Book
 
 
@@ -26,7 +27,9 @@ async def book_delete(
     book_model = db.execute(select(Book).where(Book.id == book_id)).scalars().first()
 
     if book_model is None:
-        raise http_exception()
+        raise custom_exception(
+            status_code=status.HTTP_404_NOT_FOUND, details="Book not found"
+        )
 
     logging.info(
         f"Book with ID: {book_model.id} Deleted by Librarian {librarian['id']}"
@@ -34,11 +37,3 @@ async def book_delete(
 
     db.execute(delete(Book).where(Book.id == book_id))
     db.commit()
-
-
-def http_exception() -> dict:
-    return HTTPException(status_code=404, detail="Book not found")
-
-
-def succesful_response() -> dict:
-    return {"status": 201, "transaction": "succesful_response"}

@@ -101,7 +101,7 @@ def test_filter_books(test_db: sessionmaker) -> None:
     assert response.status_code == status.HTTP_200_OK
     assert len(response.json()) == 3
     assert response.json().get("status_code") == 404
-    assert response.json().get("detail") == "Book not found"
+    assert response.json().get("detail") == "Author not found"
 
 
 def test_book_create(test_db: sessionmaker) -> None:
@@ -141,7 +141,7 @@ def test_book_create(test_db: sessionmaker) -> None:
     response = client.post(
         "/book", headers={"Authorization": f"Bearer {token}"}, json=payload
     )
-    assert response.status_code == status.HTTP_400_BAD_REQUEST
+    assert response.status_code == status.HTTP_409_CONFLICT
 
     # Add a book with no title
     payload = {

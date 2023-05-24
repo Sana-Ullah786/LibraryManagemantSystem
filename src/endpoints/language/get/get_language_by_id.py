@@ -6,6 +6,7 @@ from sqlalchemy.orm import Session
 
 from src.dependencies import get_db
 from src.endpoints.language.router_init import router
+from src.exceptions import custom_exception
 from src.models import all_models
 from src.responses import custom_response
 
@@ -30,8 +31,8 @@ async def get_language_by_id(
     ).first()
     if not language:
         logging.warning("Language not found in database")
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND, detail="Language not found"
+        raise custom_exception(
+            status_code=status.HTTP_404_NOT_FOUND, details="Language not found."
         )
     logging.info("Language found in database and returned")
     return custom_response(

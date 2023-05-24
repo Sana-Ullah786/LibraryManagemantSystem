@@ -7,6 +7,7 @@ from starlette import status
 
 from src.dependencies import get_current_librarian, get_db
 from src.endpoints.status.router_init import router
+from src.exceptions import custom_exception
 from src.models import all_models
 
 
@@ -34,8 +35,8 @@ async def status_delete(
     )
     if not found_status:
         logging.warning("Status not found")
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND, detail="Status not found"
+        raise custom_exception(
+            status_code=status.HTTP_404_NOT_FOUND, details="Status not found"
         )
     try:
         db.delete(found_status)
@@ -43,4 +44,7 @@ async def status_delete(
         logging.info("Deleted status")
     except Exception as e:
         logging.exception("Error deleting status. Details = " + str(e))
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(e))
+        raise custom_exception(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            details="Error deleting status. details = " + str(e),
+        )

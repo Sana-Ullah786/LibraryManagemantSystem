@@ -6,6 +6,7 @@ from starlette import status
 
 from src.dependencies import get_current_librarian, get_db
 from src.endpoints.status.router_init import router
+from src.exceptions import custom_exception
 from src.models.status import Status
 from src.responses import custom_response
 from src.schemas.status import StatusSchema
@@ -41,4 +42,4 @@ async def status_create(
         )
     except Exception as e:
         logging.error(f"{e} -- {__name__}")
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(e))
+        raise custom_exception(status_code=status.HTTP_400_BAD_REQUEST, details=str(e))
