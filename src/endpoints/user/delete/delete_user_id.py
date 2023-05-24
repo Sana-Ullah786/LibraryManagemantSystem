@@ -8,7 +8,6 @@ from sqlalchemy.orm import Session
 from starlette import status
 
 from src.dependencies import get_current_librarian, get_db, redis_conn
-from src.endpoints.user.exceptions import db_not_available, user_not_exist
 from src.endpoints.user.router_init import router
 from src.exceptions import custom_exception
 from src.models.user import User
