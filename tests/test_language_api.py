@@ -4,6 +4,7 @@ from datetime import datetime
 from fastapi import status
 
 from src.endpoints.auth.auth_utils import get_password_hash
+from src.models import all_models
 from src.models.user import User
 from tests.client import client
 
@@ -198,3 +199,53 @@ def test_delete_language_by_id(test_db) -> None:
     response = client.get("/language/")
     assert response.status_code == status.HTTP_200_OK
     assert len(response.json()["data"]) == 0
+
+
+# Test soft delete language
+def test_soft_delete_language(test_db) -> None:
+    """
+    This function will be used to test the soft delete language API.
+    Parameters:
+        test_db: The database session.
+    """
+    test_create_language(test_db)
+    token = get_token_for_user(test_db)
+    # get all languages
+    response = client.get("/language/")
+    assert response.status_code == status.HTTP_200_OK
+    assert len(response.json()["data"]) == 1
+    assert response.json()["data"][0]["language"] == "Test"
+    # soft delete language
+    response = client.delete(
+        "/language/1", headers={"Authorization": f"Bearer {token}"}
+    )
+    assert response.status_code == status.HTTP_204_NO_CONTENT
+    # try again to soft delete language
+    response = client.delete(
+        "/language/1", headers={"Authorization": f"Bearer {token}"}
+    )
+    assert response.status_code == status.HTTP_404_NOT_FOUND
+    # get all languages
+    response = client.get("/language/")
+    assert response.status_code == status.HTTP_200_OK
+    assert len(response.json()["data"]) == 0
+    # update deleted language
+    data = {"language": "Test2"}
+    response = client.put(
+        "/language/1", json=data, headers={"Authorization": f"Bearer {token}"}
+    )
+    assert response.status_code == status.HTTP_404_NOT_FOUND
+    # make it un deleted
+    with test_db() as db:
+        language = (
+            db.query(all_models.Language).filter(all_models.Language.id == 1).first()
+        )
+        language.is_deleted = False
+        db.commit()
+    # update language
+    response = client.put(
+        "/language/1", json=data, headers={"Authorization": f"Bearer {token}"}
+    )
+    assert response.status_code == status.HTTP_200_OK
+    assert response.json()["data"]["language"] == "Test2"
+    assert response.json()["data"]["language_id"] == 1
