@@ -1,15 +1,19 @@
 import logging
+import os
+from datetime import timedelta
 
 from fastapi import Depends, HTTPException, Path
 from sqlalchemy import and_, not_, select
 from sqlalchemy.orm import Session
 from starlette import status
 
-from src.dependencies import get_current_librarian, get_current_user, get_db
+from src.dependencies import get_current_librarian, get_db, redis_conn
 from src.endpoints.user.exceptions import db_not_available, user_not_exist
 from src.endpoints.user.router_init import router
 from src.exceptions import custom_exception
 from src.models.user import User
+
+TOKEN_EXPIRE_TIME = int(os.getenv("JWT_EXPIRE_TIME_IN_MINUTES"))
 
 
 @router.delete("/{user_id}", status_code=status.HTTP_204_NO_CONTENT)
@@ -37,6 +41,9 @@ async def delete_user_by_id(
         user_to_delete.is_deleted = True
         logging.info(f"Deleting user {user_id} -- {__name__}.delete_user_by_id")
         db.commit()
+        # Black listing the user so if user is already logged in it wont be able to make further request.
+        expire_time = timedelta(minutes=TOKEN_EXPIRE_TIME)
+        redis_conn.setex(f"bl_user_{user_id}", expire_time, user_id)
     except HTTPException:
         raise user_not_exist()
     except Exception:

@@ -93,6 +93,14 @@ def check_blacklist_and_decode_jwt(token: str) -> Tuple[str | None]:
     payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
     username = payload.get("sub")
     user_id = payload.get("id")
+    # Validating if user is already blacklisted (Deleted by librarian after users loggin)
+    if redis_conn.get(f"bl_user_{user_id}"):
+        logging.error(f"user deleted -- {__name__}")
+        raise custom_exception(
+            status_code=status.HTTP_404_NOT_FOUND,
+            details="User deleted",
+            headers={"WWW-Authenticate": "Bearer"},
+        )
     is_librarian = payload.get("is_librarian")
     if username is None or user_id is None:
         logging.error(f"invalid username or userid -- {__name__}")
