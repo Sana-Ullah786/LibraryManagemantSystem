@@ -34,7 +34,11 @@ async def get_books_by_query(
 
     if author is not None:
         authordb = (
-            db.execute(select(Author).where(Author.id == author)).scalars().first()
+            db.execute(
+                select(Author).where(and_(Author.id == author, not_(Author.is_deleted)))
+            )
+            .scalars()
+            .first()
         )
         if authordb is None:
             return custom_exception(
@@ -43,7 +47,13 @@ async def get_books_by_query(
         query = query.filter(Book.authors.contains(authordb))
 
     if genre is not None:
-        genredb = db.execute(select(Genre).where(Genre.id == genre)).scalars().first()
+        genredb = (
+            db.execute(
+                select(Genre).where(and_(Genre.id == genre, not_(Genre.is_deleted)))
+            )
+            .scalars()
+            .first()
+        )
         if genredb is None:
             return custom_exception(
                 status_code=status.HTTP_404_NOT_FOUND, details="Genre not found"
@@ -52,7 +62,11 @@ async def get_books_by_query(
 
     if language is not None:
         languagedb = (
-            db.execute(select(Language).where(Language.id == language))
+            db.execute(
+                select(Language).where(
+                    and_(Language.id == language, not_(Language.is_deleted))
+                )
+            )
             .scalars()
             .first()
         )
