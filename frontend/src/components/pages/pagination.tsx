@@ -14,8 +14,8 @@ export function Pagination(props: Props): ReactElement {
         display: "flex",
         flexDirection: "row",
         justifyContent: "space-between",
-        marginLeft: 20,
-        marginRight: 20,
+        margin: 20,
+        width: "100%",
       }}
     >
       <div>

@@ -22,7 +22,7 @@ export const BookListPresentation = (props: {
   };
 
   return (
-    <div className="modal">
+    <>
       <div style={{ display: "flex", justifyContent: "center" }}>
         <h1>Books</h1>
       </div>
@@ -83,6 +83,6 @@ export const BookListPresentation = (props: {
           </div>
         </div>
       )}
-    </div>
+    </>
   );
 };

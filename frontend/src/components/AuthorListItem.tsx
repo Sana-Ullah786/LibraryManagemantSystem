@@ -39,26 +39,27 @@ function AuthorListItem(props: AuthorListItemProps) {
     <>
       <Link to={props.linksto}>
         {props.item.last_name}, {props.item.first_name}
-        <br></br>
-        <br></br>
-        <span>
-          {"("}
-          <span style={{ fontWeight: "bold" }}>
-            {props.item.birth_date == null
-              ? "--"
-              : props.item.birth_date.substring(0, 10).replace(/-/g, "/")}
-          </span>{" "}
-          -{" "}
-          <span style={{ fontWeight: "bold" }}>
-            {props.item.death_date == null
-              ? "--"
-              : props.item.death_date.substring(0, 10).replace(/-/g, "/")}
-          </span>
-          {")"}
-        </span>
-        <br></br>
-        <br></br>
       </Link>
+      <br></br>
+      <br></br>
+      <span>
+        {"("}
+        <span>
+          {props.item.birth_date == null
+            ? "--"
+            : props.item.birth_date.substring(0, 10).replace(/-/g, "/")}
+        </span>{" "}
+        -{" "}
+        <span>
+          {props.item.death_date == null
+            ? "--"
+            : props.item.death_date.substring(0, 10).replace(/-/g, "/")}
+        </span>
+        {")"}
+      </span>
+      <br></br>
+      <br></br>
+
       {isLibrarian === true ? librarianLinks() : null}
     </>
   );

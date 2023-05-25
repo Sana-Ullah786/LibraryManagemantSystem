@@ -7,6 +7,7 @@ import { Author, ErrorObject } from "../../CustomTypes";
 import ErrorComponent from "../ErrorComponent";
 import "../style.css"; // Import the Genres CSS file
 import { Pagination } from "./pagination";
+import ScrollView from "../Scrollview";
 
 function Authors() {
   const { isLibrarian }: { isLibrarian: boolean } = useContext(AuthContext);
@@ -66,13 +67,13 @@ function Authors() {
         //Passing the link to an authors details page as a prop.
         //The AuthorListItem component then uses the linksto prop to create a link to the authors details page
         return (
-          <li className="genre-list-item" key={author.id.toString()}>
+          <div className="card" key={author.id.toString()}>
             <AuthorListItem
               key={author.id}
               item={author}
               linksto={`${url}/${author.id}`}
             />
-          </li>
+          </div>
         );
       }
     });
@@ -92,10 +93,14 @@ function Authors() {
   }
 
   return (
-    <div className="genre-list background-image ">
+    <div className="background-image">
       <div className="modal">
         <h1>Author List</h1>
-        <ul>{setAuthorListItemComponent(authorList)}</ul>
+        <ScrollView>
+          <div className="card-container">
+            {setAuthorListItemComponent(authorList)}
+          </div>
+        </ScrollView>
         {isLibrarian ? createAuthorLink() : null}
         <Pagination
           page={page}
