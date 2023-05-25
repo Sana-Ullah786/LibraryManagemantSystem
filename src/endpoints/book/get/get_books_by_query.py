@@ -8,6 +8,7 @@ from starlette import status
 
 from src.dependencies import get_db
 from src.endpoints.book.router_init import router
+from src.exceptions import custom_exception
 from src.models.author import Author
 from src.models.book import Book
 from src.models.genre import Genre
@@ -36,13 +37,17 @@ async def get_books_by_query(
             db.execute(select(Author).where(Author.id == author)).scalars().first()
         )
         if authordb is None:
-            return http_exception()
+            return custom_exception(
+                status_code=status.HTTP_404_NOT_FOUND, details="Author not found"
+            )
         query = query.filter(Book.authors.contains(authordb))
 
     if genre is not None:
         genredb = db.execute(select(Genre).where(Genre.id == genre)).scalars().first()
         if genredb is None:
-            return http_exception()
+            return custom_exception(
+                status_code=status.HTTP_404_NOT_FOUND, details="Genre not found"
+            )
         query = query.filter(Book.genres.contains(genredb))
 
     if language is not None:
@@ -52,7 +57,9 @@ async def get_books_by_query(
             .first()
         )
         if languagedb is None:
-            return http_exception()
+            return custom_exception(
+                status_code=status.HTTP_404_NOT_FOUND, details="Language not found"
+            )
         query = query.filter(Book.language_id == language)
     books = query.offset(starting_index).limit(page_size).all()
     return custom_response(
@@ -60,7 +67,3 @@ async def get_books_by_query(
         details="Books fetched successfully!",
         data=books,
     )
-
-
-def http_exception() -> dict:
-    return HTTPException(status_code=404, detail="Book not found")

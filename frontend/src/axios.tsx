@@ -2,24 +2,23 @@ import axios, { AxiosInstance, AxiosRequestConfig } from "axios";
 import { HomeData } from "./components/pages/Home";
 import {
   BookOut,
-  BookSaved,
+  BookIn,
   Author,
   AuthorDetails,
   Genre,
   Tokens,
   Language,
   ErrorObject,
+  CopyIn,
   SignupData,
   Genre as GenreDetails,
   LanguageDetails,
   UserDetails,
+  CopyOut,
+  Status,
 } from "./CustomTypes";
 import jwt_decode from "jwt-decode";
 import { DecodedRefreshToken } from "./contexts/AuthContext";
-import { resolve } from "path";
-import { rejects } from "assert";
-
-
 
 export class APIClient {
   /**
@@ -29,7 +28,7 @@ export class APIClient {
 
   private static axiosInstance: AxiosInstance;
   private static instance: APIClient;
-  
+
   //The constructor creates an axiosInstance
   private constructor(options: AxiosRequestConfig) {
     APIClient.axiosInstance = axios.create(options);
@@ -56,12 +55,12 @@ export class APIClient {
   }
 
   //This method uses api call to get book details using id. It returns the received details.
-  public GetBookDetails(id: string): Promise<BookSaved> {
+  public GetBookDetails(id: string): Promise<BookIn> {
     return new Promise((resolve, reject) => {
       APIClient.axiosInstance
         .get("/book/" + id)
         .then((res) => {
-          const book: BookSaved = this.bookDeserialize(res.data.data);
+          const book: BookIn = this.bookDeserialize(res.data.data);
           resolve(book);
         })
         .catch((error) => {
@@ -98,8 +97,8 @@ export class APIClient {
   }
 
   // This method converts a Book object from json to Book interface
-  private bookDeserialize(json: any): BookSaved {
-    let book: BookSaved = json;
+  private bookDeserialize(json: any): BookIn {
+    let book: BookIn = json;
 
     book.authors = json.authors;
     book.language = json.language;
@@ -118,19 +117,19 @@ export class APIClient {
       language_id: book.languageId,
       genre_ids: book.genreIds,
       date_of_publication: book.dateOfPublication,
-      number_of_copies: book.numberOfCopies,
+      no_of_copies: book.numberOfCopies,
     };
 
     return serialized;
   }
 
   //This method uses api call to fetch list of books. It returns this list.
-  public GetBookList(pagenumber : number): Promise<BookSaved[]> {
+  public GetBookList(pagenumber : number): Promise<BookIn[]> {
     return new Promise((resolve, reject) => {
       APIClient.axiosInstance
         .get(`book/?page_number=${pagenumber}&page_size=5`)
         .then((response) => {
-          let bookList: BookSaved[] = [];
+          let bookList: BookIn[] = [];
 
           for (let data of response.data.data) {
             bookList.push(this.bookDeserialize(data));
@@ -149,13 +148,13 @@ export class APIClient {
       genre: genre.genre,
     };
   }
-  
-  public GetBooksForAuthor(authorId: string ): Promise<BookSaved[]> {
+
+  public GetBooksForAuthor(authorId: string ): Promise<BookIn[]> {
     return new Promise((resolve, reject) => {
       APIClient.axiosInstance
         .get(`/book/?author=${authorId}`)
         .then((response) => {
-          let bookList: BookSaved[] = [];
+          let bookList: BookIn[] = [];
 
           for (let data of response.data.data) {
             bookList.push(this.bookDeserialize(data));
@@ -169,12 +168,12 @@ export class APIClient {
     });
   }
 
-  public GetBooksForGenre(genreId: string): Promise<BookSaved[]> {
+  public GetBooksForGenre(genreId: string): Promise<BookIn[]> {
     return new Promise((resolve, reject) => {
       APIClient.axiosInstance
-        .get(`/book/?author=${genreId}`)
+        .get(`/book/?genre=${genreId}`)
         .then((response) => {
-          let bookList: BookSaved[] = [];
+          let bookList: BookIn[] = [];
 
           for (let data of response.data.data) {
             bookList.push(this.bookDeserialize(data));
@@ -188,12 +187,12 @@ export class APIClient {
     });
   }
 
-  public GetBooksForLanguages(languageid: string): Promise<BookSaved[]> {
+  public GetBooksForLanguages(languageid: string): Promise<BookIn[]> {
     return new Promise((resolve, reject) => {
       APIClient.axiosInstance
         .get(`/book/?language=${languageid}`)
         .then((response) => {
-          let bookList: BookSaved[] = [];
+          let bookList: BookIn[] = [];
 
           for (let data of response.data.data) {
             bookList.push(this.bookDeserialize(data));
@@ -206,6 +205,82 @@ export class APIClient {
         });
     });
   }
+
+  private copyDeserialize(json: any): CopyIn {
+    let copy: CopyIn = json;
+
+    copy.id = json.id;
+    copy.book = this.bookDeserialize(json.book);
+    copy.language = json.language;
+    copy.status = json.status;
+    return copy;
+  }
+
+  // This method converts a Book object from json to Book interface
+  public copySerializer(copy: CopyOut) {
+    let serialized = {
+      book_id: copy.bookId,
+      language_id: copy.languageId,
+      status_id: copy.statusId,
+    };
+
+    return serialized;
+  }
+
+  public GetCopiesofBook(bookId: string): Promise<CopyIn[]> {
+    return new Promise((resolve, reject) => {
+      APIClient.axiosInstance
+        .get(`/copy/book/${bookId}`)
+        .then((res) => {
+          const copies: CopyIn[] = res.data.data.map((copy: any) =>
+            this.copyDeserialize(copy)
+          );
+          resolve(copies);
+        })
+        .catch((error) => {
+          reject(APIClient.instance.handleErrors(error));
+        });
+    });
+  }
+
+  public CreateCopy(copy: CopyOut): Promise<number> {
+    return APIClient.axiosInstance
+      .post("/copy/", this.copySerializer(copy))
+      .then((res) => {
+        // An id is assigned to copy once its saved in backend server
+        const id: number = res.data.data.id;
+        return id;
+      });
+  }
+
+  public GetCopyDetails(id: string): Promise<CopyIn> {
+    return new Promise((resolve, reject) => {
+      APIClient.axiosInstance
+        .get("/copy/" + id)
+        .then((res) => {
+          const copy: CopyIn = this.copyDeserialize(res.data.data);
+          resolve(copy);
+        })
+        .catch((error) => {
+          reject(APIClient.instance.handleErrors(error));
+        });
+    });
+  }
+
+  public UpdateCopy(copy: CopyOut, id: number): Promise<boolean> {
+    return APIClient.axiosInstance
+      .put("/copy/" + String(id) + "/", this.copySerializer(copy))
+      .then((res) => {
+        return true;
+      });
+  }
+
+  public DeleteCopy(id: string): Promise<boolean> {
+    return APIClient.axiosInstance.delete("/copy/" + id + "/").then((res) => {
+      return true;
+    });
+  }
+
   // This method fetches and returns the genre using its id.
   public GetGenreDetails(id: number): Promise<Genre> {
     return new Promise((resolve, reject) => {
@@ -256,6 +331,20 @@ export class APIClient {
     });
   }
 
+  public GetAllStatuses(): Promise<Status[]> {
+    return new Promise((resolve, reject) => {
+      APIClient.axiosInstance
+        .get("/status/")
+        .then((res) => {
+          const statuses: Status[] = res.data.data;
+          resolve(statuses);
+        })
+        .catch((error) => {
+          reject(APIClient.instance.handleErrors(error));
+        });
+    });
+  }
+
   // This method fetches and returns all languages
   public GetAllLanguages(): Promise<Language[]> {
     return new Promise((resolve, reject) => {
@@ -272,18 +361,16 @@ export class APIClient {
   }
 
   public DeleteLanguage(id: string): Promise<boolean> {
-    return APIClient.axiosInstance.delete("/language/" + id ).then((res) => {
+    return APIClient.axiosInstance.delete("/language/" + id).then((res) => {
       return true;
     });
   }
 
   public PutLanguage(id: string, data: Language): Promise<Boolean> {
-    return APIClient.axiosInstance
-      .put("/language/" + id, data)
-      .then((res) => {
-        return true;
-      });
-  }  
+    return APIClient.axiosInstance.put("/language/" + id, data).then((res) => {
+      return true;
+    });
+  }
 
   // public PutAuthor(id: string, data: AuthorDetails): Promise<Boolean> {
   //   return APIClient.axiosInstance
@@ -291,7 +378,7 @@ export class APIClient {
   //     .then((res) => {
   //       return true;
   //     });
-  // }  
+  // }
 
   // This method fetches and returns the language using its id.
   public GetLanguageDetails(id: string): Promise<Language> {
@@ -370,8 +457,7 @@ export class APIClient {
     });
   }
 
-  
-  public GetUsersList():Promise<UserDetails[]> {
+  public GetUsersList(): Promise<UserDetails[]> {
     return new Promise((resolve, reject) => {
       let userList: UserDetails[];
       APIClient.axiosInstance
@@ -401,12 +487,11 @@ export class APIClient {
   }
 
   public async PutUser(id: string, data: UserDetails): Promise<Boolean> {
-    const res = await APIClient.axiosInstance
-      .put("/user/" + id + "/", data);
+    const res = await APIClient.axiosInstance.put("/user/" + id + "/", data);
     return true;
   }
 
-  
+
   //Used to get access and refresh tokens for the login component
   public Login(data: FormData): Promise<Tokens> {
     return APIClient.axiosInstance.post("/auth/token", data).then((res) => {
@@ -423,36 +508,25 @@ export class APIClient {
     });
   }
 
-
   public Signup(data: SignupData): Promise<Tokens> {
-    return APIClient.axiosInstance.post("/auth/register", data)
-      .then((res) => {
-        let tokens: Tokens = {
-          access_token: res.data.data.access_token,
-          refresh_token: res.data.data.refresh_token,
-        };
-        localStorage.setItem("access_token", tokens.access_token);
-        localStorage.setItem("refresh_token", tokens.refresh_token);
-        APIClient.instance.SetAuthorizationHeaders(
-          "Bearer " + tokens.access_token
-        );
-        return tokens;
-      });
+    return APIClient.axiosInstance.post("/auth/register", data).then((res) => {
+      let tokens: Tokens = {
+        access_token: res.data.data.access_token,
+        refresh_token: res.data.data.refresh_token,
+      };
+      localStorage.setItem("access_token", tokens.access_token);
+      localStorage.setItem("refresh_token", tokens.refresh_token);
+      APIClient.instance.SetAuthorizationHeaders(
+        "Bearer " + tokens.access_token
+      );
+      return tokens;
+    });
   }
 
-  public LibrarianSignup(data: SignupData): Promise<Tokens> {
+  public LibrarianSignup(data: SignupData): Promise<Boolean> {
     return APIClient.axiosInstance.post("/auth/librarian/register", data)
       .then((res) => {
-        let tokens: Tokens = {
-          access_token: res.data.data.access_token,
-          refresh_token: res.data.data.refresh_token,
-        };
-        localStorage.setItem("access_token", tokens.access_token);
-        localStorage.setItem("refresh_token", tokens.refresh_token);
-        APIClient.instance.SetAuthorizationHeaders(
-          "Bearer " + tokens.access_token
-        );
-        return tokens;
+        return true ;
       });
   }
 
@@ -511,11 +585,11 @@ export class APIClient {
   public PostLanguage(Language: Language): Promise<Number> {
     return APIClient.axiosInstance.post("/language/", Language).then((res) => {
       //Redirect to the details page of the currently created language
-      const id: Number = res.data.data.id;
+      const id: Number = res.data.data.language_id;
+      console.log(id);
       return id;
     });
   }
-
 
   //Helper function for the axios interceptors.
   //Used to get a new access token using a refresh token
@@ -578,8 +652,6 @@ export class APIClient {
     );
   }
 }
-
-
 
 export const client = APIClient.getInstance({
   /**

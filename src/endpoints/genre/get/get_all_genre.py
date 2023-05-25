@@ -7,6 +7,7 @@ from sqlalchemy.orm import Session
 
 from src.dependencies import get_db
 from src.endpoints.genre.router_init import router
+from src.exceptions import custom_exception
 from src.models import all_models
 from src.responses import custom_response
 
@@ -28,4 +29,7 @@ async def get_all_genre(db: Session = Depends(get_db)) -> dict:
         )
     except Exception as e:
         logging.exception("Error getting all genre from database. Details = " + str(e))
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(e))
+        raise custom_exception(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            details="Error getting all genre from database. details = " + str(e),
+        )

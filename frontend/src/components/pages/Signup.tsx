@@ -4,7 +4,7 @@ import { AuthContext, DecodedToken } from "../../contexts/AuthContext";
 import { SignupData } from "../../CustomTypes";
 import jwt_decode from "jwt-decode";
 import { client } from "../../axios";
-import '../style.css'; // Import the Genres CSS file
+import "../style.css"; // Import the Genres CSS file
 
 function Signup() {
   const { LoginFunction }: { LoginFunction: (arg0: DecodedToken) => void } =
@@ -30,11 +30,10 @@ function Signup() {
   function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
     // Call the signup function and pass the formData
-    client.Signup(formData)
+    client
+      .Signup(formData)
       .then((tokens) => {
-        const decoded_token: DecodedToken = jwt_decode(tokens.access_token);
-        LoginFunction(decoded_token);
-        history.push("/users/");
+        history.push("/login");
       })
       .catch((error) => {
         // Handle error and show an error message
@@ -46,6 +45,8 @@ function Signup() {
           const errorMessage = error.response.data.detail[0].msg;
           // Show the error message to the user (e.g., set it to a state variable to display in the UI)
           setError(errorMessage);
+        } else {
+          alert(error);
         }
       });
   }
@@ -59,7 +60,7 @@ function Signup() {
   };
 
   return (
-    <div className='background-image'>
+    <div className="background-image">
       <div className="signup-container">
         <form className="signup-form" onSubmit={handleSubmit}>
           <h1>Signup</h1>

@@ -6,8 +6,8 @@ from sqlalchemy.orm import Session
 from starlette import status
 
 from src.dependencies import get_current_librarian, get_db
-from src.endpoints.user.exceptions import db_not_available
 from src.endpoints.user.router_init import router
+from src.exceptions import custom_exception
 from src.models.user import User
 from src.responses import custom_response
 
@@ -38,6 +38,8 @@ async def filter_user(
         "address": address,
     }
     filters = {key: value for key, value in params.items() if value}
+    # Adding a condition that only allow non deleted users.
+    filters["is_deleted"] = False
     try:
         starting_index = (page_number - 1) * page_size
         users = (
@@ -50,6 +52,6 @@ async def filter_user(
         return custom_response(
             status_code=status.HTTP_200_OK, details="Users found", data=users
         )
-    except Exception:
+    except Exception as e:
         logging.exception(f"Exception occured -- {__name__}.filter_user")
-        raise db_not_available()
+        raise custom_exception(status_code=status.HTTP_400_BAD_REQUEST, details=str(e))

@@ -2,7 +2,7 @@ import React, { useState, useEffect, useContext } from "react";
 import { client } from "../../axios";
 import { useRouteMatch } from "react-router";
 import { BookListPresentation } from "./BookListPresentation";
-import { BookSaved, ErrorObject } from "../../CustomTypes";
+import { BookIn, ErrorObject } from "../../CustomTypes";
 import ErrorComponent from "../ErrorComponent";
 import { AuthContext } from "../../contexts/AuthContext";
 import { Pagination } from "./pagination";
@@ -16,8 +16,8 @@ export const BookListContainer = () => {
 
   let { url }: { url: string } = useRouteMatch(); // The url of this page
   let [books, setBooks]: [
-    BookSaved[] | undefined,
-    React.Dispatch<React.SetStateAction<BookSaved[] | undefined>>
+    BookIn[] | undefined,
+    React.Dispatch<React.SetStateAction<BookIn[] | undefined>>
   ] = useState(); // The list of books
   const { isLibrarian }: { isLibrarian: boolean } = useContext(AuthContext);
   console.log(isLibrarian);

@@ -7,6 +7,7 @@ from starlette import status
 
 from src.dependencies import get_db
 from src.endpoints.status.router_init import router
+from src.exceptions import custom_exception
 from src.models import all_models
 from src.responses import custom_response
 
@@ -28,8 +29,8 @@ async def get_status_by_id(
         select(all_models.Status).where(all_models.Status.id == status_id)
     ).first()
     if not found_status:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND, detail="Status not found"
+        raise custom_exception(
+            status_code=status.HTTP_404_NOT_FOUND, details="Status not found"
         )
     logging.info("Status found")
     return custom_response(

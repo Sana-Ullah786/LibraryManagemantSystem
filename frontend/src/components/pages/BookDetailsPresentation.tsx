@@ -1,4 +1,4 @@
-import { BookSaved } from "../../CustomTypes";
+import { BookIn } from "../../CustomTypes";
 import { Link } from "react-router-dom";
 import { Author } from "../../CustomTypes";
 import LibrarianLinks from "../LibrarianLinks";
@@ -8,7 +8,7 @@ type BookDetailsPresentationProps = {
   showLinks?: boolean;
   id: number;
   url: string;
-  book: BookSaved;
+  book: BookIn;
 };
 
 const NOT_FOUND = "Not Found";
@@ -96,6 +96,11 @@ export const BookDetailsPresentation = (
       <p data-testid="dateOfPublication" style={{ display: "inline" }}>
         {props.book.dateOfPublication}
       </p>
+      <br></br>
+      <br></br>
+      {props.isLibrarian && (
+        <Link to={`/books/${props.book.id}/copies`}>Manage Copies</Link>
+      )}
     </div>
   );
 };

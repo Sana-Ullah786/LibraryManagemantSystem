@@ -1,10 +1,10 @@
-import React, { useEffect, useState, useContext } from 'react';
-import { useParams, Link, useRouteMatch } from 'react-router-dom';
-import { client } from '../../axios';
-import { AuthContext } from '../../contexts/AuthContext';
-import { BookSaved, ErrorObject } from '../../CustomTypes';
-import ErrorComponent from '../ErrorComponent';
-import { BookListPresentation } from './BookListPresentation';
+import React, { useEffect, useState, useContext } from "react";
+import { useParams, Link, useRouteMatch } from "react-router-dom";
+import { client } from "../../axios";
+import { AuthContext } from "../../contexts/AuthContext";
+import { BookIn, ErrorObject } from "../../CustomTypes";
+import ErrorComponent from "../ErrorComponent";
+import { BookListPresentation } from "./BookListPresentation";
 import { Pagination } from './pagination';
 function GenreDetails() {
   const { id }: { id: string } = useParams();
@@ -13,8 +13,8 @@ function GenreDetails() {
   const { url }: { url: string } = useRouteMatch();
 
   const { isLibrarian }: { isLibrarian: boolean } = useContext(AuthContext);
-  const [books, setBooks] = useState<BookSaved[]>([]);
-  const [genre, setGenre] = useState<string | null | undefined>('');
+  const [books, setBooks] = useState<BookIn[]>([]);
+  const [genre, setGenre] = useState<string | null | undefined>("");
   const [error, setError] = useState<ErrorObject>();
   const [page, setPage] = useState<number>(1)
   useEffect(() => {
@@ -36,21 +36,16 @@ function GenreDetails() {
       .catch((error) => {
         setError(error);
       });
-
-
-
-
   }, [genreId]);
-
 
   function librarianLinks() {
     return (
       <>
-        <Link to={`${url}/update`} style={{ color: 'orange' }}>
-          {' '}
-          Update{' '}
+        <Link to={`${url}/update`} style={{ color: "orange" }}>
+          {" "}
+          Update{" "}
         </Link>
-        <Link to={`${url}/delete`} style={{ color: 'red' }}>
+        <Link to={`${url}/delete`} style={{ color: "red" }}>
           Delete
         </Link>
       </>
@@ -62,16 +57,15 @@ function GenreDetails() {
   }
 
   return (
-    <div className='background-image'>
-      <div className='modal'>
+    <div className="background-image">
+      <div className="modal">
         <h1>Genre: {genre}</h1>
         {isLibrarian === true ? librarianLinks() : null}
         <div>
-          <h3>Books</h3>  
+          <h3>Books</h3>
           <BookListPresentation showLinks={false} books={books} url={url} />
         </div>
       </div>
-
     </div>
   );
 }

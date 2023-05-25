@@ -1,12 +1,12 @@
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
-import { BookSaved } from '../../CustomTypes';
-import LibrarianLinks from '../LibrarianLinks';
-import '../style.css'; // Import the Genres CSS file
-import ScrollView from '../Scrollview';
+import { Link } from "react-router-dom";
+import { BookIn } from "../../CustomTypes";
+import LibrarianLinks from "../LibrarianLinks";
+import "../style.css"; // Import the Genres CSS file
+import ScrollView from "../Scrollview";
 
 export const BookListPresentation = (props: {
-  books: BookSaved[];
+  books: BookIn[];
   url: string;
   showLinks: boolean;
 }) => {
@@ -47,31 +47,32 @@ export const BookListPresentation = (props: {
               <Link to={"/books/" + book.id.toString()}>{book.title}</Link>
               <p><b>Authors:</b></p>
               <p>
-              {
-                
-                book.authors.map((author) => {
-                  return (
-                   ` ${author.first_name} ${author.last_name}`
-                  )
-                }).join(", ")}
-</p>
-<p><b>Description :</b></p>
-              <p>{book.description}</p>
+                {
 
-              {props.showLinks && (
-                <LibrarianLinks url={`${props.url}/${book.id}`} />
-              )}
+                  book.authors.map((author) => {
+                    return (
+                      ` ${author.first_name} ${author.last_name}`
+                    )
+                  }).join(", ")}
+              </p>
+              <p><b>Description :</b></p>
+              <p>{book.description}</p>
+             
+                  </div>
+                ))}
             </div>
-          ))}
-        </div>
       </ScrollView>
       {props.showLinks && (
         <div style={{ display: 'flex', justifyContent: 'center' }}>
           <div>
-            <Link to={`${props.url}/create`} className='genre-link'> Create Book </Link>
+            <Link to={`${props.url}/create`} className="genre-link">
+              {" "}
+              Create Book{" "}
+            </Link>
           </div>
         </div>
       )}
     </div>
+
   );
 };

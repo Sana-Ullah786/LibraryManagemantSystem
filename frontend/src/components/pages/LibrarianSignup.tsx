@@ -33,10 +33,9 @@ function LibrarianSignup() {
     event.preventDefault();
     // Call the signup function and pass the formData
     client.LibrarianSignup(formData)
-      .then((tokens) => {
-        const decoded_token: DecodedToken = jwt_decode(tokens.access_token);
-        LoginFunction(decoded_token);
-        history.push("/");
+      .then((res) => {
+        alert("Librarian Created Succesfully")
+        history.push("/librarian/signup");
       })
       .catch((error) => {
         // Handle error and show an error message

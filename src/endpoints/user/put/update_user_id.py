@@ -7,6 +7,7 @@ from starlette import status
 
 from src.endpoints.user.router_init import router
 from src.endpoints.user.user_utils import update_user
+from src.exceptions import custom_exception
 from src.models.user import User
 from src.schemas.update_user import UpdateUserSchema
 
@@ -15,11 +16,6 @@ from src.dependencies import (  # isort: skip
     get_current_user,  # isort: skip
     get_db,  # isort: skip
     verify_password,  # isort: skip
-)  # isort: skip
-from src.endpoints.user.exceptions import (  # isort: skip
-    invalid_data,  # isort: skip
-    old_pass_not_matched,  # isort: skip
-    user_not_exist,  # isort: skip
 )  # isort: skip
 
 
@@ -42,13 +38,24 @@ async def update_current_user_by_id(
     try:
         current_lib = db.scalar(select(User).where(User.id == librarian.get("id")))
         if not verify_password(new_user.old_password, current_lib.password):
-            raise old_pass_not_matched()
+            raise custom_exception(
+                status_code=status.HTTP_401_UNAUTHORIZED,
+                details="Old password not matched.",
+            )
         return update_user(new_user, user_id, db)
     except HTTPException as e:
         if e.status_code == status.HTTP_401_UNAUTHORIZED:
-            raise old_pass_not_matched()
+            raise custom_exception(
+                status_code=status.HTTP_401_UNAUTHORIZED,
+                details="Old password not matched.",
+            )
         elif e.status_code == status.HTTP_404_NOT_FOUND:
-            raise user_not_exist()
-    except Exception:
+            raise custom_exception(
+                status_code=status.HTTP_404_NOT_FOUND, details="User not found."
+            )
+    except Exception as exp:
         logging.exception(f"Exception occured -- {__name__}.update_current_user")
-        raise invalid_data()
+        raise custom_exception(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            details="Error updating user. details = " + str(exp),
+        )

@@ -3,7 +3,7 @@ import { useParams, Link, useRouteMatch } from "react-router-dom";
 
 import { client } from "../../axios";
 import { AuthContext } from "../../contexts/AuthContext";
-import { BookSaved, ErrorObject } from "../../CustomTypes";
+import { BookIn, ErrorObject } from "../../CustomTypes";
 import ErrorComponent from "../ErrorComponent";
 import { BookListPresentation } from "./BookListPresentation";
 import { Pagination } from './pagination';
@@ -19,7 +19,7 @@ function AuthorDetails() {
   const [lastName, setLastName] = useState<string | null | undefined>("");
   const [dateOfBirth, setDateOfBirth] = useState<string | null | undefined>("");
   const [dateOfDeath, setDateOfDeath] = useState<string | null | undefined>("");
-  const [books, setBooks] = useState<BookSaved[]>([]);
+  const [books, setBooks] = useState<BookIn[]>([]);
   const [error, setError] = useState<ErrorObject>();
 
   //Getting the details of a specific author from the api endpoint
@@ -71,10 +71,10 @@ function AuthorDetails() {
   //The Book Description portion is a placeholder as the api to get the books for an author has not been made yet
   if (error != null) {
     return <ErrorComponent error={error} />;
-  }
+  };
 
   return (
-    <div className='background-image'>
+    <div className="background-image">
       <div className="modal">
         <h1>
         Author: {lastName}, {firstName}
@@ -88,11 +88,12 @@ function AuthorDetails() {
       <div>
         <h3>Books</h3>
         <BookListPresentation showLinks={false} books={books} url={url} />
-      </div>
+        </div>
     </div>
     </div>
 
   );
 }
+
 
 export default AuthorDetails;
