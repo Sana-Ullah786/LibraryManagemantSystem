@@ -8,6 +8,7 @@ from src.dependencies import get_current_librarian, get_db
 from src.endpoints.borrowed.router_init import router
 from src.exceptions import custom_exception
 from src.models import all_models
+from src.status_constants import AVAILABLE, BORROWED
 
 
 @router.delete(
@@ -41,6 +42,54 @@ async def delete_borrowed(
         logging.warning("Borrowed not found in database with id: " + str(borrowed_id))
         raise custom_exception(
             status_code=status.HTTP_404_NOT_FOUND, details="Borrowed not found."
+        )
+    found_copy = db.scalar(
+        select(all_models.Copy).where(
+            and_(
+                all_models.Copy.id == found_borrowed.copy_id,
+                not_(all_models.Copy.is_deleted),
+            )
+        )
+    )
+    if not found_copy:
+        logging.warning(
+            "Copy not found in database with id: " + str(found_borrowed.copy_id)
+        )
+        raise custom_exception(
+            status_code=status.HTTP_404_NOT_FOUND, details="Copy not found."
+        )
+    found_status = db.scalar(
+        select(all_models.Status).where(
+            and_(
+                all_models.Status.id == found_copy.status_id,
+                not_(all_models.Status.is_deleted),
+            )
+        )
+    )
+    if not found_status:
+        logging.warning(
+            "Status not found in database with id: " + str(found_copy.status_id)
+        )
+        raise custom_exception(
+            status_code=status.HTTP_404_NOT_FOUND, details="Status not found."
+        )
+    if found_status.status != BORROWED:
+        logging.warning("Status is not borrowed.")
+        raise custom_exception(
+            status_code=status.HTTP_400_BAD_REQUEST, details="Status is not borrowed."
+        )
+    found_copy.status_id = db.scalar(
+        select(all_models.Status.id).where(
+            and_(
+                all_models.Status.status == AVAILABLE,
+                not_(all_models.Status.is_deleted),
+            )
+        )
+    )
+    if not found_copy.status_id:
+        logging.warning("Status not found in database with status: " + str(AVAILABLE))
+        raise custom_exception(
+            status_code=status.HTTP_404_NOT_FOUND, details="Status not found."
         )
     found_borrowed.is_deleted = True
     db.commit()

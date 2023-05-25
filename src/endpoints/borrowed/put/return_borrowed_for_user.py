@@ -80,7 +80,12 @@ async def return_borrowed_for_user(
         today = datetime.now().date()
         found_borrowed.return_date = today
         found_copy.status_id = db.scalars(
-            select(all_models.Status.id).where(all_models.Status.status == AVAILABLE)
+            select(all_models.Status.id).where(
+                and_(
+                    all_models.Status.status == AVAILABLE,
+                    not_(all_models.Status.is_deleted),
+                )
+            )
         ).first()
         db.commit()
         logging.info("Updated borrowed in database with id: " + str(borrowed_id))
