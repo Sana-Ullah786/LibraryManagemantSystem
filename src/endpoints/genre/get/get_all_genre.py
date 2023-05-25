@@ -1,8 +1,8 @@
 import logging
 from typing import List
 
-from fastapi import Depends, HTTPException, status
-from sqlalchemy import select
+from fastapi import Depends, status
+from sqlalchemy import not_, select
 from sqlalchemy.orm import Session
 
 from src.dependencies import get_db
@@ -23,7 +23,9 @@ async def get_all_genre(db: Session = Depends(get_db)) -> dict:
     """
     logging.info("Getting all genre")
     try:
-        all_genre = db.scalars(select(all_models.Genre)).all()
+        all_genre = db.scalars(
+            select(all_models.Genre).where(not_(all_models.Genre.is_deleted))
+        ).all()
         return custom_response(
             status_code=status.HTTP_200_OK, details="All genre found", data=all_genre
         )
