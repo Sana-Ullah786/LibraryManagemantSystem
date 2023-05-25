@@ -1,7 +1,7 @@
 import logging
 
-from fastapi import Depends, HTTPException
-from sqlalchemy import select
+from fastapi import Depends
+from sqlalchemy import and_, not_, select
 from sqlalchemy.orm import Session
 from starlette import status
 
@@ -17,7 +17,11 @@ async def get_book_by_id(book_id: int, db: Session = Depends(get_db)) -> dict:
     """
     Endpoint to get book by id
     """
-    book = db.execute(select(Book).where(Book.id == book_id)).scalars().first()
+    book = (
+        db.execute(select(Book).where(and_(Book.id == book_id, not_(Book.is_deleted))))
+        .scalars()
+        .first()
+    )
     if book:
         logging.info(f"Book with id : {book_id} requested")
         return custom_response(

@@ -5,6 +5,7 @@ from starlette import status
 from src.dependencies import redis_conn
 from src.models.user import User
 from tests.client import client
+
 # fmt: off
 from tests.utils import (
     LIB_USER,
