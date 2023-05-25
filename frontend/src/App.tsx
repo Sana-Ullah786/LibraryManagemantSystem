@@ -3,7 +3,6 @@ import Navbar from "./components/Navbar";
 import Authors from "./components/pages/Authors";
 import Home from "./components/pages/Home";
 import Login from "./components/pages/Login";
-import AuthorDetails from "./components/pages/AuthorDetails";
 import { BrowserRouter as Router, Route, Switch } from "react-router-dom";
 import AuthContextProvider from "./contexts/AuthContext";
 import AuthorDelete from "./components/pages/AuthorDelete";
@@ -38,7 +37,8 @@ import MyBorrowed from "./components/pages/MyBorrowed";
 import BorrowBook from "./components/pages/BorrowBook";
 import ReturnBorrowed from "./components/pages/ReturnBorrowed";
 import BorrowUpdate from "./components/pages/BorrowUpdate";
-
+import AuthorDetails from "./components/pages/AuthorDetails";
+import LibrarianSignup from "./components/pages/LibrarianSignup";
 function App() {
   return (
     /**
@@ -116,6 +116,9 @@ function App() {
             </Route>
             <Route exact path="/signup">
               <Signup />
+            </Route>
+            <Route exact path="/librarian/signup">
+              <LibrarianSignup />
             </Route>
             <Route exact path="/genre">
               <Genres />

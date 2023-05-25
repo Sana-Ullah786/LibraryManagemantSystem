@@ -1,236 +1,269 @@
 /* Navbar.css */
 
 .navbar {
-    background-color: #333;
-    color: #fff;
-    padding: 10px;
-  }
-  
-  .navbar ul {
-    list-style-type: none;
-    display: flex;
-    justify-content: flex-start;
-  }
-  
-  .navbar li {
-    margin-right: 10px;
-  }
-  
-  .navbar a {
-    color: #fff;
-    text-decoration: none;
-  }
+  background-color: #333;
+  color: #fff;
+  padding: 10px;
+}
 
-  .signup-container {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    padding: 15px;
-  }
-  
-  .signup-form {
-    width: 300px;
-    padding: 20px;
-    border: 1px solid #ccc;
-    border-radius: 5px;
-    background-color: #f9f9f9;
-    padding-right: 35px;
-  }
-  
-  .signup-form h1 {
-    text-align: center;
-    margin-bottom: 20px;
-  }
-  
-  .form-group {
-    margin-bottom: 15px;
-  }
-  
-  .form-group label {
-    display: block;
-    margin-bottom: 5px;
-    font-weight: bold;
-  }
-  
-  .form-group input {
-    width: 100%;
-    padding: 8px;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-  }
-  
-  .form-group button {
-    width: 100%;
-    padding: 8px;
-    border: none;
-    border-radius: 4px;
-    background-color: #4caf50;
-    color: #fff;
-    font-size: 16px;
-    cursor: pointer;
-  }
-  
-  .error-message {
-    color: red;
-    margin-top: 10px;
-    text-align: center;
-  }
-  
+.navbar ul {
+  list-style-type: none;
+  display: flex;
+  justify-content: flex-start;
+}
 
-  .genre-list {
-    list-style-type: none;
-    padding: 0;
-  }
-  
-  .genre-list-item {
-    font-size: medium;
-    margin-bottom: 10px;
-    background-color: #f5f5f5;
-    padding: 10px;
-    border-radius: 5px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    justify-items: center;
-  }
-  
-  .genre-link {
-    display: inline-block;
-    padding: 10px 20px;
-    background-color: #9ef4ff;
-    border: 1px solid #ccc;
-    border-radius: 5px;
-    color: #333;
-    text-decoration: none;
-    transition: background-color 0.3s ease;
-  }
-  
-  .genre-link:hover {
-    background-color: #e0e0e0;
-  }
-  
-  .genre-title {
-    font-size: 24px;
-    font-weight: bold;
-    margin-bottom: 20px;
-  }
-  
-  .genre-description {
-    font-size: 16px;
-    color: #777;
-    margin-bottom: 10px;
-  }
+.navbar li {
+  margin-right: 10px;
+}
 
-  .genre-list-item-buttons {
-    margin-top: 10px;
-  }
-  
-  .genre-list-delete-button {
-    display: inline-block;
-    margin-right: 10px;
-    padding: 8px 16px;
-    background-color: #ffa600;
-    color: #fff;
-    border: none;
-    border-radius: 4px;
-    text-decoration: none;
-  }
-  
-  .genre-list-delete-button:hover {
-    background-color: #fa7000;
-  }  
+.navbar a {
+  color: #fff;
+  text-decoration: none;
+}
 
-  .genre-list-update-button {
-    display: inline-block;
-    margin-right: 10px;
-    padding: 8px 16px;
-    background-color: #00fc00;
-    color: #fff;
-    border: none;
-    border-radius: 4px;
-    text-decoration: none;
-  }
-  
-  .genre-list-update-button:hover {
-    background-color: #026000;
-  }    
+.signup-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 15px;
+}
 
-  .genre-list-danger-button {
-    display: inline-block;
-    margin-right: 10px;
-    padding: 8px 16px;
-    background-color: #ff0000;
-    color: #fff;
-    border: none;
-    border-radius: 4px;
-    text-decoration: none;
-  }
-  
-  .genre-list-danger-button:hover {
-    background-color: #7b0000;
-  }      
-  .language-list {
-    list-style-type: none;
-    padding: 0;
-    margin: 0;
-  }
-  
-  .language-list-item {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 10px;
-    margin-bottom: 10px;
-    background-color: #f5f5f5;
-    border-radius: 5px;
-  }
-  
-  .language-name {
-    font-size: 23px;
-    display: flex;
-    justify-content:center;
-  }
-  
-  .language-actions {
-    display: flex;
-    justify-content: flex-end;
-  }
+.signup-form {
+  width: 300px;
+  padding: 20px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  background-color: #f9f9f9;
+  padding-right: 35px;
+}
 
-  .modal {
-    background-color: #ececec;
-    border-radius: 10px; 
-    opacity: 0.8; 
-    padding: 30px;
-    margin-bottom: 5px;
-  }
+.signup-form h1 {
+  text-align: center;
+  margin-bottom: 20px;
+}
 
-  .inner-modal {
-   
-    color: #000000;
+.form-group {
+  margin-bottom: 15px;
+}
 
-  }
+.form-group label {
+  display: block;
+  margin-bottom: 5px;
+  font-weight: bold;
+}
+
+.form-group input {
+  width: 100%;
+  padding: 8px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+.form-group button {
+  width: 100%;
+  padding: 8px;
+  border: none;
+  border-radius: 4px;
+  background-color: #4caf50;
+  color: #fff;
+  font-size: 16px;
+  cursor: pointer;
+}
+
+.error-message {
+  color: red;
+  margin-top: 10px;
+  text-align: center;
+}
+
+
+.genre-list {
+  list-style-type: none;
+  padding: 0;
+}
+
+.genre-list-item {
+  font-size: medium;
+  margin-bottom: 10px;
+  background-color: #f5f5f5;
+  padding: 10px;
+  border-radius: 5px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  justify-items: center;
+  min-width: 600px;
+  max-width: 600px;
   
-  .language-action-button {
-    margin-left: 10px;
-    padding: 6px 12px;
-    background-color: #007bff;
-    color: #fff;
-    text-decoration: none;
-    border: none;
-    border-radius: 4px;
-    font-size: 14px;
-    cursor: pointer;
-  }
+}
+
+.genre-link {
+  justify-content: center;
+  display: flex;
+  padding: 10px 20px;
+  background-color: #264aff;  
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  color: #ffffff;
+  max-width: 150px;
+  text-decoration: none;
+  transition: background-color 0.3s ease;
+
   
-  .language-action-button:first-child {
-    margin-left: 0;
-  }
-  
-  .background-image {
-    background-image: url("../assets/background.jpg");
-    background-size: cover;
-    background-position: center;
-    min-height: 100vh;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    flex-direction: column;
-  }
+}
+
+.genre-link:hover {
+  background-color: #e0e0e0;
+}
+
+.genre-title {
+  font-size: 24px;
+  font-weight: bold;
+  margin-bottom: 20px;
+}
+
+.genre-description {
+  font-size: 16px;
+  color: #777;
+  margin-bottom: 10px;
+}
+
+.genre-list-item-buttons {
+  margin-top: 10px;
+  display: flex;
+  justify-content:center
+}
+
+.genre-list-delete-button {
+  display: inline-block;
+  margin-right: 10px;
+  padding: 8px 16px;
+  background-color: #ffa600;
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  text-decoration: none;
+}
+
+.genre-list-delete-button:hover {
+  background-color: #fa7000;
+}  
+
+.genre-list-update-button {
+  display: inline-block;
+  margin-right: 10px;
+  padding: 8px 16px;
+  background-color: #00fc00;
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  text-decoration: none;
+}
+
+.genre-list-update-button:hover {
+  background-color: #026000;
+}    
+
+.genre-list-danger-button {
+  display: inline-block;
+  margin-right: 10px;
+  padding: 8px 16px;
+  background-color: #ff0000;
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  text-decoration: none;
+}
+
+.genre-list-danger-button:hover {
+  background-color: #7b0000;
+}      
+.language-list {
+  list-style-type: none;
+  padding: 0;
+  margin: 0;
+}
+
+.language-list-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px;
+  margin-bottom: 10px;
+  background-color: #f5f5f5;
+  border-radius: 5px;
+}
+
+.language-name {
+  font-size: 23px;
+  display: flex;
+  justify-content:center;
+}
+
+.language-actions {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.modal {
+  background-color: #ececec;
+  border-radius: 10px; 
+  opacity: 0.8; 
+  padding: 30px;
+  margin-bottom: 5px;
+}
+
+.inner-modal {
+ 
+  color: #000000;
+
+}
+
+.language-action-button {
+  margin-left: 10px;
+  padding: 6px 12px;
+  background-color: #007bff;
+  color: #fff;
+  text-decoration: none;
+  border: none;
+  border-radius: 4px;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.language-action-button:first-child {
+  margin-left: 0;
+}
+
+.background-image {
+  background-image: url("../assets/background.jpg");
+  background-size: cover;
+  background-position: center;
+  min-height: 90vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+}
+
+.card-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 20px;
+}
+
+.card {
+  background-color: #f5f5f5;
+  padding: 20px;
+  border-radius: 8px;
+}
+
+.card a {
+  color: #333;
+  text-decoration: none;
+  font-weight: bold;
+}
+
+.card a:hover {
+  text-decoration: underline;
+}
+
+

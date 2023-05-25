@@ -14,6 +14,7 @@ export interface UserDetails {
   email: string;
   username: string;
   password: string;
+  old_password : string;
   first_name: string;
   last_name: string;
   contact_number: string;

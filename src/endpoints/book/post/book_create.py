@@ -9,6 +9,7 @@ from starlette import status
 
 from src.dependencies import get_current_librarian, get_db
 from src.endpoints.book.router_init import router
+from src.exceptions import custom_exception
 from src.models.author import Author
 from src.models.book import Book
 from src.models.copy import Copy
@@ -36,19 +37,25 @@ async def book_create(
     )
     if language is None:
         logging.error("No language found while creating book")
-        raise http_exception()
+        raise custom_exception(
+            status_code=status.HTTP_404_NOT_FOUND, details="Language not found"
+        )
     authors = (
         db.execute(select(Author).where(Author.id.in_(book.author_ids))).scalars().all()
     )
     if len(authors) == 0:
         logging.error("No author found while creating book")
-        raise http_exception()
+        raise custom_exception(
+            status_code=status.HTTP_404_NOT_FOUND, details="Author not found"
+        )
     genres = (
         db.execute(select(Genre).where(Genre.id.in_(book.genre_ids))).scalars().all()
     )
     if len(genres) == 0:
         logging.error("No genre found while creating book")
-        raise http_exception()
+        raise custom_exception(
+            status_code=status.HTTP_404_NOT_FOUND, details="Genre not found"
+        )
     book_model = Book()
     book_model.title = book.title
     book_model.date_of_publication = datetime.strptime(
@@ -81,7 +88,9 @@ async def book_create(
         )
     except IntegrityError as e:
         print(e)
-        raise book_exist()
+        raise custom_exception(
+            status_code=status.HTTP_409_CONFLICT, details="Book already exist"
+        )
 
     book.id = book_model.id
 
@@ -90,15 +99,3 @@ async def book_create(
         details="Book created successfully!",
         data=book,
     )
-
-
-def http_exception() -> dict:
-    return HTTPException(status_code=404, detail="Book not found")
-
-
-def book_exist() -> dict:
-    return HTTPException(status_code=400, detail="Book already exist")
-
-
-def succesful_response() -> dict:
-    return {"status": 201, "transaction": "succesful_response"}

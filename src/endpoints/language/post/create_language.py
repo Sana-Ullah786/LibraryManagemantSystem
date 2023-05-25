@@ -5,6 +5,7 @@ from sqlalchemy.orm import Session
 
 from src.dependencies import get_current_librarian, get_db
 from src.endpoints.language.router_init import router
+from src.exceptions import custom_exception
 from src.models import all_models
 from src.responses import custom_response
 from src.schemas import language_schema
@@ -40,4 +41,7 @@ async def create_language(
         )
     except Exception as e:
         logging.exception("Error creating a new Language database. Details = " + str(e))
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(e))
+        raise custom_exception(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            details="Error creating a new Language database. details = " + str(e),
+        )

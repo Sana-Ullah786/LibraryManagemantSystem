@@ -101,7 +101,7 @@ def test_filter_books(test_db: sessionmaker) -> None:
     assert response.status_code == status.HTTP_200_OK
     assert len(response.json()) == 3
     assert response.json().get("status_code") == 404
-    assert response.json().get("detail") == "Book not found"
+    assert response.json().get("detail") == "Author not found"
 
 
 def test_book_create(test_db: sessionmaker) -> None:
@@ -141,7 +141,7 @@ def test_book_create(test_db: sessionmaker) -> None:
     response = client.post(
         "/book", headers={"Authorization": f"Bearer {token}"}, json=payload
     )
-    assert response.status_code == status.HTTP_400_BAD_REQUEST
+    assert response.status_code == status.HTTP_409_CONFLICT
 
     # Add a book with no title
     payload = {
@@ -245,3 +245,104 @@ def test_book_update(test_db: sessionmaker) -> None:
 
     assert response.status_code == status.HTTP_200_OK
     assert response.json()["data"].get("description") == "Hello"
+
+
+# Test for book delete
+def test_book_soft_delete(test_db: sessionmaker) -> None:
+    """
+    Test for book delete
+    """
+    check_no_auth("/book", client.post)
+    language = insert_language(test_db)
+    genre = insert_genre(test_db)
+    author = insert_author(test_db)
+    token = get_fresh_token(test_db, SUPER_USER_CRED)
+    payload_book2 = {
+        "title": "TESTBook2",
+        "isbn": "dsasadaa1359",
+        "date_of_publication": "2000-12-13",
+        "description": "Short dics about book, max 200 characters",
+        "language_id": language.id,
+        "author_ids": [author.id],
+        "genre_ids": [genre.id],
+    }
+    # create another book
+    response = client.post(
+        "/book", headers={"Authorization": f"Bearer {token}"}, json=payload_book2
+    )
+    assert response.status_code == status.HTTP_201_CREATED
+
+    payload_book1 = {
+        "title": "TESTBook",
+        "isbn": "dsasadaa135",
+        "date_of_publication": "2000-12-13",
+        "description": "Short dics about book, max 200 characters",
+        "language_id": language.id,
+        "author_ids": [author.id],
+        "genre_ids": [genre.id],
+    }
+
+    response = client.post(
+        "/book", headers={"Authorization": f"Bearer {token}"}, json=payload_book1
+    )
+    # succesful Response for creation
+    assert response.status_code == status.HTTP_201_CREATED
+    assert len(response.json()["data"]) == 9
+
+    book_id = response.json()["data"].get("id")
+    # get book by id and match the title
+    response = client.get(
+        "/book/" + str(book_id), headers={"Authorization": f"Bearer {token}"}
+    )
+    assert response.status_code == status.HTTP_200_OK
+    assert response.json()["data"].get("title") == "TESTBook"
+    # get all books
+    response = client.get("/book", headers={"Authorization": f"Bearer {token}"})
+    assert response.status_code == status.HTTP_200_OK
+    assert len(response.json()["data"]) == 2
+    # delete the book using soft delete
+    response = client.delete(
+        "/book/" + str(book_id), headers={"Authorization": f"Bearer {token}"}
+    )
+    assert response.status_code == status.HTTP_204_NO_CONTENT
+    # again try to delete the same book
+    response = client.delete(
+        "/book/" + str(book_id), headers={"Authorization": f"Bearer {token}"}
+    )
+    assert response.status_code == status.HTTP_404_NOT_FOUND
+    # get book by id
+    response = client.get(
+        "/book/" + str(book_id), headers={"Authorization": f"Bearer {token}"}
+    )
+    assert response.status_code == status.HTTP_404_NOT_FOUND
+    # get booky by query pass author id, language id, genre id
+    response = client.get(
+        "/book?author_id=" + str(author.id),
+        headers={"Authorization": f"Bearer {token}"},
+    )
+    assert response.status_code == status.HTTP_200_OK
+    assert len(response.json()["data"]) == 1
+    assert response.json()["data"][0].get("title") == "TESTBook2"
+
+    # get all books
+    response = client.get("/book", headers={"Authorization": f"Bearer {token}"})
+    assert response.status_code == status.HTTP_200_OK
+    assert len(response.json()["data"]) == 1
+
+    # try to update the book which is already deleted
+    payload = {
+        "title": "TESTBook",
+        "isbn": "dsasadaa135",
+        "date_of_publication": "2000-12-03",
+        "description": "Hello",
+        "language_id": language.id,
+        "author_ids": [author.id],
+        "genre_ids": [genre.id],
+    }
+
+    response = client.put(
+        "/book/" + str(book_id),
+        headers={"Authorization": f"Bearer {token}"},
+        json=payload,
+    )
+    assert response.status_code == status.HTTP_404_NOT_FOUND

@@ -126,10 +126,10 @@ export class APIClient {
   }
 
   //This method uses api call to fetch list of books. It returns this list.
-  public GetBookList(): Promise<BookIn[]> {
+  public GetBookList(pagenumber : number): Promise<BookIn[]> {
     return new Promise((resolve, reject) => {
       APIClient.axiosInstance
-        .get("/book")
+        .get(`book/?page_number=${pagenumber}&page_size=5`)
         .then((response) => {
           let bookList: BookIn[] = [];
 
@@ -151,10 +151,10 @@ export class APIClient {
     };
   }
 
-  public GetBooksForAuthor(authorId: string): Promise<BookIn[]> {
+  public GetBooksForAuthor(authorId: string ): Promise<BookIn[]> {
     return new Promise((resolve, reject) => {
       APIClient.axiosInstance
-        .get(`/book/?author=${authorId}&page_number=1&page_size=10`)
+        .get(`/book/?author=${authorId}`)
         .then((response) => {
           let bookList: BookIn[] = [];
 
@@ -173,7 +173,7 @@ export class APIClient {
   public GetBooksForGenre(genreId: string): Promise<BookIn[]> {
     return new Promise((resolve, reject) => {
       APIClient.axiosInstance
-        .get(`/book/?genre=${genreId}&page_number=1&page_size=10`)
+        .get(`/book/?genre=${genreId}`)
         .then((response) => {
           let bookList: BookIn[] = [];
 
@@ -192,7 +192,7 @@ export class APIClient {
   public GetBooksForLanguages(languageid: string): Promise<BookIn[]> {
     return new Promise((resolve, reject) => {
       APIClient.axiosInstance
-        .get(`/book/?language=${languageid}&page_number=1&page_size=10`)
+        .get(`/book/?language=${languageid}`)
         .then((response) => {
           let bookList: BookIn[] = [];
 
@@ -299,10 +299,10 @@ export class APIClient {
   }
 
   // This method fetches and returns the all genres.
-  public GetAllGenres(): Promise<Genre[]> {
+  public GetAllGenres(page :  number): Promise<Genre[]> {
     return new Promise((resolve, reject) => {
       APIClient.axiosInstance
-        .get(`/genre/`)
+        .get(`/genre/?page_number=${page}&page_size=5`)
         .then((res) => {
           const genreList: Genre[] = res.data.data;
           resolve(genreList);
@@ -413,10 +413,11 @@ export class APIClient {
   }
 
   // This method returns all authors using api
-  public GetAllAuthors(): Promise<Author[]> {
+  public GetAllAuthors(pagenumber : number): Promise<Author[]> {
     return new Promise((resolve, reject) => {
       APIClient.axiosInstance
-        .get("/author")
+        .get(`/author/?page_number=${pagenumber}&page_size=5`)
+        
         .then((res) => {
           const authorList: Author[] = res.data.data;
           resolve(authorList);
@@ -443,11 +444,11 @@ export class APIClient {
   }
 
   //Used to get a list of all the authors
-  public GetAuthorsList(): Promise<Author[]> {
+  public GetAuthorsList(page :number): Promise<Author[]> {
     return new Promise((resolve, reject) => {
       let authorList: Author[];
       APIClient.axiosInstance
-        .get("/author")
+        .get(`/author?page_number=${page}&page_size=10`)
         .then((response) => {
           authorList = response.data.data;
           resolve(authorList);
@@ -492,6 +493,7 @@ export class APIClient {
     return true;
   }
 
+
   //Used to get access and refresh tokens for the login component
   public Login(data: FormData): Promise<Tokens> {
     return APIClient.axiosInstance.post("/auth/token", data).then((res) => {
@@ -522,6 +524,14 @@ export class APIClient {
       return tokens;
     });
   }
+
+  public LibrarianSignup(data: SignupData): Promise<Boolean> {
+    return APIClient.axiosInstance.post("/auth/librarian/register", data)
+      .then((res) => {
+        return true ;
+      });
+  }
+
 
   //Used to set the authorization headers with the access token for the axios instant
   private SetAuthorizationHeaders(TokenHeader: String | null): void {
@@ -558,6 +568,12 @@ export class APIClient {
       return true;
     });
   }
+  public DeleteUser(id: string): Promise<Boolean> {
+    return APIClient.axiosInstance.delete("/user/" + id + "/").then((res) => {
+      return true;
+    });
+  }
+
 
   //Used to update a given authors data
   public PutAuthor(id: string, data: AuthorDetails): Promise<Boolean> {

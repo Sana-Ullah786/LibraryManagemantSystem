@@ -91,7 +91,7 @@ function AuthorUpdate(props: Props): ReactElement {
   }
 
   return (
-    <div>
+    <div className="background-image">
       {/* The loaded state allows us to only render the form when the data has been obtained, 
             This will allow us to prefill the form with the author data when it renders */}
       {loaded === true ? (

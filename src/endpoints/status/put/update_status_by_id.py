@@ -7,6 +7,7 @@ from starlette import status
 
 from src.dependencies import get_current_librarian, get_db
 from src.endpoints.status.router_init import router
+from src.exceptions import custom_exception
 from src.models import all_models
 from src.responses import custom_response
 from src.schemas.status import StatusSchema
@@ -35,8 +36,8 @@ async def update_status_by_id(
     )
     if not found_status:
         logging.error("Status not found with id" + str(status_id))
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND, detail="Status not found"
+        raise custom_exception(
+            status_code=status.HTTP_404_NOT_FOUND, details="Status not found"
         )
     try:
         found_status.status = status_req.status
@@ -48,4 +49,7 @@ async def update_status_by_id(
         )
     except Exception as e:
         logging.error("Error updating status with id" + str(status_id))
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(e))
+        raise custom_exception(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            details="Error updating status with id" + str(status_id),
+        )

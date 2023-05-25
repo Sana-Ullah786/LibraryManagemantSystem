@@ -5,6 +5,8 @@ import { BookListPresentation } from "./BookListPresentation";
 import { BookIn, ErrorObject } from "../../CustomTypes";
 import ErrorComponent from "../ErrorComponent";
 import { AuthContext } from "../../contexts/AuthContext";
+import { Pagination } from "./pagination";
+
 
 export const BookListContainer = () => {
   /*
@@ -20,17 +22,18 @@ export const BookListContainer = () => {
   const { isLibrarian }: { isLibrarian: boolean } = useContext(AuthContext);
   console.log(isLibrarian);
   const [error, setError] = useState<ErrorObject>();
+  const [page, setPage] = useState<number>(1);
 
   useEffect(() => {
     client
-      .GetBookList()
+      .GetBookList(page)
       .then((bookList) => {
         setBooks(bookList);
       })
       .catch((err) => {
         setError(err);
       });
-  }, []);
+  }, [page]);
 
   if (!books) {
     if (error) {
@@ -38,10 +41,14 @@ export const BookListContainer = () => {
     }
     return <div>Loading...</div>;
   }
-  return (
+  return (  
     <div className="background-image">
-      {/* Book list is presented once the list of books is properly initialized */}
-      <BookListPresentation showLinks={isLibrarian} books={books} url={url} />
+
+      <div className="genre-list-item">
+        {/* Book list is presented once the list of books is properly initialized */}
+        <BookListPresentation showLinks={isLibrarian} books={books} url={url} />
+        <Pagination page={page} setPage={setPage}/>
+      </div>
     </div>
   );
 };

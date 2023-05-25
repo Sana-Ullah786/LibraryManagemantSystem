@@ -83,6 +83,7 @@ function BorrowBook(): ReactElement {
               username: username,
               email: "",
               password: "",
+              old_password: "",
               first_name: "",
               last_name: "",
               address: "",

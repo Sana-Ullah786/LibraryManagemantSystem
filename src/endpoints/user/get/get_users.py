@@ -1,13 +1,13 @@
 import logging
 
 from fastapi import Depends, Path
-from sqlalchemy import select
+from sqlalchemy import and_, not_, select
 from sqlalchemy.orm import Session
 from starlette import status
 
 from src.dependencies import get_current_librarian, get_db
-from src.endpoints.user.exceptions import db_not_available, user_not_exist
 from src.endpoints.user.router_init import router
+from src.exceptions import custom_exception
 from src.models.user import User
 from src.responses import custom_response
 
@@ -30,10 +30,19 @@ async def get_user_by_id(
     dict : A dict with status code, details and data
     """
     try:
-        user = db.execute(select(User).where(User.id == user_id)).scalars().first()
-    except Exception:
+        user = (
+            db.execute(
+                select(User).where(and_(User.id == user_id, not_(User.is_deleted)))
+            )
+            .scalars()
+            .first()
+        )
+    except Exception as e:
         logging.exception(f"Exception occured -- {__name__}.get_user_by_id")
-        raise db_not_available()
+        raise custom_exception(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            details=f"Database not available. details: {e}",
+        )
     if user:
         logging.info(f"Returning a single user. -- {__name__}.get_user_by_id")
         return custom_response(
@@ -41,4 +50,6 @@ async def get_user_by_id(
         )
     else:
         logging.error(f"User not found -- {__name__}.get_user_by_id")
-        raise user_not_exist()
+        raise custom_exception(
+            status_code=status.HTTP_404_NOT_FOUND, details="User not found."
+        )

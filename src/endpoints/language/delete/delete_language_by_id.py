@@ -6,6 +6,7 @@ from sqlalchemy.orm import Session
 
 from src.dependencies import get_current_librarian, get_db
 from src.endpoints.language.router_init import router
+from src.exceptions import custom_exception
 from src.models import all_models
 
 
@@ -32,8 +33,8 @@ async def delete_language_by_id(
     ).first()
     if not found_language:
         logging.warning("Language not found in database")
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND, detail="Language not found"
+        raise custom_exception(
+            status_code=status.HTTP_404_NOT_FOUND, details="Language not found."
         )
     try:
         db.delete(found_language)
@@ -41,4 +42,7 @@ async def delete_language_by_id(
         logging.info("Deleted language in database with id: " + str(language_id))
     except Exception as e:
         logging.exception("Error deleting language from database. Details = " + str(e))
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(e))
+        raise custom_exception(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            details="Error deleting language from database. details = " + str(e),
+        )

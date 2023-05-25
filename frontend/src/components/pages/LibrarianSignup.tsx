@@ -4,14 +4,14 @@ import { AuthContext, DecodedToken } from "../../contexts/AuthContext";
 import { SignupData } from "../../CustomTypes";
 import jwt_decode from "jwt-decode";
 import { client } from "../../axios";
-import "../style.css"; // Import the Genres CSS file
+import '../style.css'; // Import the Genres CSS file
 
-function Signup() {
+function LibrarianSignup() {
   const { LoginFunction }: { LoginFunction: (arg0: DecodedToken) => void } =
     useContext(AuthContext);
   const { LogoutFunction }: { LogoutFunction: () => void } =
     useContext(AuthContext);
-  const { isAuthenticated }: { isAuthenticated: boolean } =
+  const { isAuthenticated, isLibrarian }: { isAuthenticated: boolean, isLibrarian: boolean } =
     useContext(AuthContext);
   const [error, setError] = useState("");
   const history = useHistory();
@@ -25,15 +25,17 @@ function Signup() {
     address: "",
   });
 
+  useEffect(() => {
 
+  });
 
   function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
     // Call the signup function and pass the formData
-    client
-      .Signup(formData)
-      .then((tokens) => {
-        history.push("/login");
+    client.LibrarianSignup(formData)
+      .then((res) => {
+        alert("Librarian Created Succesfully")
+        history.push("/librarian/signup");
       })
       .catch((error) => {
         // Handle error and show an error message
@@ -45,8 +47,6 @@ function Signup() {
           const errorMessage = error.response.data.detail[0].msg;
           // Show the error message to the user (e.g., set it to a state variable to display in the UI)
           setError(errorMessage);
-        } else {
-          alert(error);
         }
       });
   }
@@ -59,8 +59,13 @@ function Signup() {
     }));
   };
 
+  // Conditionally render the Signup form only if the user is a librarian
+  if (!isLibrarian) {
+    return <div>You do not have permission to access this page.</div>;
+  }
+
   return (
-    <div className="background-image">
+    <div className='background-image'>
       <div className="signup-container">
         <form className="signup-form" onSubmit={handleSubmit}>
           <h1>Signup</h1>
@@ -137,4 +142,4 @@ function Signup() {
   );
 }
 
-export default Signup;
+export default LibrarianSignup;
