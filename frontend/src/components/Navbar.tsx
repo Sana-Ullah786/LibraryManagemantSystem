@@ -16,11 +16,11 @@ function Navbar() {
     if (isLibrarian) {
       return (
         <div style={{ flexDirection: "row", display: "flex" }}>
-          <li>
-            <LoginComponent />
-          </li>
           <li style={{ justifyContent: "flex-end" }}>
             <Link to="/librarian/signup">Librarian Signup</Link>
+          </li>
+          <li>
+            <LoginComponent />
           </li>
         </div>
       );
@@ -65,9 +65,11 @@ function Navbar() {
           <li style={{ justifyContent: "flex-end" }}>
             <Link to="/Language">Language</Link>
           </li>
-          <li style={{ justifyContent: "flex-end" }}>
-            <Link to="/users">Users</Link>
-          </li>
+          {isLibrarian && (
+            <li style={{ justifyContent: "flex-end" }}>
+              <Link to="/users">Users</Link>
+            </li>
+          )}
           <li>
             <Link to="/my_borrowed">My Borrowed</Link>
           </li>
