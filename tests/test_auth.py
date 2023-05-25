@@ -91,14 +91,13 @@ def test_token_invalid(test_db: sessionmaker) -> None:
     new_test_user_auth["username"] = "an incorrect username"
     response = login(new_test_user_auth)
 
-    assert response.status_code == status.HTTP_401_UNAUTHORIZED
+    assert response.status_code == status.HTTP_400_BAD_REQUEST
 
     new_test_user_auth = TEST_USER_AUTH.copy()
     new_test_user_auth["password"] = "an incorrect password"
     response = login(new_test_user_auth)
 
-    assert response.status_code == status.HTTP_401_UNAUTHORIZED
-
+    assert response.status_code == status.HTTP_400_BAD_REQUEST
 
 ## Register Librarian Tests
 
