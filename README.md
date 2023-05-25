@@ -10,8 +10,8 @@ Follow the steps on this link: https://riptutorial.com/redis/example/29962/insta
 You will have to run the redis-server.exe file before running this project. The REDIS_HOST and/or REDIS_PORT are to be updated in the env file if they are different.
 
 
-README:
- Software Requirements
+# README:
+## Software Requirements
 
 Python3.11.1
 JavaScript
@@ -26,16 +26,16 @@ Frontend Software
 
 This repository contains the frontend software for the project. It is responsible for the user interface and interaction with the backend.
 
-Installation
+## Installation
 
-1. Clone the repository:
+### 1. Clone the repository:
 shell or terminal/Command Prompt
  git clone https://github.com/ahsan-kamal-sdq/LibraryManagementSystem.git
 2.Install the dependency:
 npm install
 
 
-Usage
+### Usage
 To start the frontend software, run the following command:
 In Terminal : 
 npm start
@@ -65,46 +65,48 @@ Please ensure that your code follows the established coding style and convention
 License
 This project is licensed under the MIT License.
 
-Backend Software
+## Backend Software
 
-Table of Contents
-Installation
-Requirements
-Setup Virtual Environment
-Install Dependencies
-Database Configuration
-Running the Application
-API Documentation
-Testing
-Continuous Integration and Deployment
-Contributing
-License
-Installation
+### Table of Contents
+#### Installation
+#### Requirements
+
+#### Setup Virtual Environment
+#### Install Dependencies
+#### Database Configuration
+#### Running the Application
+#### API Documentation
+#### Testing
+#### Continuous Integration and Deployment
+#### Contributing
+#### License
+
+### Installation
 Before proceeding with the installation, ensure you have the following requirements:
 Python 3.11+
 Redis (for caching, optional)
-Setup Virtual Environment
+### Setup Virtual Environment
 It is recommended to use a virtual environment to keep the project dependencies isolated. Follow these steps to set up a virtual environment:
 Create a new virtual environment using venv:
 python3 -m venv venv
 Activate the virtual environment:
 
-For Linux/Mac:
+#### For Linux/Mac:
 source venv/bin/activate
 
-For Windows:
+#### For Windows:
 venv\Scripts\activate
 
-Install Dependencies
+### Install Dependencies
 To install the project dependencies, use the following steps:
 
-Install Pipenv (if not already installed):
+#### Install Pipenv (if not already installed):
 pip install pipenv
 
-Install the project dependencies from the Pipfile:
+#### Install the project dependencies from the Pipfile:
 pipenv install
 
-Database Configuration
+### Database Configuration
 Configure the database settings in the .env file or through environment variables. Modify the following variables according to your setup:
 DATABASE_URL=postgresql://username:password@host:port/database_name
 SQLALCHEMY_DATABASE_URL_TEST="sqlite:///test.db"
@@ -116,16 +118,16 @@ JWT_EXPIRE_TIME_IN_MINUTES = 180
 # Refresh token expire time == 5 days.
 JWT_REFRESH_EXPIRE_TIME_IN_MINUTES = 7200
 
-Running the Application
+### Running the Application
 To run the application locally, follow these steps:
 
 Activate the virtual environment (if not already activated):
 
-For Linux/Mac:
+#### For Linux/Mac:
 source venv/bin/activate
-For Windows:
+#### For Windows:
 venv\Scripts\activate
 
-Start the FastAPI server:
+### Start the FastAPI server:
 uvicorn app.main:app --reload
 The application will be accessible at http://localhost:8000.
