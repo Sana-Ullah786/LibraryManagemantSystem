@@ -2,7 +2,7 @@ import logging
 from typing import Annotated, List
 
 from fastapi import Depends, Path, Query, status
-from sqlalchemy import asc, select
+from sqlalchemy import and_, asc, not_, select
 from sqlalchemy.orm import Session
 
 from src.dependencies import get_current_librarian, get_db
@@ -30,7 +30,7 @@ async def get_all_borrowed_for_any_user(
     all_borrowed = (
         db.scalars(
             select(Borrowed)
-            .where(Borrowed.user_id == user_id)
+            .where(and_(Borrowed.user_id == user_id, not_(Borrowed.is_deleted)))
             .order_by(asc(Borrowed.id))
             .offset(starting_index)
             .limit(page_size)

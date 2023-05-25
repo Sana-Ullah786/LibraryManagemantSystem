@@ -1,7 +1,7 @@
 import logging
 
-from fastapi import Depends, HTTPException, Path, status
-from sqlalchemy import select
+from fastapi import Depends, Path, status
+from sqlalchemy import and_, not_, select
 from sqlalchemy.orm import Session
 
 from src.dependencies import get_current_librarian, get_db
@@ -31,7 +31,12 @@ async def update_borrowed_by_id(
     """
     logging.info("Updating borrowed in database with id: " + str(borrowed_id))
     found_borrowed = db.scalar(
-        select(all_models.Borrowed).where(all_models.Borrowed.id == borrowed_id)
+        select(all_models.Borrowed).where(
+            and_(
+                all_models.Borrowed.id == borrowed_id,
+                not_(all_models.Borrowed.is_deleted),
+            )
+        )
     )
     if not found_borrowed:
         logging.warning("Borrowed not found in database with id: " + str(borrowed_id))
