@@ -99,6 +99,7 @@ def test_token_invalid(test_db: sessionmaker) -> None:
 
     assert response.status_code == status.HTTP_400_BAD_REQUEST
 
+
 ## Register Librarian Tests
 
 
