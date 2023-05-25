@@ -126,7 +126,7 @@ export class APIClient {
   }
 
   //This method uses api call to fetch list of books. It returns this list.
-  public GetBookList(pagenumber : number): Promise<BookIn[]> {
+  public GetBookList(pagenumber: number): Promise<BookIn[]> {
     return new Promise((resolve, reject) => {
       APIClient.axiosInstance
         .get(`book/?page_number=${pagenumber}&page_size=5`)
@@ -151,7 +151,7 @@ export class APIClient {
     };
   }
 
-  public GetBooksForAuthor(authorId: string ): Promise<BookIn[]> {
+  public GetBooksForAuthor(authorId: string): Promise<BookIn[]> {
     return new Promise((resolve, reject) => {
       APIClient.axiosInstance
         .get(`/book/?author=${authorId}`)
@@ -299,7 +299,7 @@ export class APIClient {
   }
 
   // This method fetches and returns the all genres.
-  public GetAllGenres(page :  number): Promise<Genre[]> {
+  public GetAllGenres(page: number): Promise<Genre[]> {
     return new Promise((resolve, reject) => {
       APIClient.axiosInstance
         .get(`/genre/?page_number=${page}&page_size=5`)
@@ -413,11 +413,11 @@ export class APIClient {
   }
 
   // This method returns all authors using api
-  public GetAllAuthors(pagenumber : number): Promise<Author[]> {
+  public GetAllAuthors(pagenumber: number): Promise<Author[]> {
     return new Promise((resolve, reject) => {
       APIClient.axiosInstance
         .get(`/author/?page_number=${pagenumber}&page_size=5`)
-        
+
         .then((res) => {
           const authorList: Author[] = res.data.data;
           resolve(authorList);
@@ -444,7 +444,7 @@ export class APIClient {
   }
 
   //Used to get a list of all the authors
-  public GetAuthorsList(page :number): Promise<Author[]> {
+  public GetAuthorsList(page: number): Promise<Author[]> {
     return new Promise((resolve, reject) => {
       let authorList: Author[];
       APIClient.axiosInstance
@@ -493,7 +493,6 @@ export class APIClient {
     return true;
   }
 
-
   //Used to get access and refresh tokens for the login component
   public Login(data: FormData): Promise<Tokens> {
     return APIClient.axiosInstance.post("/auth/token", data).then((res) => {
@@ -526,12 +525,12 @@ export class APIClient {
   }
 
   public LibrarianSignup(data: SignupData): Promise<Boolean> {
-    return APIClient.axiosInstance.post("/auth/librarian/register", data)
+    return APIClient.axiosInstance
+      .post("/auth/librarian/register", data)
       .then((res) => {
-        return true ;
+        return true;
       });
   }
-
 
   //Used to set the authorization headers with the access token for the axios instant
   private SetAuthorizationHeaders(TokenHeader: String | null): void {
@@ -573,7 +572,6 @@ export class APIClient {
       return true;
     });
   }
-
 
   //Used to update a given authors data
   public PutAuthor(id: string, data: AuthorDetails): Promise<Boolean> {
@@ -771,25 +769,3 @@ export const client = APIClient.getInstance({
   // 	return response.data.data
   // }]
 });
-
-const axiosInstance = axios.create({
-  /**
-   * This is the axios instance used by the entire frontend app.
-   * When a user logs in, the Authorization details are stored here so that all future requests use them.
-   * Axios interceptors will also be added to help with refreshing the access token and error handling in the future
-   */
-  timeout: 5000,
-  headers: {
-    Authorization: localStorage.getItem("access_token")
-      ? "Bearer " + localStorage.getItem("access_token")
-      : null,
-    "Content-Type": "application/json",
-    accept: "application/json",
-  },
-  //baseURL: 'catalog/api/',
-  // transformResponse: [(response) =>{
-  // 	return response.data.data
-  // }]
-});
-
-export default axiosInstance;

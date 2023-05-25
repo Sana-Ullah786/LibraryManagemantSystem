@@ -25,8 +25,6 @@ function Signup() {
     address: "",
   });
 
-
-
   function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
     // Call the signup function and pass the formData
@@ -127,11 +125,11 @@ function Signup() {
               onChange={handleChange}
             />
           </div>
+          <div className="error-message">{error}</div>
           <div className="form-group">
             <button type="submit">Signup</button>
           </div>
         </form>
-        <div className="error-message">{error}</div>
       </div>
     </div>
   );
