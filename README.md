@@ -130,4 +130,4 @@ venv\Scripts\activate
 
 ### Start the FastAPI server:
 uvicorn app.main:app --reload
-The application will be accessible at http://localhost:8000.
+The application will be accessible at http://localhost:8000...
