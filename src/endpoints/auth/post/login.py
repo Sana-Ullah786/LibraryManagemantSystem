@@ -28,7 +28,7 @@ async def login_for_access_token(
     user = authenticate_user(form_data.username, form_data.password, db)
     if not user:
         raise custom_exception(
-            status_code=status.HTTP_401_UNAUTHORIZED, details="Invalid credentials."
+            status_code=status.HTTP_400_BAD_REQUEST, details="Invalid credentials."
         )
     access_token = create_token(user, EXPIRE_TIME_IN_MINUTES)
     refresh_token = create_token(user, REFRESH_TOKEN_EXPIRE_TIME_IN_MINUTES)
