@@ -80,7 +80,7 @@ To install the project dependencies, use the following steps:
 
 ### Database Configuration
 Configure the database settings in the .env file or through environment variables. Modify the following variables according to your setup:
-DATABASE_URL=postgresql://username:password@host:port/database_name
+``` DATABASE_URL=postgresql://username:password@host:port/database_name
 SQLALCHEMY_DATABASE_URL_TEST="sqlite:///test.db"
 REDIS_HOST = "127.0.0.1"
 REDIS_PORT = 6379
@@ -88,8 +88,8 @@ JWT_SECRET_KEY = "<YOUR_JWT_KEY>"
 JWT_ALGORITHM = "<ANY ALGORITHM>"
 JWT_EXPIRE_TIME_IN_MINUTES = 180
 Refresh token expire time == 5 days.
-JWT_REFRESH_EXPIRE_TIME_IN_MINUTES = 7200
-
+JWT_REFRESH_EXPIRE_TIME_IN_MINUTES = 7200 
+```
 ### Running the Application
 To run the application locally, follow these steps:
 
