@@ -1,7 +1,7 @@
 import logging
 
-from fastapi import Depends, HTTPException, Path
-from sqlalchemy import select
+from fastapi import Depends, Path
+from sqlalchemy import and_, not_, select
 from sqlalchemy.orm import Session
 from starlette import status
 
@@ -26,7 +26,9 @@ async def get_status_by_id(
     """
     logging.info("Fetching status by id" + str(status_id))
     found_status = db.scalars(
-        select(all_models.Status).where(all_models.Status.id == status_id)
+        select(all_models.Status).where(
+            and_(all_models.Status.id == status_id, not_(all_models.Status.is_deleted))
+        )
     ).first()
     if not found_status:
         raise custom_exception(
