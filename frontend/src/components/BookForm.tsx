@@ -13,7 +13,7 @@ function BookForm(props: {
   book: BookIn;
   submitHandler: SubmitHandler<BookOut>;
 }): ReactElement {
-  const [page,setPage] = useState<number>(1)
+  const [page, setPage] = useState<number>(1);
   console.log(props.book);
   // A form for book
   let { register, handleSubmit } = useForm<BookOut>({
@@ -43,7 +43,7 @@ function BookForm(props: {
 
   // This effect fetches authors from backend
   useEffect(() => {
-    client.GetAllAuthors(page).then(
+    client.GetAuthorsList(page).then(
       (authors: Author[]) => {
         setAuthors(authors);
       },
