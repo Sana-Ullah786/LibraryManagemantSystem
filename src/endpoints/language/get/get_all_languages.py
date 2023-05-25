@@ -1,8 +1,8 @@
 import logging
 from typing import List
 
-from fastapi import Depends, HTTPException, status
-from sqlalchemy import select
+from fastapi import Depends, status
+from sqlalchemy import and_, not_, select
 from sqlalchemy.orm import Session
 
 from src.dependencies import get_db
@@ -23,7 +23,9 @@ async def get_all_languages(db: Session = Depends(get_db)) -> dict:
     """
     logging.info("Getting all languages")
     try:
-        all_languages = db.scalars(select(all_models.Language)).all()
+        all_languages = db.scalars(
+            select(all_models.Language).where(not_(all_models.Language.is_deleted))
+        ).all()
         return custom_response(
             status_code=status.HTTP_200_OK,
             details="All languages found",

@@ -1,7 +1,7 @@
 import logging
 
-from fastapi import Depends, HTTPException, Path, status
-from sqlalchemy import select
+from fastapi import Depends, Path, status
+from sqlalchemy import and_, not_, select
 from sqlalchemy.orm import Session
 
 from src.dependencies import get_db
@@ -27,7 +27,12 @@ async def get_language_by_id(
     """
     logging.info("Getting language by id = " + str(language_id) + " from database")
     language = db.scalars(
-        select(all_models.Language).where(all_models.Language.id == language_id)
+        select(all_models.Language).where(
+            and_(
+                all_models.Language.id == language_id,
+                not_(all_models.Language.is_deleted),
+            )
+        )
     ).first()
     if not language:
         logging.warning("Language not found in database")

@@ -1,7 +1,7 @@
 import logging
 
-from fastapi import Depends, HTTPException, Path, status
-from sqlalchemy import select
+from fastapi import Depends, Path, status
+from sqlalchemy import and_, not_, select
 from sqlalchemy.orm import Session
 
 from src.dependencies import get_current_librarian, get_db
@@ -29,7 +29,12 @@ async def delete_language_by_id(
     """
     logging.info("Deleting language in database with id: " + str(language_id))
     found_language = db.scalars(
-        select(all_models.Language).where(all_models.Language.id == language_id)
+        select(all_models.Language).where(
+            and_(
+                all_models.Language.id == language_id,
+                not_(all_models.Language.is_deleted),
+            )
+        )
     ).first()
     if not found_language:
         logging.warning("Language not found in database")
@@ -37,7 +42,7 @@ async def delete_language_by_id(
             status_code=status.HTTP_404_NOT_FOUND, details="Language not found."
         )
     try:
-        db.delete(found_language)
+        found_language.is_deleted = True
         db.commit()
         logging.info("Deleted language in database with id: " + str(language_id))
     except Exception as e:
