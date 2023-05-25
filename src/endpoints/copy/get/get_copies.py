@@ -2,7 +2,7 @@ import logging
 from typing import List
 
 from fastapi import Depends
-from sqlalchemy import select
+from sqlalchemy import and_, not_, select
 from sqlalchemy.orm import Session
 from starlette import status
 
@@ -19,7 +19,9 @@ async def get_copies(db: Session = Depends(get_db)) -> dict:
     """
     logging.info("All Copy Requested")
 
-    data = db.execute(select(Copy)).unique().scalars().all()
+    data = (
+        db.execute(select(Copy).where(not_(Copy.is_deleted))).unique().scalars().all()
+    )
     return custom_response(
         status_code=status.HTTP_200_OK, details="Copies found", data=data
     )
