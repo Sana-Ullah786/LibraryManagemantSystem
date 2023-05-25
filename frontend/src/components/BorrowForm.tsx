@@ -42,7 +42,7 @@ function BorrowForm(props: {
           <input {...register("dueDate")} type="datetime-local" />
         </label>
         <br></br>
-        {props.isLibrarian && (
+        {props.isLibrarian && props.borrowed.id !== -1 && (
           <>
             <label className="form-group">
               Return Date

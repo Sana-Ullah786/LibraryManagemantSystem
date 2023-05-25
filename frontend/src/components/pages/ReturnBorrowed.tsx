@@ -9,7 +9,7 @@ import { BorrowedIn } from "../../CustomTypes";
 
 interface Props {}
 
-function ReturnBook(props: Props): ReactElement {
+function ReturnBorrowed(props: Props): ReactElement {
   const { id }: { id: string } = useParams();
   const history = useHistory();
   const [borrowed, setBorrowed] = useState<BorrowedIn | undefined>();
@@ -75,4 +75,4 @@ function ReturnBook(props: Props): ReactElement {
   );
 }
 
-export default ReturnBook;
+export default ReturnBorrowed;

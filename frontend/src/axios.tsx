@@ -618,6 +618,23 @@ export class APIClient {
     });
   }
 
+  public GetBorrowedForUser(id: string): Promise<BorrowedIn[]> {
+    return new Promise((resolve, reject) => {
+      let myBorrowed: BorrowedIn[];
+      APIClient.axiosInstance
+        .get("/borrowed/user/" + id)
+        .then((response) => {
+          myBorrowed = response.data.data.map((borrowed: any) =>
+            this.borrowedDeserialize(borrowed)
+          );
+          resolve(myBorrowed);
+        })
+        .catch((error) => {
+          reject(APIClient.instance.handleErrors(error));
+        });
+    });
+  }
+
   public CreateBorrowed(borrowed: BorrowedOut): Promise<number> {
     return APIClient.axiosInstance
       .post("/borrowed/", this.borrowedSerialize(borrowed))
@@ -648,6 +665,12 @@ export class APIClient {
       .then((res) => {
         return true;
       });
+  }
+
+  public UpdateBorrowed(id: string, data: BorrowedOut): Promise<Boolean> {
+    return APIClient.axiosInstance.put("/borrowed/" + id, data).then((res) => {
+      return true;
+    });
   }
 
   //Helper function for the axios interceptors.

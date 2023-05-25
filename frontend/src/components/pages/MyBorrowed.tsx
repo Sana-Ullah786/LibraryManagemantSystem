@@ -5,6 +5,7 @@ import { client } from "../../axios";
 import { AuthContext } from "../../contexts/AuthContext";
 import { useRouteMatch, Link } from "react-router-dom";
 import ErrorComponent from "../ErrorComponent";
+import { BorrowedList } from "../BorrowedList";
 
 const MyBorrowed = (props: { showLinks?: boolean }) => {
   /*
@@ -20,10 +21,7 @@ const MyBorrowed = (props: { showLinks?: boolean }) => {
 
   // book, genre and language are intentially allowed to be undefined. We display the page once these values are loaded
 
-  let [myBorrowed, setMyBorrowed]: [
-    BorrowedIn[] | undefined,
-    React.Dispatch<React.SetStateAction<BorrowedIn[] | undefined>>
-  ] = useState(); //The myBorrowed to be displayed
+  let [myBorrowed, setMyBorrowed] = useState<BorrowedIn[]>([]); //The myBorrowed to be displayed
 
   const [error, setError] = useState<ErrorObject>();
 
@@ -45,7 +43,7 @@ const MyBorrowed = (props: { showLinks?: boolean }) => {
 
   console.log(myBorrowed);
 
-  if (myBorrowed?.length === 0) {
+  if (myBorrowed.length === 0) {
     if (error) {
       return <ErrorComponent error={error} />;
     }
@@ -56,19 +54,7 @@ const MyBorrowed = (props: { showLinks?: boolean }) => {
       <div className="background-image">
         <div className="modal">
           <h1>My Borrowed Books</h1>
-          <ul>
-            {myBorrowed?.map((borrowed: BorrowedIn, index: number) => (
-              <li>
-                <h2>{borrowed.copy.book.title}</h2>
-                <p>Issue Date: {borrowed.issueDate.split("T").join(" ")}</p>
-                <p>Due Date: {borrowed.dueDate.split("T").join(" ")}</p>
-                <p>Return Date: {borrowed.returnDate?.split("T").join(" ")}</p>
-                {!borrowed.returnDate && (
-                  <Link to={`/borrowed/${borrowed.id}/return`}>Return</Link>
-                )}
-              </li>
-            ))}
-          </ul>
+          <BorrowedList borrowedList={myBorrowed} />
         </div>
       </div>
     );
