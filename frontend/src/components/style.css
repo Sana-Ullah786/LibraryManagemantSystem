@@ -76,7 +76,6 @@
   text-align: center;
 }
 
-
 .genre-list {
   list-style-type: none;
   padding: 0;
@@ -92,22 +91,33 @@
   justify-items: center;
   min-width: 600px;
   max-width: 600px;
-  
 }
 
 .genre-link {
   justify-content: center;
   display: flex;
   padding: 10px 20px;
-  background-color: #264aff;  
+  background-color: #264aff;
   border: 1px solid #ccc;
   border-radius: 5px;
   color: #ffffff;
   max-width: 150px;
   text-decoration: none;
   transition: background-color 0.3s ease;
+}
 
-  
+.genre-link-disabled {
+  justify-content: center;
+  display: flex;
+  padding: 10px 20px;
+  background-color: #264aff;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  color: #ffffff;
+  max-width: 150px;
+  text-decoration: none;
+  transition: background-color 0.3s ease;
+  opacity: 0.5;
 }
 
 .genre-link:hover {
@@ -129,7 +139,7 @@
 .genre-list-item-buttons {
   margin-top: 10px;
   display: flex;
-  justify-content:center
+  justify-content: center;
 }
 
 .genre-list-delete-button {
@@ -145,7 +155,7 @@
 
 .genre-list-delete-button:hover {
   background-color: #fa7000;
-}  
+}
 
 .genre-list-update-button {
   display: inline-block;
@@ -160,7 +170,7 @@
 
 .genre-list-update-button:hover {
   background-color: #026000;
-}    
+}
 
 .genre-list-danger-button {
   display: inline-block;
@@ -175,7 +185,7 @@
 
 .genre-list-danger-button:hover {
   background-color: #7b0000;
-}      
+}
 .language-list {
   list-style-type: none;
   padding: 0;
@@ -195,7 +205,7 @@
 .language-name {
   font-size: 23px;
   display: flex;
-  justify-content:center;
+  justify-content: center;
 }
 
 .language-actions {
@@ -205,16 +215,14 @@
 
 .modal {
   background-color: #ececec;
-  border-radius: 10px; 
-  opacity: 0.8; 
+  border-radius: 10px;
+  opacity: 0.95;
   padding: 30px;
   margin-bottom: 5px;
 }
 
 .inner-modal {
- 
   color: #000000;
-
 }
 
 .language-action-button {
@@ -254,6 +262,7 @@
   background-color: #f5f5f5;
   padding: 20px;
   border-radius: 8px;
+  width: 30vw;
 }
 
 .card a {
@@ -265,5 +274,3 @@
 .card a:hover {
   text-decoration: underline;
 }
-
-

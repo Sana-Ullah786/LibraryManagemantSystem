@@ -129,7 +129,7 @@ export class APIClient {
   public GetBookList(pagenumber: number): Promise<BookIn[]> {
     return new Promise((resolve, reject) => {
       APIClient.axiosInstance
-        .get(`book/?page_number=${pagenumber}&page_size=5`)
+        .get(`book/?page_number=${pagenumber}&page_size=10`)
         .then((response) => {
           let bookList: BookIn[] = [];
 
@@ -302,7 +302,7 @@ export class APIClient {
   public GetAllGenres(page: number): Promise<Genre[]> {
     return new Promise((resolve, reject) => {
       APIClient.axiosInstance
-        .get(`/genre/?page_number=${page}&page_size=5`)
+        .get(`/genre/?page_number=${page}&page_size=10`)
         .then((res) => {
           const genreList: Genre[] = res.data.data;
           resolve(genreList);
@@ -416,7 +416,7 @@ export class APIClient {
   public GetAllAuthors(pagenumber: number): Promise<Author[]> {
     return new Promise((resolve, reject) => {
       APIClient.axiosInstance
-        .get(`/author/?page_number=${pagenumber}&page_size=5`)
+        .get(`/author/?page_number=${pagenumber}&page_size=10`)
 
         .then((res) => {
           const authorList: Author[] = res.data.data;
