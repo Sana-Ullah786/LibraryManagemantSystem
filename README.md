@@ -115,7 +115,7 @@ REDIS_PORT = 6379
 JWT_SECRET_KEY = "<YOUR_JWT_KEY>"
 JWT_ALGORITHM = "<ANY ALGORITHM>"
 JWT_EXPIRE_TIME_IN_MINUTES = 180
-# Refresh token expire time == 5 days.
+Refresh token expire time == 5 days.
 JWT_REFRESH_EXPIRE_TIME_IN_MINUTES = 7200
 
 ### Running the Application
