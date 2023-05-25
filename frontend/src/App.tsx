@@ -36,6 +36,7 @@ import CopyUpdate from "./components/pages/CopyUpdate";
 import CopyDelete from "./components/pages/CopyDelete";
 import MyBorrowed from "./components/pages/MyBorrowed";
 import BorrowBook from "./components/pages/BorrowBook";
+import ReturnBook from "./components/pages/ReturnBook";
 
 function App() {
   return (
@@ -161,6 +162,9 @@ function App() {
             </Route>
             <Route exact path="/my_borrowed">
               <MyBorrowed />
+            </Route>
+            <Route exact path="/borrowed/:id(\d+)/return">
+              <ReturnBook />
             </Route>
             <Route>
               <ErrorComponent error={{ status: 404, message: "Not found." }} />

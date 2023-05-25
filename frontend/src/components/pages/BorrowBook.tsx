@@ -6,6 +6,8 @@ import BookForm from "../BookForm";
 import BorrowForm from "../BorrowForm";
 import { useParams } from "react-router-dom";
 import { AuthContext } from "../../contexts/AuthContext";
+import ErrorComponent from "../ErrorComponent";
+import "../style.css";
 
 function BorrowBook(): ReactElement {
   const history = useHistory();
@@ -22,9 +24,11 @@ function BorrowBook(): ReactElement {
     CopyIn | undefined,
     React.Dispatch<React.SetStateAction<CopyIn | undefined>>
   ] = useState();
+  let [loading, setLoading] = useState<boolean>(false);
 
   useEffect(() => {
     // Getting value of book from the api
+    setLoading(true);
     client
       .GetCopiesofBook(id)
       .then(
@@ -34,11 +38,14 @@ function BorrowBook(): ReactElement {
               setCopy(newCopy);
             }
           });
+          setLoading(false);
         }
+
         //(error) => { console.log(`Error! The book with id ${id} does not exist.`); }
       )
       .catch((err) => {
         alert(err);
+        setLoading(false);
       });
   }, [id]);
 
@@ -66,7 +73,7 @@ function BorrowBook(): ReactElement {
 
   return (
     <div className="background-image">
-      {copy !== undefined && (
+      {copy !== undefined ? (
         <BorrowForm
           borrowed={{
             id: -1,
@@ -88,6 +95,14 @@ function BorrowBook(): ReactElement {
           isLibrarian={isLibrarian}
           submitHandler={submitHandler}
         />
+      ) : (
+        <div className="signup-form">
+          <h2>
+            {loading
+              ? "Loading..."
+              : "There are no copies available for this book to borrow!"}
+          </h2>
+        </div>
       )}
     </div>
   );

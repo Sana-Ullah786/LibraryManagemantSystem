@@ -60,10 +60,10 @@ const MyBorrowed = (props: { showLinks?: boolean }) => {
             {myBorrowed?.map((borrowed: BorrowedIn, index: number) => (
               <li>
                 <h2>{borrowed.copy.book.title}</h2>
-                <p>Issue Date: {borrowed.issueDate}</p>
-                <p>Due Date: {borrowed.dueDate}</p>
-                <p>Return Date: {borrowed.returnDate}</p>
-                {borrowed.returnDate && (
+                <p>Issue Date: {borrowed.issueDate.split("T").join(" ")}</p>
+                <p>Due Date: {borrowed.dueDate.split("T").join(" ")}</p>
+                <p>Return Date: {borrowed.returnDate?.split("T").join(" ")}</p>
+                {!borrowed.returnDate && (
                   <Link to={`/borrowed/${borrowed.id}/return`}>Return</Link>
                 )}
               </li>

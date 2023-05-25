@@ -628,6 +628,28 @@ export class APIClient {
       });
   }
 
+  public GetBorrowedDetails(id: string): Promise<BorrowedIn> {
+    return new Promise((resolve, reject) => {
+      APIClient.axiosInstance
+        .get(`/borrowed/${id}`)
+        .then((res) => {
+          const borrowed: BorrowedIn = this.borrowedDeserialize(res.data.data);
+          resolve(borrowed);
+        })
+        .catch((error) => {
+          reject(APIClient.instance.handleErrors(error));
+        });
+    });
+  }
+
+  public ReturnBorrowed(id: string, data: BorrowedOut): Promise<Boolean> {
+    return APIClient.axiosInstance
+      .put("/borrowed/return_borrowed_user/" + id, data)
+      .then((res) => {
+        return true;
+      });
+  }
+
   //Helper function for the axios interceptors.
   //Used to get a new access token using a refresh token
   private UseRefreshToken(refreshToken: string): Promise<string> {
