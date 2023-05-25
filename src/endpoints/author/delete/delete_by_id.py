@@ -1,7 +1,7 @@
 import logging
 
 from fastapi import Depends, HTTPException, Path
-from sqlalchemy import delete
+from sqlalchemy import and_, not_, select
 from sqlalchemy.orm import Session
 from starlette import status
 
@@ -29,11 +29,18 @@ async def delete_author_by_id(
     ------
     Status code 204 NO_CONTENT
     """
-    if db.execute(delete(Author).where(Author.id == author_id)).rowcount > 0:
-        logging.info(f"Deleting author {author_id} -- {__name__}")
-        db.commit()
-    else:
+    author = (
+        db.execute(
+            select(Author).where(and_(Author.id == author_id, not_(Author.is_deleted)))
+        )
+        .scalars()
+        .first()
+    )
+    if not author:
         logging.error("Author not found -- {__name__}")
         raise custom_exception(
             status_code=status.HTTP_404_NOT_FOUND, details="Author not found."
         )
+    author.is_deleted = True
+    logging.info(f"Deleting author {author_id} -- {__name__}")
+    db.commit()
