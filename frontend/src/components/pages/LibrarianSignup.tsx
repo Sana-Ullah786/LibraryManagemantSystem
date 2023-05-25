@@ -6,12 +6,12 @@ import jwt_decode from "jwt-decode";
 import { client } from "../../axios";
 import '../style.css'; // Import the Genres CSS file
 
-function Signup() {
+function LibrarianSignup() {
   const { LoginFunction }: { LoginFunction: (arg0: DecodedToken) => void } =
     useContext(AuthContext);
   const { LogoutFunction }: { LogoutFunction: () => void } =
     useContext(AuthContext);
-  const { isAuthenticated }: { isAuthenticated: boolean } =
+  const { isAuthenticated, isLibrarian }: { isAuthenticated: boolean, isLibrarian: boolean } =
     useContext(AuthContext);
   const [error, setError] = useState("");
   const history = useHistory();
@@ -25,16 +25,18 @@ function Signup() {
     address: "",
   });
 
+  useEffect(() => {
 
+  });
 
   function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
     // Call the signup function and pass the formData
-    client.Signup(formData)
+    client.LibrarianSignup(formData)
       .then((tokens) => {
         const decoded_token: DecodedToken = jwt_decode(tokens.access_token);
         LoginFunction(decoded_token);
-        history.push("/users/");
+        history.push("/");
       })
       .catch((error) => {
         // Handle error and show an error message
@@ -57,6 +59,11 @@ function Signup() {
       [name]: value,
     }));
   };
+
+  // Conditionally render the Signup form only if the user is a librarian
+  if (!isLibrarian) {
+    return <div>You do not have permission to access this page.</div>;
+  }
 
   return (
     <div className='background-image'>
@@ -136,4 +143,4 @@ function Signup() {
   );
 }
 
-export default Signup;
+export default LibrarianSignup;

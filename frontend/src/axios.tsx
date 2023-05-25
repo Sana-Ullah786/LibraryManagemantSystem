@@ -125,10 +125,10 @@ export class APIClient {
   }
 
   //This method uses api call to fetch list of books. It returns this list.
-  public GetBookList(): Promise<BookSaved[]> {
+  public GetBookList(pagenumber : number): Promise<BookSaved[]> {
     return new Promise((resolve, reject) => {
       APIClient.axiosInstance
-        .get("/book")
+        .get(`book/?page_number=${pagenumber}&page_size=5`)
         .then((response) => {
           let bookList: BookSaved[] = [];
 
@@ -150,10 +150,10 @@ export class APIClient {
     };
   }
   
-  public GetBooksForAuthor(authorId: string): Promise<BookSaved[]> {
+  public GetBooksForAuthor(authorId: string ): Promise<BookSaved[]> {
     return new Promise((resolve, reject) => {
       APIClient.axiosInstance
-        .get(`/book/?author=${authorId}&page_number=1&page_size=10`)
+        .get(`/book/?author=${authorId}`)
         .then((response) => {
           let bookList: BookSaved[] = [];
 
@@ -172,7 +172,7 @@ export class APIClient {
   public GetBooksForGenre(genreId: string): Promise<BookSaved[]> {
     return new Promise((resolve, reject) => {
       APIClient.axiosInstance
-        .get(`/book/?author=${genreId}&page_number=1&page_size=10`)
+        .get(`/book/?author=${genreId}`)
         .then((response) => {
           let bookList: BookSaved[] = [];
 
@@ -191,7 +191,7 @@ export class APIClient {
   public GetBooksForLanguages(languageid: string): Promise<BookSaved[]> {
     return new Promise((resolve, reject) => {
       APIClient.axiosInstance
-        .get(`/book/?language=${languageid}&page_number=1&page_size=10`)
+        .get(`/book/?language=${languageid}`)
         .then((response) => {
           let bookList: BookSaved[] = [];
 
@@ -222,10 +222,10 @@ export class APIClient {
   }
 
   // This method fetches and returns the all genres.
-  public GetAllGenres(): Promise<Genre[]> {
+  public GetAllGenres(page :  number): Promise<Genre[]> {
     return new Promise((resolve, reject) => {
       APIClient.axiosInstance
-        .get(`/genre/`)
+        .get(`/genre/?page_number=${page}&page_size=5`)
         .then((res) => {
           const genreList: Genre[] = res.data.data;
           resolve(genreList);
@@ -324,10 +324,11 @@ export class APIClient {
   }
 
   // This method returns all authors using api
-  public GetAllAuthors(): Promise<Author[]> {
+  public GetAllAuthors(pagenumber : number): Promise<Author[]> {
     return new Promise((resolve, reject) => {
       APIClient.axiosInstance
-        .get("/author")
+        .get(`/author/?page_number=${pagenumber}&page_size=5`)
+        
         .then((res) => {
           const authorList: Author[] = res.data.data;
           resolve(authorList);
@@ -354,11 +355,11 @@ export class APIClient {
   }
 
   //Used to get a list of all the authors
-  public GetAuthorsList(): Promise<Author[]> {
+  public GetAuthorsList(page :number): Promise<Author[]> {
     return new Promise((resolve, reject) => {
       let authorList: Author[];
       APIClient.axiosInstance
-        .get("/author")
+        .get(`/author?page_number=${page}&page_size=10`)
         .then((response) => {
           authorList = response.data.data;
           resolve(authorList);
@@ -439,6 +440,22 @@ export class APIClient {
       });
   }
 
+  public LibrarianSignup(data: SignupData): Promise<Tokens> {
+    return APIClient.axiosInstance.post("/auth/librarian/register", data)
+      .then((res) => {
+        let tokens: Tokens = {
+          access_token: res.data.data.access_token,
+          refresh_token: res.data.data.refresh_token,
+        };
+        localStorage.setItem("access_token", tokens.access_token);
+        localStorage.setItem("refresh_token", tokens.refresh_token);
+        APIClient.instance.SetAuthorizationHeaders(
+          "Bearer " + tokens.access_token
+        );
+        return tokens;
+      });
+  }
+
 
   //Used to set the authorization headers with the access token for the axios instant
   private SetAuthorizationHeaders(TokenHeader: String | null): void {
@@ -475,6 +492,12 @@ export class APIClient {
       return true;
     });
   }
+  public DeleteUser(id: string): Promise<Boolean> {
+    return APIClient.axiosInstance.delete("/user/" + id + "/").then((res) => {
+      return true;
+    });
+  }
+
 
   //Used to update a given authors data
   public PutAuthor(id: string, data: AuthorDetails): Promise<Boolean> {

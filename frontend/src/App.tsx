@@ -30,6 +30,7 @@ import Users from './components/pages/Users';
 import UserDetails from './components/pages/UserDetails';
 import UserCreate from './components/pages/UserCreate';
 import UserUpdate from './components/pages/UserUpdate';
+import LibrarianSignup from './components/pages/LibrarianSignup';
 function App() {
   return (
     /**
@@ -96,6 +97,9 @@ function App() {
               <Signup />
             </Route>
 
+            <Route exact path="/librarian/signup">
+              <LibrarianSignup />
+            </Route>
 
             <Route exact path="/genre">
               <Genres />

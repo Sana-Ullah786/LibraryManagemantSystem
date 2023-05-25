@@ -1,26 +1,27 @@
 import React, {
-    useEffect, 
+    useEffect,
     useState,
     useContext,
 } from 'react'
-import {client} from "../../axios"
+import { client } from "../../axios"
 import AuthorListItem from '../AuthorListItem'
 import {
     Link,
     useRouteMatch
 } from 'react-router-dom'
-import {AuthContext} from "../../contexts/AuthContext"
-import { 
+import { AuthContext } from "../../contexts/AuthContext"
+import {
     Author,
     ErrorObject
 } from '../../CustomTypes'
 import ErrorComponent from '../ErrorComponent'
 import '../style.css'; // Import the Genres CSS file
+import { Pagination } from './pagination'
 
 function Authors() {
-    const {isLibrarian}: {isLibrarian: boolean} = useContext(AuthContext)
+    const { isLibrarian }: { isLibrarian: boolean } = useContext(AuthContext)
 
-    let {url}: {url: string} = useRouteMatch();
+    let { url }: { url: string } = useRouteMatch();
     /**
      * This renders the list of authors page.
      * It makes a get request to the authors api end point and saves
@@ -31,6 +32,7 @@ function Authors() {
      */
     const [authorList, setAuthorList] = useState<Author[]>([])
     const [error, setError] = useState<ErrorObject>()
+    const [page, setPage] = useState<number>(1);
 
     //When the page first loads up, make an api call to recieve a list of author objects
     //and save it in the state.
@@ -39,22 +41,22 @@ function Authors() {
          * Since we've added "proxy": "http://127.0.0.1:8000/", to packages.json,
          * We do not need to use the full URL and instead a relative URL can be used to access the endpoint
          */
-        client.GetAuthorsList()
-        .then(AuthorList=>{
-            if (AuthorList){
-                setAuthorList(AuthorList)
-            }            
-        })
-        .catch(error => {
-            setError(error)            
-        })
-        .catch(error => {
-            setError(error)            
-        })
-    },[])
+        client.GetAuthorsList(page)
+            .then(AuthorList => {
+                if (AuthorList) {
+                    setAuthorList(AuthorList)
+                }
+            })
+            .catch(error => {
+                setError(error)
+            })
+            .catch(error => {
+                setError(error)
+            })
+    }, [page])
 
     //This function returns the AuthorListItem components. It is called in the return statement
-    function setAuthorListItemComponent(authorList: Author[]){
+    function setAuthorListItemComponent(authorList: Author[]) {
         /**
          * Here we use the map method to individually pass the author objects in the authorList as props 
          * to the AuthorListItem component. This gives us a list of such components.
@@ -67,52 +69,56 @@ function Authors() {
          * is thus empty. Which is why we need to use the ternary operator here to avoid any missing key warnings React might give us
          */
         const authorListItemComponent: JSX.Element[] = authorList.map(author => {
-            if (author.id == null){
+            if (author.id == null) {
                 return (
-                    <li key = {null}>
+                    <li key={null}>
                         No items
                     </li>
                 )
             }
-            else{
+            else {
                 //Passing the link to an authors details page as a prop.
                 //The AuthorListItem component then uses the linksto prop to create a link to the authors details page
-                return(
-                    <li className="genre-list-item" key = {author.id.toString()}>
-                        <AuthorListItem 
-                            key = {author.id} 
-                            item = {author} 
-                            linksto = {`${url}/${author.id}`} 
+                return (
+                    <li className="genre-list-item" key={author.id.toString()}>
+                        <AuthorListItem
+                            key={author.id}
+                            item={author}
+                            linksto={`${url}/${author.id}`}
                         />
                     </li>
-                ) 
+                )
             }
         })
         return authorListItemComponent
     }
     //This creates a link to the librarian creation form page
-    function createAuthorLink(){
+    function createAuthorLink() {
         return (
-            <Link to = {`${url}/create`} className="genre-link">
+            <Link to={`${url}/create`} className="genre-link">
                 Create Author
             </Link>
         )
     }
 
-    if (error != null){
+    if (error != null) {
         return (
             <ErrorComponent error={error} />
         )
     }
 
     return (
-        <div  className="genre-list background-image ">
-            <div  className='modal'>             <h1>Author List</h1>
-            <ul>
-                {setAuthorListItemComponent(authorList)}
-            </ul>
-            {isLibrarian?createAuthorLink():null}
-        </div>
+        <div className="genre-list background-image ">
+            <div className='modal'>
+                <h1>Author List</h1>
+                <ul>
+                    {setAuthorListItemComponent(authorList)}
+                </ul>
+                {isLibrarian ? createAuthorLink() : null}
+                <Pagination page={page} setPage={setPage}/>
+
+            </div>
+
         </div>
 
     )

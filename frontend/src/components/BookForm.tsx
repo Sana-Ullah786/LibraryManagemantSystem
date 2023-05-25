@@ -13,6 +13,7 @@ function BookForm(props: {
   book: BookSaved;
   submitHandler: SubmitHandler<BookOut>;
 }): ReactElement {
+  const [page,setPage] = useState<number>(1)
   console.log(props.book);
   // A form for book
   let { register, handleSubmit } = useForm<BookOut>({
@@ -42,7 +43,7 @@ function BookForm(props: {
 
   // This effect fetches authors from backend
   useEffect(() => {
-    client.GetAllAuthors().then(
+    client.GetAllAuthors(page).then(
       (authors: Author[]) => {
         setAuthors(authors);
       },
@@ -54,7 +55,7 @@ function BookForm(props: {
 
   // This effect fetches genres from backend
   useEffect(() => {
-    client.GetAllGenres().then(
+    client.GetAllGenres(page).then(
       (genres: Genre[]) => {
         setGenres(genres);
       },

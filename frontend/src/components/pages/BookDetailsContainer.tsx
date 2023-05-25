@@ -52,7 +52,7 @@ export const BookDetailsContainer = (props: { showLinks?: boolean }) => {
     // The book details are presented once all details have been received
     return (
       <>
-      <div className="background-image"></div>
+      <div className="background-image">
       <div className="modal">
         <BookDetailsPresentation
           url={url}
@@ -62,6 +62,7 @@ export const BookDetailsContainer = (props: { showLinks?: boolean }) => {
           book={book}
         />
         </div>  
+        </div>
       </>
     );
   }

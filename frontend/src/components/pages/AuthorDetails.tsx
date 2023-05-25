@@ -6,12 +6,13 @@ import { AuthContext } from "../../contexts/AuthContext";
 import { BookSaved, ErrorObject } from "../../CustomTypes";
 import ErrorComponent from "../ErrorComponent";
 import { BookListPresentation } from "./BookListPresentation";
+import { Pagination } from './pagination';
 
 function AuthorDetails() {
   //Getting the id of the author from the url of the current page as a parameter
   let { id }: { id: string } = useParams();
   const { url }: { url: string } = useRouteMatch();
-
+  const [page, setPage] = useState<number>(1);
   const { isLibrarian }: { isLibrarian: boolean } = useContext(AuthContext);
 
   const [firstName, setFirstName] = useState<string | null | undefined>("");

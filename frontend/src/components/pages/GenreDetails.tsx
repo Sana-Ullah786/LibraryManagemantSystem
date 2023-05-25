@@ -5,7 +5,7 @@ import { AuthContext } from '../../contexts/AuthContext';
 import { BookSaved, ErrorObject } from '../../CustomTypes';
 import ErrorComponent from '../ErrorComponent';
 import { BookListPresentation } from './BookListPresentation';
-
+import { Pagination } from './pagination';
 function GenreDetails() {
   const { id }: { id: string } = useParams();
   const genreId: number = parseInt(id);
@@ -16,7 +16,7 @@ function GenreDetails() {
   const [books, setBooks] = useState<BookSaved[]>([]);
   const [genre, setGenre] = useState<string | null | undefined>('');
   const [error, setError] = useState<ErrorObject>();
-
+  const [page, setPage] = useState<number>(1)
   useEffect(() => {
     client
       .GetGenreDetails(genreId)

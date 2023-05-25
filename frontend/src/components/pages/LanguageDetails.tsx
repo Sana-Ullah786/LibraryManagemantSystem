@@ -6,13 +6,13 @@ import { BookSaved, ErrorObject } from '../../CustomTypes';
 import ErrorComponent from '../ErrorComponent';
 import "../style.css"; // Import the Languages CSS file
 import { BookListPresentation } from "./BookListPresentation";
-
+import { Pagination } from './pagination';
 function LanguageDetails() {
   // Getting the id of the language from the URL of the current page as a parameter
   let {id}:{id: string} = useParams();
   const { url } = useRouteMatch();
   const [books, setBooks] = useState<BookSaved[]>([]);
-
+  const [page , setPage] = useState<number>(1);
   const { isLibrarian } = useContext(AuthContext);
 
   const [language, setLanguage] = useState<string | null | undefined>('');

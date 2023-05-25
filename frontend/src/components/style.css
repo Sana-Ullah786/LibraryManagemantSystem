@@ -90,6 +90,9 @@
   border-radius: 5px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   justify-items: center;
+  min-width: 600px;
+  max-width: 600px;
+  
 }
 
 .genre-link {
@@ -234,7 +237,7 @@
   background-image: url("../assets/background.jpg");
   background-size: cover;
   background-position: center;
-  min-height: 100vh;
+  min-height: 90vh;
   display: flex;
   justify-content: center;
   align-items: center;
