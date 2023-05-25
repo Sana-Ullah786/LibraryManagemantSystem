@@ -73,24 +73,22 @@ async def delete_borrowed(
         raise custom_exception(
             status_code=status.HTTP_404_NOT_FOUND, details="Status not found."
         )
-    if found_status.status != BORROWED:
-        logging.warning("Status is not borrowed.")
-        raise custom_exception(
-            status_code=status.HTTP_400_BAD_REQUEST, details="Status is not borrowed."
-        )
-    found_copy.status_id = db.scalar(
-        select(all_models.Status.id).where(
-            and_(
-                all_models.Status.status == AVAILABLE,
-                not_(all_models.Status.is_deleted),
+    try:
+        if found_status.status == BORROWED:
+            found_copy.status_id = db.scalar(
+                select(all_models.Status.id).where(
+                    and_(
+                        all_models.Status.status == AVAILABLE,
+                        not_(all_models.Status.is_deleted),
+                    )
+                )
             )
-        )
-    )
-    if not found_copy.status_id:
-        logging.warning("Status not found in database with status: " + str(AVAILABLE))
+        found_borrowed.is_deleted = True
+        db.commit()
+        logging.info("Borrowed deleted successfully")
+    except Exception as e:
+        logging.error("An error occurred: " + str(e))
         raise custom_exception(
-            status_code=status.HTTP_404_NOT_FOUND, details="Status not found."
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            details="An error occurred.",
         )
-    found_borrowed.is_deleted = True
-    db.commit()
-    logging.info("Deleted borrowed in database with id: " + str(borrowed_id))
