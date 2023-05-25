@@ -25,11 +25,6 @@ function CreateUser() {
     address: "",
   });
 
-  useEffect(() => {
-    if (isAuthenticated) {
-      LogoutFunction();
-    }
-  }, [isAuthenticated, LogoutFunction]);
 
   function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();

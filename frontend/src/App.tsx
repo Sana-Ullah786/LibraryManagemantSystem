@@ -3,7 +3,6 @@ import Navbar from "./components/Navbar";
 import Authors from "./components/pages/Authors";
 import Home from "./components/pages/Home";
 import Login from "./components/pages/Login";
-import AuthorDetails from "./components/pages/AuthorDetails";
 import { BrowserRouter as Router, Route, Switch } from "react-router-dom";
 import AuthContextProvider from "./contexts/AuthContext";
 import AuthorDelete from "./components/pages/AuthorDelete";
@@ -34,7 +33,8 @@ import Copies from "./components/pages/Copies";
 import CopyCreate from "./components/pages/CopyCreate";
 import CopyUpdate from "./components/pages/CopyUpdate";
 import CopyDelete from "./components/pages/CopyDelete";
-
+import AuthorDetails from './components/pages/AuthorDetails';
+import LibrarianSignup from './components/pages/LibrarianSignup';
 function App() {
   return (
     /**
@@ -110,6 +110,11 @@ function App() {
             <Route exact path="/signup">
               <Signup />
             </Route>
+
+            <Route exact path="/librarian/signup">
+              <LibrarianSignup />
+            </Route>
+
             <Route exact path="/genre">
               <Genres />
             </Route>
