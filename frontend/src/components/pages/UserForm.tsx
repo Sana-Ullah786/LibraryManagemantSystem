@@ -52,12 +52,12 @@ function UserForm({ user, onSubmit }: Props) {
                         {errors.password && <span>This field is required</span>}
                     </div>
                     <div>
-                        <label htmlFor="password"> Old Password:</label>
+                        <label htmlFor="old_password"> Old Password:</label>
                         <input
                             type="password"
                             id="old_password"
                             placeholder='Required'
-                            {...register('password', { required: true })}
+                            {...register('old_password', { required: true })}
                         />
                         {errors.password && <span>This field is required</span>}
                     </div>

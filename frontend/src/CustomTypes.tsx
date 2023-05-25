@@ -10,10 +10,11 @@ export interface AuthorDetails {
 }
 
 export interface UserDetails {
-  id : number;
+  id: number;
   email: string;
   username: string;
   password: string;
+  old_password : string;
   first_name: string;
   last_name: string;
   contact_number: string;
@@ -118,4 +119,21 @@ export interface LanguageDetails {
 export interface Language {
   id: number;
   language: string;
+}
+
+export interface BorrowedBase {
+  issueDate: string;
+  dueDate: string;
+  returnDate: string | null;
+}
+
+export interface BorrowedIn extends BorrowedBase {
+  id: number;
+  copy: CopyIn;
+  user: UserDetails;
+}
+
+export interface BorrowedOut extends BorrowedBase {
+  copyId: number;
+  userId: number | null;
 }

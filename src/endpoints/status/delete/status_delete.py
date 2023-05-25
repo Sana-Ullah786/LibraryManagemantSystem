@@ -1,7 +1,7 @@
 import logging
 
-from fastapi import Depends, HTTPException, Path
-from sqlalchemy import delete, select
+from fastapi import Depends, Path
+from sqlalchemy import and_, not_, select
 from sqlalchemy.orm import Session
 from starlette import status
 
@@ -31,7 +31,9 @@ async def status_delete(
     """
     logging.info(f"Deleting status {status_id} -- {__name__}")
     found_status = db.scalar(
-        select(all_models.Status).where(all_models.Status.id == status_id)
+        select(all_models.Status).where(
+            and_(all_models.Status.id == status_id, not_(all_models.Status.is_deleted))
+        )
     )
     if not found_status:
         logging.warning("Status not found")
@@ -39,7 +41,7 @@ async def status_delete(
             status_code=status.HTTP_404_NOT_FOUND, details="Status not found"
         )
     try:
-        db.delete(found_status)
+        found_status.is_deleted = True
         db.commit()
         logging.info("Deleted status")
     except Exception as e:

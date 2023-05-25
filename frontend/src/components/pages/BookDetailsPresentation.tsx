@@ -6,6 +6,7 @@ import LibrarianLinks from "../LibrarianLinks";
 type BookDetailsPresentationProps = {
   isLibrarian: boolean;
   showLinks?: boolean;
+  isAuthenticated: boolean;
   id: number;
   url: string;
   book: BookIn;
@@ -99,7 +100,14 @@ export const BookDetailsPresentation = (
       <br></br>
       <br></br>
       {props.isLibrarian && (
-        <Link to={`/books/${props.book.id}/copies`}>Manage Copies</Link>
+        <>
+          <Link to={`/books/${props.book.id}/copies`}>Manage Copies</Link>
+          <br></br>
+          <br></br>
+        </>
+      )}
+      {props.isAuthenticated && (
+        <Link to={`/books/${props.book.id}/borrow`}>Borrow</Link>
       )}
     </div>
   );

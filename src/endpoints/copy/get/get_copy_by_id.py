@@ -1,7 +1,7 @@
 import logging
 
-from fastapi import Depends, HTTPException
-from sqlalchemy import select
+from fastapi import Depends
+from sqlalchemy import and_, not_, select
 from sqlalchemy.orm import Session
 from starlette import status
 
@@ -17,7 +17,11 @@ async def get_copy_by_id(copy_id: int, db: Session = Depends(get_db)) -> dict:
     """
     Endpoint to get copy by id
     """
-    copy = db.execute(select(Copy).where(Copy.id == copy_id)).scalars().first()
+    copy = (
+        db.execute(select(Copy).where(and_(Copy.id == copy_id, not_(Copy.is_deleted))))
+        .scalars()
+        .first()
+    )
     if copy:
         logging.info(f"Copy with copy id : {copy_id}")
         return custom_response(

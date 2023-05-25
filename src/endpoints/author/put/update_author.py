@@ -1,7 +1,7 @@
 import logging
 
 from fastapi import Depends, HTTPException, Path
-from sqlalchemy import select
+from sqlalchemy import and_, not_, select
 from sqlalchemy.orm import Session
 from starlette import status
 
@@ -32,7 +32,13 @@ async def update_author(
     dict : A dict with status code, details and data
     """
     logging.info(f"Getting author {author_id}-- {__name__}")
-    author = db.execute(select(Author).where(Author.id == author_id)).scalars().first()
+    author = (
+        db.execute(
+            select(Author).where(and_(Author.id == author_id, not_(Author.is_deleted)))
+        )
+        .scalars()
+        .first()
+    )
     if not author:
         logging.error("Author not found -- {__name__}")
         raise custom_exception(

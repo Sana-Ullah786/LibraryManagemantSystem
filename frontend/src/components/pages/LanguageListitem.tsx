@@ -15,10 +15,7 @@ const LanguageListItem: React.FC<LanguageListItemProps> = ({ item, linksto }) =>
       <Link to={linksto} > {item.language}</Link>
       </span>
 
-      <div >
-        <Link to={`language/${item.id}/update`} className="genre-list-update-button">Update</Link>
-        <Link to={`language/${item.id}/delete`} className="genre-list-delete-button">Delete</Link>
-      </div>
+     
     </div>
   );
 };

@@ -16,6 +16,8 @@ import {
   UserDetails,
   CopyOut,
   Status,
+  BorrowedIn,
+  BorrowedOut,
 } from "./CustomTypes";
 import jwt_decode from "jwt-decode";
 import { DecodedRefreshToken } from "./contexts/AuthContext";
@@ -48,7 +50,7 @@ export class APIClient {
     if (error.response) {
       const err: ErrorObject = {
         status: error.response.status,
-        message: error.response.data.data.detail,
+        message: error.response.data.detail,
       };
       return err;
     }
@@ -124,10 +126,10 @@ export class APIClient {
   }
 
   //This method uses api call to fetch list of books. It returns this list.
-  public GetBookList(): Promise<BookIn[]> {
+  public GetBookList(pagenumber : number): Promise<BookIn[]> {
     return new Promise((resolve, reject) => {
       APIClient.axiosInstance
-        .get("/book")
+        .get(`book/?page_number=${pagenumber}&page_size=5`)
         .then((response) => {
           let bookList: BookIn[] = [];
 
@@ -149,10 +151,10 @@ export class APIClient {
     };
   }
 
-  public GetBooksForAuthor(authorId: string): Promise<BookIn[]> {
+  public GetBooksForAuthor(authorId: string ): Promise<BookIn[]> {
     return new Promise((resolve, reject) => {
       APIClient.axiosInstance
-        .get(`/book/?author=${authorId}&page_number=1&page_size=10`)
+        .get(`/book/?author=${authorId}`)
         .then((response) => {
           let bookList: BookIn[] = [];
 
@@ -171,7 +173,7 @@ export class APIClient {
   public GetBooksForGenre(genreId: string): Promise<BookIn[]> {
     return new Promise((resolve, reject) => {
       APIClient.axiosInstance
-        .get(`/book/?genre=${genreId}&page_number=1&page_size=10`)
+        .get(`/book/?genre=${genreId}`)
         .then((response) => {
           let bookList: BookIn[] = [];
 
@@ -190,7 +192,7 @@ export class APIClient {
   public GetBooksForLanguages(languageid: string): Promise<BookIn[]> {
     return new Promise((resolve, reject) => {
       APIClient.axiosInstance
-        .get(`/book/?language=${languageid}&page_number=1&page_size=10`)
+        .get(`/book/?language=${languageid}`)
         .then((response) => {
           let bookList: BookIn[] = [];
 
@@ -297,10 +299,10 @@ export class APIClient {
   }
 
   // This method fetches and returns the all genres.
-  public GetAllGenres(): Promise<Genre[]> {
+  public GetAllGenres(page :  number): Promise<Genre[]> {
     return new Promise((resolve, reject) => {
       APIClient.axiosInstance
-        .get(`/genre/`)
+        .get(`/genre/?page_number=${page}&page_size=5`)
         .then((res) => {
           const genreList: Genre[] = res.data.data;
           resolve(genreList);
@@ -411,10 +413,11 @@ export class APIClient {
   }
 
   // This method returns all authors using api
-  public GetAllAuthors(): Promise<Author[]> {
+  public GetAllAuthors(pagenumber : number): Promise<Author[]> {
     return new Promise((resolve, reject) => {
       APIClient.axiosInstance
-        .get("/author")
+        .get(`/author/?page_number=${pagenumber}&page_size=5`)
+        
         .then((res) => {
           const authorList: Author[] = res.data.data;
           resolve(authorList);
@@ -441,11 +444,11 @@ export class APIClient {
   }
 
   //Used to get a list of all the authors
-  public GetAuthorsList(): Promise<Author[]> {
+  public GetAuthorsList(page :number): Promise<Author[]> {
     return new Promise((resolve, reject) => {
       let authorList: Author[];
       APIClient.axiosInstance
-        .get("/author")
+        .get(`/author?page_number=${page}&page_size=10`)
         .then((response) => {
           authorList = response.data.data;
           resolve(authorList);
@@ -490,6 +493,7 @@ export class APIClient {
     return true;
   }
 
+
   //Used to get access and refresh tokens for the login component
   public Login(data: FormData): Promise<Tokens> {
     return APIClient.axiosInstance.post("/auth/token", data).then((res) => {
@@ -520,6 +524,14 @@ export class APIClient {
       return tokens;
     });
   }
+
+  public LibrarianSignup(data: SignupData): Promise<Boolean> {
+    return APIClient.axiosInstance.post("/auth/librarian/register", data)
+      .then((res) => {
+        return true ;
+      });
+  }
+
 
   //Used to set the authorization headers with the access token for the axios instant
   private SetAuthorizationHeaders(TokenHeader: String | null): void {
@@ -556,6 +568,12 @@ export class APIClient {
       return true;
     });
   }
+  public DeleteUser(id: string): Promise<Boolean> {
+    return APIClient.axiosInstance.delete("/user/" + id + "/").then((res) => {
+      return true;
+    });
+  }
+
 
   //Used to update a given authors data
   public PutAuthor(id: string, data: AuthorDetails): Promise<Boolean> {
@@ -572,6 +590,102 @@ export class APIClient {
       const id: Number = res.data.data.language_id;
       console.log(id);
       return id;
+    });
+  }
+
+  private borrowedDeserialize(json: any): BorrowedIn {
+    let borrowed: BorrowedIn = json;
+
+    borrowed.id = json.id;
+    borrowed.copy = this.copyDeserialize(json.copy);
+    borrowed.user = json.user;
+    borrowed.dueDate = json.due_date;
+    borrowed.issueDate = json.issue_date;
+    borrowed.returnDate = json.return_date;
+    return borrowed;
+  }
+
+  public borrowedSerialize(borrowed: BorrowedOut) {
+    let serialized = {
+      copy_id: borrowed.copyId,
+      user_id: borrowed.userId,
+      due_date: borrowed.dueDate,
+      issue_date: borrowed.issueDate,
+      return_date: borrowed.returnDate,
+    };
+
+    return serialized;
+  }
+
+  public GetMyBorrowed(): Promise<BorrowedIn[]> {
+    return new Promise((resolve, reject) => {
+      let myBorrowed: BorrowedIn[];
+      APIClient.axiosInstance
+        .get("/borrowed/user")
+        .then((response) => {
+          myBorrowed = response.data.data.map((borrowed: any) =>
+            this.borrowedDeserialize(borrowed)
+          );
+          resolve(myBorrowed);
+        })
+        .catch((error) => {
+          reject(APIClient.instance.handleErrors(error));
+        });
+    });
+  }
+
+  public GetBorrowedForUser(id: string): Promise<BorrowedIn[]> {
+    return new Promise((resolve, reject) => {
+      let myBorrowed: BorrowedIn[];
+      APIClient.axiosInstance
+        .get("/borrowed/user/" + id)
+        .then((response) => {
+          myBorrowed = response.data.data.map((borrowed: any) =>
+            this.borrowedDeserialize(borrowed)
+          );
+          resolve(myBorrowed);
+        })
+        .catch((error) => {
+          reject(APIClient.instance.handleErrors(error));
+        });
+    });
+  }
+
+  public CreateBorrowed(borrowed: BorrowedOut): Promise<number> {
+    return APIClient.axiosInstance
+      .post("/borrowed/", this.borrowedSerialize(borrowed))
+      .then((res) => {
+        // An id is assigned to book once its saved in backend server
+        const id: number = res.data.data.id;
+        return id;
+      });
+  }
+
+  public GetBorrowedDetails(id: string): Promise<BorrowedIn> {
+    return new Promise((resolve, reject) => {
+      APIClient.axiosInstance
+        .get(`/borrowed/${id}`)
+        .then((res) => {
+          const borrowed: BorrowedIn = this.borrowedDeserialize(res.data.data);
+          resolve(borrowed);
+        })
+        .catch((error) => {
+          reject(APIClient.instance.handleErrors(error));
+        });
+    });
+  }
+
+  public ReturnBorrowed(id: string, data: BorrowedOut): Promise<Boolean> {
+    return APIClient.axiosInstance
+      .put("/borrowed/return_borrowed_user/" + id, data)
+      .then((res) => {
+        return true;
+      });
+  }
+
+  public UpdateBorrowed(id: string, data: BorrowedOut): Promise<Boolean> {
+    return APIClient.axiosInstance.put("/borrowed/" + id, data).then((res) => {
+      return true;
     });
   }
 

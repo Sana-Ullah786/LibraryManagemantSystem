@@ -2,7 +2,7 @@ import logging
 from typing import Annotated, List
 
 from fastapi import Depends, Query
-from sqlalchemy import asc, select
+from sqlalchemy import asc, not_, select
 from sqlalchemy.orm import Session
 from starlette import status
 
@@ -32,6 +32,7 @@ async def get_all_authors(
     authors = (
         db.execute(
             select(Author)
+            .where(not_(Author.is_deleted))
             .order_by(asc(Author.id))
             .offset(starting_index)
             .limit(page_size)

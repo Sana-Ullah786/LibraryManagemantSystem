@@ -1,7 +1,7 @@
 import logging
 
-from fastapi import Depends, HTTPException, Path, status
-from sqlalchemy import select
+from fastapi import Depends, Path, status
+from sqlalchemy import and_, not_, select
 from sqlalchemy.orm import Session
 
 from src.dependencies import get_current_librarian, get_db
@@ -29,7 +29,9 @@ async def delete_genre_by_id(
     """
     logging.info("Deleting genre in database with id: " + str(genre_id))
     found_genre = db.scalars(
-        select(all_models.Genre).where(all_models.Genre.id == genre_id)
+        select(all_models.Genre).where(
+            and_(all_models.Genre.id == genre_id, not_(all_models.Genre.is_deleted))
+        )
     ).first()
     if not found_genre:
         logging.warning("Genre not found in database")
@@ -37,7 +39,7 @@ async def delete_genre_by_id(
             status_code=status.HTTP_404_NOT_FOUND, details="Genre not found."
         )
     try:
-        db.delete(found_genre)
+        found_genre.is_deleted = True
         db.commit()
         logging.info("Deleted Genre in database with id: " + str(genre_id))
     except Exception as e:

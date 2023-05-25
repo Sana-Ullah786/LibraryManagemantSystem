@@ -1,7 +1,7 @@
 import logging
 
-from fastapi import Depends, HTTPException
-from sqlalchemy import delete, select
+from fastapi import Depends
+from sqlalchemy import and_, not_, select
 from sqlalchemy.orm import Session
 from starlette import status
 
@@ -24,7 +24,11 @@ async def book_delete(
         f"Book with ID: {book_id} Delete Request by Librarian {librarian['id']}"
     )
 
-    book_model = db.execute(select(Book).where(Book.id == book_id)).scalars().first()
+    book_model = (
+        db.execute(select(Book).where(and_(Book.id == book_id, not_(Book.is_deleted))))
+        .scalars()
+        .first()
+    )
 
     if book_model is None:
         raise custom_exception(
@@ -34,6 +38,5 @@ async def book_delete(
     logging.info(
         f"Book with ID: {book_model.id} Deleted by Librarian {librarian['id']}"
     )
-
-    db.execute(delete(Book).where(Book.id == book_id))
+    book_model.is_deleted = True
     db.commit()

@@ -1,7 +1,7 @@
 import logging
 
-from fastapi import Depends, HTTPException, Path, status
-from sqlalchemy import select
+from fastapi import Depends, Path, status
+from sqlalchemy import and_, not_, select
 from sqlalchemy.orm import Session
 
 from src.dependencies import get_db
@@ -27,7 +27,9 @@ async def get_genre_by_id(
     """
     logging.info("Getting genre by id = " + str(genre_id) + " from database")
     genre = db.scalars(
-        select(all_models.Genre).where(all_models.Genre.id == genre_id)
+        select(all_models.Genre).where(
+            and_(all_models.Genre.id == genre_id, not_(all_models.Genre.is_deleted))
+        )
     ).first()
     if not genre:
         logging.warning("genre not found in database")

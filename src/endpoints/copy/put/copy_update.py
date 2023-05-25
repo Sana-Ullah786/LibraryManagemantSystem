@@ -1,7 +1,7 @@
 import logging
 
-from fastapi import Depends, HTTPException
-from sqlalchemy import select
+from fastapi import Depends
+from sqlalchemy import and_, not_, select
 from sqlalchemy.orm import Session
 from starlette import status
 
@@ -28,7 +28,11 @@ async def copy_update(
     )
 
     copy_model = (
-        db.execute(select(all_models.Copy).where(all_models.Copy.id == copy_id))
+        db.execute(
+            select(all_models.Copy).where(
+                and_(all_models.Copy.id == copy_id, not_(all_models.Copy.is_deleted))
+            )
+        )
         .scalars()
         .first()
     )

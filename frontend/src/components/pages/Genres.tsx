@@ -6,6 +6,7 @@ import { AuthContext } from '../../contexts/AuthContext';
 import { Genre, ErrorObject } from '../../CustomTypes';
 import ErrorComponent from '../ErrorComponent';
 import '../style.css'; // Import the Genres CSS file
+import { Pagination } from './pagination';
 
 function Genres() {
   const { isLibrarian }: { isLibrarian: boolean } = useContext(AuthContext);
@@ -14,9 +15,10 @@ function Genres() {
 
   const [genreList, setGenreList] = useState<Genre[]>([]);
   const [error, setError] = useState<ErrorObject>();
+  const [page, setPage] = useState<number>(1);
 
   useEffect(() => {
-    client.GetAllGenres()
+    client.GetAllGenres(page)
       .then((genreList) => {
         if (genreList) {
           setGenreList(genreList);
@@ -25,7 +27,7 @@ function Genres() {
       .catch((error) => {
         setError(error);
       });
-  }, []);
+  }, [page]);
 
   function setGenreListItemComponent(genreList: Genre[]) {
     const genreListItemComponent: JSX.Element[] = genreList.map((genre) => (
@@ -59,7 +61,10 @@ function Genres() {
         {setGenreListItemComponent(genreList)}
       </ul>
       {isLibrarian ? createGenreLink() : null}
+      <Pagination page={page} setPage={setPage}/>
+
     </div>
+
     </div>
   );
 }

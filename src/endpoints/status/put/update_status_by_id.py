@@ -1,7 +1,7 @@
 import logging
 
-from fastapi import Depends, HTTPException, Path
-from sqlalchemy import select
+from fastapi import Depends, Path
+from sqlalchemy import and_, not_, select
 from sqlalchemy.orm import Session
 from starlette import status
 
@@ -32,7 +32,9 @@ async def update_status_by_id(
     """
     logging.info("Updating status by id" + str(status_id))
     found_status = db.scalar(
-        select(all_models.Status).where(all_models.Status.id == status_id)
+        select(all_models.Status).where(
+            and_(all_models.Status.id == status_id, not_(all_models.Status.is_deleted))
+        )
     )
     if not found_status:
         logging.error("Status not found with id" + str(status_id))

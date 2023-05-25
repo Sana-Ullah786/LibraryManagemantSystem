@@ -32,8 +32,7 @@ def test_get_copy(test_db: sessionmaker) -> None:
     # get all books by book id that doesnt exist
 
     response = client.get("/copy/book/3")
-    assert response.status_code == status.HTTP_200_OK
-    assert len(response.json()["data"]) == 0
+    assert response.status_code == status.HTTP_404_NOT_FOUND
 
     # get copy by copy id
 
@@ -135,3 +134,70 @@ def test_copy_delete(test_db: sessionmaker):
 
     assert response.status_code == status.HTTP_404_NOT_FOUND
     assert response.json().get("detail") == "Copy not found"
+
+
+# Test Soft Delete
+
+
+def test_soft_deleted(test_db: sessionmaker) -> None:
+    """
+    Test Soft Delete
+    """
+    copy = insert_copy(
+        test_db, isbn="qwer", language="English", status_name="available"
+    )
+    copy2 = insert_copy(
+        test_db, isbn="qwerty", language="Persian", status_name="reserved"
+    )
+
+    response = client.get("/copy")
+    assert response.status_code == 200
+    assert len(response.json()["data"]) == 2
+    assert response.json()["data"][0].get("id") == copy[1].id
+    assert response.json()["data"][1].get("id") == copy2[1].id
+    # get all copies by book id
+    response = client.get(f"/copy/book/{copy[1].id}")
+    assert response.status_code == status.HTTP_200_OK
+    assert response.json()["data"][0].get("id") == copy[1].id
+    # soft delete copy 1
+    token = get_fresh_token(test_db, SUPER_USER_CRED)
+    response = client.delete(
+        f"/copy/{copy[1].id}",
+        headers={"Authorization": f"Bearer {token}"},
+    )
+    assert response.status_code == status.HTTP_204_NO_CONTENT
+    # try again to delete copy 1
+    response = client.delete(
+        f"/copy/{copy[1].id}",
+        headers={"Authorization": f"Bearer {token}"},
+    )
+    assert response.status_code == status.HTTP_404_NOT_FOUND
+    # get all copies by book id
+    response = client.get(f"/copy/book/{copy[1].id}")
+    assert response.status_code == status.HTTP_404_NOT_FOUND
+    response = client.get("/copy")
+    assert response.status_code == 200
+    assert response.json()["data"][0].get("id") == copy2[1].id
+    assert len(response.json()["data"]) == 1
+
+    # get copy by copy id
+    response = client.get(f"/copy/{copy[1].id}")
+    assert response.status_code == status.HTTP_404_NOT_FOUND
+    # get copy by copy id 2
+    response = client.get(f"/copy/{copy2[1].id}")
+    assert response.status_code == 200
+    # update copy 1
+    payload = {"book_id": copy[0].id, "language_id": copy[2].id, "status_id": 1}
+    response = client.put(
+        f"/copy/{copy[1].id}",
+        headers={"Authorization": f"Bearer {token}"},
+        json=payload,
+    )
+    assert response.status_code == status.HTTP_404_NOT_FOUND
+    # upadate copy 2
+    response = client.put(
+        f"/copy/{copy2[1].id}",
+        headers={"Authorization": f"Bearer {token}"},
+        json=payload,
+    )
+    assert response.status_code == status.HTTP_200_OK
