@@ -33,8 +33,12 @@ import Copies from "./components/pages/Copies";
 import CopyCreate from "./components/pages/CopyCreate";
 import CopyUpdate from "./components/pages/CopyUpdate";
 import CopyDelete from "./components/pages/CopyDelete";
-import AuthorDetails from './components/pages/AuthorDetails';
-import LibrarianSignup from './components/pages/LibrarianSignup';
+import MyBorrowed from "./components/pages/MyBorrowed";
+import BorrowBook from "./components/pages/BorrowBook";
+import ReturnBorrowed from "./components/pages/ReturnBorrowed";
+import BorrowUpdate from "./components/pages/BorrowUpdate";
+import AuthorDetails from "./components/pages/AuthorDetails";
+import LibrarianSignup from "./components/pages/LibrarianSignup";
 function App() {
   return (
     /**
@@ -83,6 +87,9 @@ function App() {
             <Route exact path="/books/:id(\d+)/update">
               <BookUpdate />
             </Route>
+            <Route exact path="/books/:id(\d+)/borrow">
+              <BorrowBook />
+            </Route>
             {/* URL for the book Creation page */}
             <Route exact path="/books/create">
               <BookCreate />
@@ -110,11 +117,9 @@ function App() {
             <Route exact path="/signup">
               <Signup />
             </Route>
-
             <Route exact path="/librarian/signup">
               <LibrarianSignup />
             </Route>
-
             <Route exact path="/genre">
               <Genres />
             </Route>
@@ -158,6 +163,15 @@ function App() {
             </Route>
             <Route exact path="/users/:id(\d+)/update">
               <UserUpdate />
+            </Route>
+            <Route exact path="/my_borrowed">
+              <MyBorrowed />
+            </Route>
+            <Route exact path="/borrowed/:id(\d+)/return">
+              <ReturnBorrowed />
+            </Route>
+            <Route exact path="/borrowed/:id(\d+)/update">
+              <BorrowUpdate />
             </Route>
             <Route>
               <ErrorComponent error={{ status: 404, message: "Not found." }} />

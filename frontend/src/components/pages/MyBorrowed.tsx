@@ -1,13 +1,13 @@
 import React, { useEffect, useState, useContext } from "react";
-import { BookIn, ErrorObject } from "../../CustomTypes";
+import { BorrowedIn, ErrorObject } from "../../CustomTypes";
 import { useParams } from "react-router";
-import { BookDetailsPresentation } from "./BookDetailsPresentation";
 import { client } from "../../axios";
 import { AuthContext } from "../../contexts/AuthContext";
-import { useRouteMatch } from "react-router-dom";
+import { useRouteMatch, Link } from "react-router-dom";
 import ErrorComponent from "../ErrorComponent";
+import { BorrowedList } from "../BorrowedList";
 
-export const BookDetailsContainer = (props: { showLinks?: boolean }) => {
+const MyBorrowed = (props: { showLinks?: boolean }) => {
   /*
    * BookDetailsContainer performs all the computation and api calls to fetch book details.
    * It delegates the task of actually displaying the data to BookDetailsPresentation.
@@ -16,29 +16,23 @@ export const BookDetailsContainer = (props: { showLinks?: boolean }) => {
   //id is extracted from url
   let { id }: { id: string } = useParams();
 
-  const {
-    isLibrarian,
-    isAuthenticated,
-  }: { isLibrarian: boolean; isAuthenticated: boolean } =
-    useContext(AuthContext);
+  const { isLibrarian }: { isLibrarian: boolean } = useContext(AuthContext);
   let { url }: { url: string } = useRouteMatch(); // The url of this page
 
   // book, genre and language are intentially allowed to be undefined. We display the page once these values are loaded
 
-  let [book, setBook]: [
-    BookIn | undefined,
-    React.Dispatch<React.SetStateAction<BookIn | undefined>>
-  ] = useState(); //The book to be displayed
+  let [myBorrowed, setMyBorrowed] = useState<BorrowedIn[]>([]); //The myBorrowed to be displayed
 
   const [error, setError] = useState<ErrorObject>();
 
   useEffect(() => {
     // Getting value of book from the api
     client
-      .GetBookDetails(id)
+      .GetMyBorrowed()
       .then(
-        (bookDetails: BookIn) => {
-          setBook(bookDetails);
+        (newMyBorrowed: BorrowedIn[]) => {
+          newMyBorrowed.sort((a, b) => (a.id > b.id ? 1 : -1));
+          setMyBorrowed(newMyBorrowed);
         }
         //(error) => { console.log(`Error! The book with id ${id} does not exist.`); }
       )
@@ -47,7 +41,9 @@ export const BookDetailsContainer = (props: { showLinks?: boolean }) => {
       });
   }, [id]);
 
-  if (!book) {
+  console.log(myBorrowed);
+
+  if (myBorrowed.length === 0) {
     if (error) {
       return <ErrorComponent error={error} />;
     }
@@ -55,23 +51,17 @@ export const BookDetailsContainer = (props: { showLinks?: boolean }) => {
   } else {
     // The book details are presented once all details have been received
     return (
-      <>
-        <div className="background-image">
-          <div className="modal">
-            <BookDetailsPresentation
-              url={url}
-              showLinks={props.showLinks}
-              isLibrarian={isLibrarian}
-              id={parseInt(id)}
-              book={book}
-              isAuthenticated={isAuthenticated}
-            />
-          </div>
+      <div className="background-image">
+        <div className="modal">
+          <h1>My Borrowed Books</h1>
+          <BorrowedList borrowedList={myBorrowed} />
         </div>
-      </>
+      </div>
     );
   }
 };
 
 // By default links are always shown if the user is a librarian
-BookDetailsContainer.defaultProps = { showLinks: true };
+MyBorrowed.defaultProps = { showLinks: true };
+
+export default MyBorrowed;
