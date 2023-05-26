@@ -151,10 +151,15 @@ export class APIClient {
     };
   }
 
-  public GetBooksForAuthor(authorId: string): Promise<BookIn[]> {
+  public GetBooksForAuthor(
+    authorId: string,
+    page_number: number
+  ): Promise<BookIn[]> {
     return new Promise((resolve, reject) => {
       APIClient.axiosInstance
-        .get(`/book/?author=${authorId}`)
+        .get(
+          `/book/?author=${authorId}&page_number=${page_number}&page_size=10`
+        )
         .then((response) => {
           let bookList: BookIn[] = [];
 
@@ -170,10 +175,13 @@ export class APIClient {
     });
   }
 
-  public GetBooksForGenre(genreId: string): Promise<BookIn[]> {
+  public GetBooksForGenre(
+    genreId: string,
+    page_number: number
+  ): Promise<BookIn[]> {
     return new Promise((resolve, reject) => {
       APIClient.axiosInstance
-        .get(`/book/?genre=${genreId}`)
+        .get(`/book/?genre=${genreId}&page_number=${page_number}&page_size=10`)
         .then((response) => {
           let bookList: BookIn[] = [];
 
@@ -189,10 +197,15 @@ export class APIClient {
     });
   }
 
-  public GetBooksForLanguages(languageid: string): Promise<BookIn[]> {
+  public GetBooksForLanguages(
+    languageid: string,
+    page_number: number
+  ): Promise<BookIn[]> {
     return new Promise((resolve, reject) => {
       APIClient.axiosInstance
-        .get(`/book/?language=${languageid}`)
+        .get(
+          `/book/?language=${languageid}&page_number=${page_number}&page_size=10`
+        )
         .then((response) => {
           let bookList: BookIn[] = [];
 

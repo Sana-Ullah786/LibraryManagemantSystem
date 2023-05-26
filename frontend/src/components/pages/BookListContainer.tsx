@@ -44,11 +44,12 @@ export const BookListContainer = () => {
     <div className="background-image">
       <div className="modal">
         {/* Book list is presented once the list of books is properly initialized */}
-        <BookListPresentation showLinks={isLibrarian} books={books} url={url} />
-        <Pagination
+        <BookListPresentation
+          showLinks={isLibrarian}
+          books={books}
+          url={url}
           page={page}
           setPage={setPage}
-          showNext={books.length === 10}
         />
       </div>
     </div>

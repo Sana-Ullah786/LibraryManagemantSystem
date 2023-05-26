@@ -6,13 +6,13 @@ import { BookIn, ErrorObject } from "../../CustomTypes";
 import ErrorComponent from "../ErrorComponent";
 import "../style.css"; // Import the Languages CSS file
 import { BookListPresentation } from "./BookListPresentation";
-import { Pagination } from './pagination';
+import { Pagination } from "./pagination";
 function LanguageDetails() {
   // Getting the id of the language from the URL of the current page as a parameter
   let { id }: { id: string } = useParams();
   const { url } = useRouteMatch();
   const [books, setBooks] = useState<BookIn[]>([]);
-  const [page , setPage] = useState<number>(1);
+  const [page, setPage] = useState<number>(1);
   const { isLibrarian } = useContext(AuthContext);
 
   const [language, setLanguage] = useState<string | null | undefined>("");
@@ -36,7 +36,7 @@ function LanguageDetails() {
         setError(error);
       });
     client
-      .GetBooksForLanguages(id)
+      .GetBooksForLanguages(id, page)
       .then((bookList) => {
         setBooks(bookList);
       })
@@ -71,7 +71,13 @@ function LanguageDetails() {
         {isLibrarian === true ? librarianLinks() : null}
         <div>
           <div>
-            <BookListPresentation showLinks={false} books={books} url={url} />
+            <BookListPresentation
+              showLinks={false}
+              books={books}
+              url={url}
+              page={page}
+              setPage={setPage}
+            />
           </div>
         </div>
       </div>

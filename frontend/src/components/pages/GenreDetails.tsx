@@ -29,7 +29,7 @@ function GenreDetails() {
         setError(error);
       });
     client
-      .GetBooksForGenre(id)
+      .GetBooksForGenre(id, page)
       .then((bookList) => {
         setBooks(bookList);
       })
@@ -62,8 +62,13 @@ function GenreDetails() {
         <h1>Genre: {genre}</h1>
         {isLibrarian === true ? librarianLinks() : null}
         <div>
-          <h3>Books</h3>
-          <BookListPresentation showLinks={false} books={books} url={url} />
+          <BookListPresentation
+            showLinks={false}
+            books={books}
+            url={url}
+            page={page}
+            setPage={setPage}
+          />
         </div>
       </div>
     </div>

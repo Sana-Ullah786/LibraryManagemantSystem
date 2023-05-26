@@ -2,6 +2,7 @@ import { BookIn } from "../../CustomTypes";
 import { Link } from "react-router-dom";
 import { Author } from "../../CustomTypes";
 import LibrarianLinks from "../LibrarianLinks";
+import "../style.css";
 
 type BookDetailsPresentationProps = {
   isLibrarian: boolean;
@@ -107,7 +108,12 @@ export const BookDetailsPresentation = (
         </>
       )}
       {props.isAuthenticated && (
-        <Link to={`/books/${props.book.id}/borrow`}>Borrow</Link>
+        <Link
+          className="language-action-button"
+          to={`/books/${props.book.id}/borrow`}
+        >
+          Borrow
+        </Link>
       )}
     </div>
   );

@@ -4,11 +4,14 @@ import { BookIn } from "../../CustomTypes";
 import LibrarianLinks from "../LibrarianLinks";
 import "../style.css"; // Import the Genres CSS file
 import ScrollView from "../Scrollview";
+import { Pagination } from "./pagination";
 
 export const BookListPresentation = (props: {
   books: BookIn[];
   url: string;
   showLinks: boolean;
+  page: number;
+  setPage: React.Dispatch<React.SetStateAction<number>>;
 }) => {
   const [searchTerm, setSearchTerm] = useState<string>(""); // State for the search term
 
@@ -83,6 +86,11 @@ export const BookListPresentation = (props: {
           </div>
         </div>
       )}
+      <Pagination
+        page={props.page}
+        setPage={props.setPage}
+        showNext={props.books.length === 10}
+      />
     </>
   );
 };
