@@ -36,5 +36,6 @@ def update_user(new_user: UpdateUserSchema, user_id: int, db: Session) -> dict:
     current_user.address = new_user.address
     logging.info(f"Updating user {user_id} -- {__name__}.udpate_current_user")
     db.commit()
+    db.refresh(current_user)
     new_user = UserSchemaOut(**current_user.__dict__)
     return custom_response(status_code=200, details="User updated", data=new_user)
