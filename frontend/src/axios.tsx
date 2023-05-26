@@ -479,6 +479,8 @@ export class APIClient {
 
   public async UpdateMe(data: UserDetails): Promise<Boolean> {
     const res = await APIClient.axiosInstance.put("/user/", data);
+    let user: UserDetails = res.data.data;
+    localStorage.setItem("user", JSON.stringify(user));
     return true;
   }
 
