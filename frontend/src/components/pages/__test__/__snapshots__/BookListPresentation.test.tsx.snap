@@ -1,0 +1,28 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Snapshot tests produces correct snapshot 1`] = `
+<div>
+  <ul>
+    <li
+      data-testid="item1"
+    >
+      <a
+        href="/test-url/1"
+        onClick={[Function]}
+      >
+        title1
+      </a>
+    </li>
+    <li
+      data-testid="item2"
+    >
+      <a
+        href="/test-url/2"
+        onClick={[Function]}
+      >
+        title2
+      </a>
+    </li>
+  </ul>
+</div>
+`;
