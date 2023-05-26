@@ -1,3 +1,4 @@
+from src.endpoints.borrowed.delete import delete_by_id
 from src.endpoints.borrowed.get import (
     get_all_borrowed,
     get_all_borrowed_for_any_user,

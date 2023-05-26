@@ -1,8 +1,8 @@
 import logging
 from typing import List
 
-from fastapi import Depends, HTTPException, Path, status
-from sqlalchemy import select
+from fastapi import Depends, Path, status
+from sqlalchemy import and_, not_, select
 from sqlalchemy.orm import Session
 
 from src.dependencies import get_current_user, get_db
@@ -25,7 +25,9 @@ async def get_borrowed_by_id(
 
     logging.info(f"User with id {user['id']} requested borrowed with id {borrowed_id}.")
 
-    query = select(Borrowed).where(Borrowed.id == borrowed_id)
+    query = select(Borrowed).where(
+        and_(Borrowed.id == borrowed_id, not_(Borrowed.is_deleted))
+    )
     if not db.scalar(select(User).where(User.id == user["id"])).is_librarian:
         query = query.where(Borrowed.user_id == user["id"])
 

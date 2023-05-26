@@ -8,33 +8,28 @@ from src.dependencies import get_current_librarian, get_db
 from src.endpoints.borrowed.router_init import router
 from src.exceptions import custom_exception
 from src.models import all_models
-from src.responses import custom_response
-from src.schemas.borrowed import BorrowedSchema
 from src.status_constants import AVAILABLE, BORROWED
 
 
-@router.put(
-    "/return_borrowed_any_user/{borrowed_id}",
-    response_model=None,
-    status_code=status.HTTP_200_OK,
+@router.delete(
+    "/{borrowed_id}", response_model=None, status_code=status.HTTP_204_NO_CONTENT
 )
-async def return_borrowed_any_for_user(
-    borrowed: BorrowedSchema,
+async def delete_borrowed(
     borrowed_id: int = Path(gt=-1),
     db: Session = Depends(get_db),
     librarian: dict = Depends(get_current_librarian),
 ) -> dict:
     """
-    This function will be used to update a borrowed by id.
+    This function will be used to delete a borrowed by id.
     Parameters:
         borrowed_id: The id of the borrowed.
-        borrowed: The borrowed data.
-        librarian: The user data. (current librarian)
+        librarian: The librarian data. (current librarian)
         db: The database session.
     Returns:
-        A dict that contains the status_code, detail and the data.
+        dict: A dict with the following keys status_code, details and data.
     """
-    logging.info("Updating borrowed in database with id: " + str(borrowed_id))
+
+    logging.info("Deleting borrowed in database with id: " + str(borrowed_id))
     found_borrowed = db.scalar(
         select(all_models.Borrowed).where(
             and_(
@@ -78,35 +73,22 @@ async def return_borrowed_any_for_user(
         raise custom_exception(
             status_code=status.HTTP_404_NOT_FOUND, details="Status not found."
         )
-    if found_status.status != BORROWED:
-        logging.warning(
-            "Copy is not borrowed in database with id: " + str(found_copy.status_id)
-        )
-        raise custom_exception(
-            status_code=status.HTTP_400_BAD_REQUEST, details="Copy is not borrowed."
-        )
     try:
-        found_borrowed.return_date = borrowed.return_date
-        found_copy.status_id = db.scalars(
-            select(all_models.Status.id).where(
-                and_(
-                    all_models.Status.status == AVAILABLE,
-                    not_(all_models.Status.is_deleted),
+        if found_status.status == BORROWED:
+            found_copy.status_id = db.scalar(
+                select(all_models.Status.id).where(
+                    and_(
+                        all_models.Status.status == AVAILABLE,
+                        not_(all_models.Status.is_deleted),
+                    )
                 )
             )
-        ).first()
+        found_borrowed.is_deleted = True
         db.commit()
-        logging.info("Updated borrowed in database with id: " + str(borrowed_id))
-        borrowed.id = borrowed_id
-        borrowed.user_id = found_borrowed.user_id
-        return custom_response(
-            status_code=status.HTTP_200_OK,
-            details="Borrowed returned successfully",
-            data=borrowed,
-        )
+        logging.info("Borrowed deleted successfully")
     except Exception as e:
-        logging.exception("Error updating borrowed in database. Details = " + str(e))
+        logging.error("An error occurred: " + str(e))
         raise custom_exception(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            details="Error updating borrowed in database. details = " + str(e),
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            details="An error occurred.",
         )
