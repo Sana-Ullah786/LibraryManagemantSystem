@@ -299,10 +299,10 @@ export class APIClient {
   }
 
   // This method fetches and returns the all genres.
-  public GetAllGenres(page: number): Promise<Genre[]> {
+  public GetAllGenres(): Promise<Genre[]> {
     return new Promise((resolve, reject) => {
       APIClient.axiosInstance
-        .get(`/genre/?page_number=${page}&page_size=10`)
+        .get("/genre")
         .then((res) => {
           const genreList: Genre[] = res.data.data;
           resolve(genreList);
@@ -412,22 +412,6 @@ export class APIClient {
     });
   }
 
-  // This method returns all authors using api
-  public GetAllAuthors(pagenumber: number): Promise<Author[]> {
-    return new Promise((resolve, reject) => {
-      APIClient.axiosInstance
-        .get(`/author/?page_number=${pagenumber}&page_size=10`)
-
-        .then((res) => {
-          const authorList: Author[] = res.data.data;
-          resolve(authorList);
-        })
-        .catch((error) => {
-          reject(APIClient.instance.handleErrors(error));
-        });
-    });
-  }
-
   //Used to get data needed to fill the home page
   public GetHomePageData(): Promise<HomeData> {
     return new Promise((resolve, reject) => {
@@ -493,6 +477,11 @@ export class APIClient {
     return true;
   }
 
+  public async UpdateMe(data: UserDetails): Promise<Boolean> {
+    const res = await APIClient.axiosInstance.put("/user/", data);
+    return true;
+  }
+
   //Used to get access and refresh tokens for the login component
   public Login(data: FormData): Promise<Tokens> {
     return APIClient.axiosInstance.post("/auth/token", data).then((res) => {
@@ -500,8 +489,10 @@ export class APIClient {
         access_token: res.data.data.access_token,
         refresh_token: res.data.data.refresh_token,
       };
+      let user: UserDetails = res.data.data;
       localStorage.setItem("access_token", tokens.access_token);
       localStorage.setItem("refresh_token", tokens.refresh_token);
+      localStorage.setItem("user", JSON.stringify(user));
       APIClient.instance.SetAuthorizationHeaders(
         "Bearer " + tokens.access_token
       );
@@ -547,6 +538,7 @@ export class APIClient {
       .then((res) => {
         localStorage.removeItem("access_token");
         localStorage.removeItem("refresh_token");
+        localStorage.removeItem("user");
         APIClient.instance.SetAuthorizationHeaders(null);
         return true;
       });
@@ -687,6 +679,14 @@ export class APIClient {
     });
   }
 
+  public DeleteBorrowed(id: string): Promise<Boolean> {
+    return APIClient.axiosInstance
+      .delete("/borrowed/" + id + "/")
+      .then((res) => {
+        return true;
+      });
+  }
+
   //Helper function for the axios interceptors.
   //Used to get a new access token using a refresh token
   private UseRefreshToken(refreshToken: string): Promise<string> {
@@ -763,7 +763,7 @@ export const client = APIClient.getInstance({
     "Content-Type": "application/json",
     accept: "application/json",
   },
-  baseURL: "http://127.0.0.1:8000/",
+  baseURL: "http://16.171.21.166:8000/",
   // transformResponse: [(response) =>{
   //   console.log(response.data.data)
   // 	return response.data.data

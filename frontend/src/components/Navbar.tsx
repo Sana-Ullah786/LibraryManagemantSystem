@@ -13,32 +13,22 @@ function Navbar() {
   }: { isAuthenticated: boolean; isLibrarian: boolean } =
     useContext(AuthContext);
   function loggedin() {
-    if (isLibrarian) {
-      return (
-        <div style={{ flexDirection: "row", display: "flex" }}>
+    return (
+      <div style={{ flexDirection: "row", display: "flex" }}>
+        {isAuthenticated ? (
+          <li>
+            <Link to="/update_profile">My Profile</Link>
+          </li>
+        ) : (
+          <li style={{ justifyContent: "flex-end" }}>
+            <Link to="/signup">Signup</Link>
+          </li>
+        )}
+        {isLibrarian && (
           <li style={{ justifyContent: "flex-end" }}>
             <Link to="/librarian/signup">Librarian Signup</Link>
           </li>
-          <li>
-            <LoginComponent />
-          </li>
-        </div>
-      );
-    }
-    if (isAuthenticated) {
-      return (
-        <div style={{ flexDirection: "row", display: "flex" }}>
-          <li>
-            <LoginComponent />
-          </li>
-        </div>
-      );
-    }
-    return (
-      <div style={{ flexDirection: "row", display: "flex" }}>
-        <li style={{ justifyContent: "flex-end" }}>
-          <Link to="/signup">Signup</Link>
-        </li>
+        )}
         <li>
           <LoginComponent />
         </li>

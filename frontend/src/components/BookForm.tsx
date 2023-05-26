@@ -55,7 +55,7 @@ function BookForm(props: {
 
   // This effect fetches genres from backend
   useEffect(() => {
-    client.GetAllGenres(page).then(
+    client.GetAllGenres().then(
       (genres: Genre[]) => {
         setGenres(genres);
       },

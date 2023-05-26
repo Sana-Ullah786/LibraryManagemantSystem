@@ -39,6 +39,8 @@ import ReturnBorrowed from "./components/pages/ReturnBorrowed";
 import BorrowUpdate from "./components/pages/BorrowUpdate";
 import AuthorDetails from "./components/pages/AuthorDetails";
 import LibrarianSignup from "./components/pages/LibrarianSignup";
+import BorrowDelete from "./components/pages/BorrowDelete";
+import UserUpdateMe from "./components/pages/UserUpdateMe";
 function App() {
   return (
     /**
@@ -152,6 +154,9 @@ function App() {
             <Route exact path="/language/:id(\d+)/delete">
               <LanguageDelete />
             </Route>
+            <Route exact path="/update_profile">
+              <UserUpdateMe />
+            </Route>
             <Route exact path="/users">
               <Users />
             </Route>
@@ -172,6 +177,9 @@ function App() {
             </Route>
             <Route exact path="/borrowed/:id(\d+)/update">
               <BorrowUpdate />
+            </Route>
+            <Route exact path="/borrowed/:id(\d+)/delete">
+              <BorrowDelete />
             </Route>
             <Route>
               <ErrorComponent error={{ status: 404, message: "Not found." }} />

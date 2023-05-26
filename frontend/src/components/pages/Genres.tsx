@@ -16,11 +16,10 @@ function Genres() {
 
   const [genreList, setGenreList] = useState<Genre[]>([]);
   const [error, setError] = useState<ErrorObject>();
-  const [page, setPage] = useState<number>(1);
 
   useEffect(() => {
     client
-      .GetAllGenres(page)
+      .GetAllGenres()
       .then((genreList) => {
         if (genreList) {
           setGenreList(genreList);
@@ -29,7 +28,7 @@ function Genres() {
       .catch((error) => {
         setError(error);
       });
-  }, [page]);
+  }, []);
 
   function setGenreListItemComponent(genreList: Genre[]) {
     const genreListItemComponent: JSX.Element[] = genreList.map((genre) => (
@@ -66,11 +65,6 @@ function Genres() {
           </div>
         </ScrollView>
         {isLibrarian ? createGenreLink() : null}
-        <Pagination
-          page={page}
-          setPage={setPage}
-          showNext={genreList.length === 10}
-        />
       </div>
     </div>
   );
