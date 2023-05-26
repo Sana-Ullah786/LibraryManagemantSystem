@@ -609,11 +609,11 @@ export class APIClient {
     return serialized;
   }
 
-  public GetMyBorrowed(): Promise<BorrowedIn[]> {
+  public GetMyBorrowed(page: number): Promise<BorrowedIn[]> {
     return new Promise((resolve, reject) => {
       let myBorrowed: BorrowedIn[];
       APIClient.axiosInstance
-        .get("/borrowed/user")
+        .get(`/borrowed/user?page_number=${page}&page_size=10`)
         .then((response) => {
           myBorrowed = response.data.data.map((borrowed: any) =>
             this.borrowedDeserialize(borrowed)
@@ -626,11 +626,11 @@ export class APIClient {
     });
   }
 
-  public GetBorrowedForUser(id: string): Promise<BorrowedIn[]> {
+  public GetBorrowedForUser(id: string, page: number): Promise<BorrowedIn[]> {
     return new Promise((resolve, reject) => {
       let myBorrowed: BorrowedIn[];
       APIClient.axiosInstance
-        .get("/borrowed/user/" + id)
+        .get(`/borrowed/user/${id}?page_number=${page}&page_size=10`)
         .then((response) => {
           myBorrowed = response.data.data.map((borrowed: any) =>
             this.borrowedDeserialize(borrowed)

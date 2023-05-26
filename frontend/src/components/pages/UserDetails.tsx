@@ -5,12 +5,14 @@ import { UserDetails as User, ErrorObject } from "../../CustomTypes";
 import ErrorComponent from "../ErrorComponent";
 import { BorrowedList } from "../BorrowedList";
 import { BorrowedIn } from "../../CustomTypes";
+import { Pagination } from "./pagination";
 
 function UserDetails() {
   let { id }: { id: string } = useParams();
   const [user, setUser] = useState<User | null>(null);
   const [error, setError] = useState<ErrorObject | null>(null);
   const [borrowedList, setBorrowedList] = useState<BorrowedIn[]>([]);
+  const [page, setPage] = useState<number>(1);
 
   useEffect(() => {
     client
@@ -22,7 +24,7 @@ function UserDetails() {
         setError(error);
       });
     client
-      .GetBorrowedForUser(id)
+      .GetBorrowedForUser(id, page)
       .then((borrowed) => {
         setBorrowedList(borrowed);
       })
@@ -53,6 +55,11 @@ function UserDetails() {
         </div>
         <h2>Books borrowed by this user:</h2>
         <BorrowedList borrowedList={borrowedList} />
+        <Pagination
+          page={page}
+          setPage={setPage}
+          showNext={borrowedList.length === 10}
+        />
       </div>
     </div>
   );

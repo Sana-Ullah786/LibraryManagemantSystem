@@ -53,16 +53,18 @@ function Navbar() {
             <Link to="/genre">Genres</Link>
           </li>
           <li style={{ justifyContent: "flex-end" }}>
-            <Link to="/Language">Language</Link>
+            <Link to="/Language">Languages</Link>
           </li>
           {isLibrarian && (
             <li style={{ justifyContent: "flex-end" }}>
               <Link to="/users">Users</Link>
             </li>
           )}
-          <li>
-            <Link to="/my_borrowed">My Borrowed</Link>
-          </li>
+          {isAuthenticated && (
+            <li>
+              <Link to="/my_borrowed">My Borrowed</Link>
+            </li>
+          )}
         </div>
 
         {loggedin()}
