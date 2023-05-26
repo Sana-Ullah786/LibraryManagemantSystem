@@ -7,6 +7,7 @@ import { AuthContext } from "../../contexts/AuthContext";
 import { useRouteMatch, Link } from "react-router-dom";
 import ErrorComponent from "../ErrorComponent";
 import LibrarianLinks from "../LibrarianLinks";
+import ScrollView from "../Scrollview";
 
 const Copies = (props: { showLinks?: boolean }) => {
   /*
@@ -63,22 +64,26 @@ const Copies = (props: { showLinks?: boolean }) => {
     // The book details are presented once all details have been received
     return (
       <div className="background-image">
-        <h1>Copies for {book?.title}</h1>
-        <ul>
-          {copies?.map((copy: CopyIn, index: number) => (
-            <li>
-              <h2>Copy {index + 1}</h2>
-              <p>Status: {copy.status.status}</p>
-              <p>Language: {copy.language.language}</p>
-              {isLibrarian && <LibrarianLinks url={`/copies/${copy.id}`} />}
-            </li>
-          ))}
-        </ul>
-        {isLibrarian && (
-          <Link to={`/books/${id}/copies/add`} className="genre-link">
-            Add Copy
-          </Link>
-        )}
+        <div className="modal">
+          <h1>Copies for {book?.title}</h1>
+          <ScrollView>
+            <div className="card-container">
+              {copies?.map((copy: CopyIn, index: number) => (
+                <div className="card">
+                  <h2>Copy {index + 1}</h2>
+                  <p>Status: {copy.status.status}</p>
+                  <p>Language: {copy.language.language}</p>
+                  {isLibrarian && <LibrarianLinks url={`/copies/${copy.id}`} />}
+                </div>
+              ))}
+            </div>
+          </ScrollView>
+          {isLibrarian && (
+            <Link to={`/books/${id}/copies/add`} className="genre-link">
+              Add Copy
+            </Link>
+          )}
+        </div>
       </div>
     );
   }

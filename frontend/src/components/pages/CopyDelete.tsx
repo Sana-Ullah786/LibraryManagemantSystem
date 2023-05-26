@@ -45,12 +45,16 @@ function CopyDelete(): ReactElement {
 
   return (
     <div className="background-image">
-      <h1>DELETE Copy?</h1>
-      {/* Displaying the copy details component to show which copy is being deleted */}
-      <h2>Copy for {currCopy?.book.title}</h2>
-      <p>Status: {currCopy?.status.status}</p>
-      <p>Language: {currCopy?.language.language}</p>
-      <button onClick={handleClick}>Yes, Delete</button>
+      <div className="modal">
+        <h1>DELETE Copy?</h1>
+        {/* Displaying the copy details component to show which copy is being deleted */}
+        <h2>Copy for {currCopy?.book.title}</h2>
+        <p>Status: {currCopy?.status.status}</p>
+        <p>Language: {currCopy?.language.language}</p>
+        <button className="genre-list-delete-button" onClick={handleClick}>
+          Yes, Delete
+        </button>
+      </div>
     </div>
   );
 }
