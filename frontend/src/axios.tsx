@@ -763,7 +763,7 @@ export const client = APIClient.getInstance({
     "Content-Type": "application/json",
     accept: "application/json",
   },
-  baseURL: "http://16.171.21.166:8000/",
+  baseURL: "http://127.0.0.1:8000/",
   // transformResponse: [(response) =>{
   //   console.log(response.data.data)
   // 	return response.data.data
