@@ -126,10 +126,10 @@ export class APIClient {
   }
 
   //This method uses api call to fetch list of books. It returns this list.
-  public GetBookList(pagenumber : number): Promise<BookIn[]> {
+  public GetBookList(pagenumber: number): Promise<BookIn[]> {
     return new Promise((resolve, reject) => {
       APIClient.axiosInstance
-        .get(`book/?page_number=${pagenumber}&page_size=5`)
+        .get(`book/?page_number=${pagenumber}&page_size=10`)
         .then((response) => {
           let bookList: BookIn[] = [];
 
@@ -151,10 +151,15 @@ export class APIClient {
     };
   }
 
-  public GetBooksForAuthor(authorId: string ): Promise<BookIn[]> {
+  public GetBooksForAuthor(
+    authorId: string,
+    page_number: number
+  ): Promise<BookIn[]> {
     return new Promise((resolve, reject) => {
       APIClient.axiosInstance
-        .get(`/book/?author=${authorId}`)
+        .get(
+          `/book/?author=${authorId}&page_number=${page_number}&page_size=10`
+        )
         .then((response) => {
           let bookList: BookIn[] = [];
 
@@ -170,10 +175,13 @@ export class APIClient {
     });
   }
 
-  public GetBooksForGenre(genreId: string): Promise<BookIn[]> {
+  public GetBooksForGenre(
+    genreId: string,
+    page_number: number
+  ): Promise<BookIn[]> {
     return new Promise((resolve, reject) => {
       APIClient.axiosInstance
-        .get(`/book/?genre=${genreId}`)
+        .get(`/book/?genre=${genreId}&page_number=${page_number}&page_size=10`)
         .then((response) => {
           let bookList: BookIn[] = [];
 
@@ -189,10 +197,15 @@ export class APIClient {
     });
   }
 
-  public GetBooksForLanguages(languageid: string): Promise<BookIn[]> {
+  public GetBooksForLanguages(
+    languageid: string,
+    page_number: number
+  ): Promise<BookIn[]> {
     return new Promise((resolve, reject) => {
       APIClient.axiosInstance
-        .get(`/book/?language=${languageid}`)
+        .get(
+          `/book/?language=${languageid}&page_number=${page_number}&page_size=10`
+        )
         .then((response) => {
           let bookList: BookIn[] = [];
 
@@ -299,10 +312,10 @@ export class APIClient {
   }
 
   // This method fetches and returns the all genres.
-  public GetAllGenres(page :  number): Promise<Genre[]> {
+  public GetAllGenres(): Promise<Genre[]> {
     return new Promise((resolve, reject) => {
       APIClient.axiosInstance
-        .get(`/genre/?page_number=${page}&page_size=5`)
+        .get("/genre")
         .then((res) => {
           const genreList: Genre[] = res.data.data;
           resolve(genreList);
@@ -412,22 +425,6 @@ export class APIClient {
     });
   }
 
-  // This method returns all authors using api
-  public GetAllAuthors(pagenumber : number): Promise<Author[]> {
-    return new Promise((resolve, reject) => {
-      APIClient.axiosInstance
-        .get(`/author/?page_number=${pagenumber}&page_size=5`)
-        
-        .then((res) => {
-          const authorList: Author[] = res.data.data;
-          resolve(authorList);
-        })
-        .catch((error) => {
-          reject(APIClient.instance.handleErrors(error));
-        });
-    });
-  }
-
   //Used to get data needed to fill the home page
   public GetHomePageData(): Promise<HomeData> {
     return new Promise((resolve, reject) => {
@@ -444,7 +441,7 @@ export class APIClient {
   }
 
   //Used to get a list of all the authors
-  public GetAuthorsList(page :number): Promise<Author[]> {
+  public GetAuthorsList(page: number): Promise<Author[]> {
     return new Promise((resolve, reject) => {
       let authorList: Author[];
       APIClient.axiosInstance
@@ -493,6 +490,12 @@ export class APIClient {
     return true;
   }
 
+  public async UpdateMe(data: UserDetails): Promise<Boolean> {
+    const res = await APIClient.axiosInstance.put("/user/", data);
+    let user: UserDetails = res.data.data;
+    localStorage.setItem("user", JSON.stringify(user));
+    return true;
+  }
 
   //Used to get access and refresh tokens for the login component
   public Login(data: FormData): Promise<Tokens> {
@@ -501,8 +504,10 @@ export class APIClient {
         access_token: res.data.data.access_token,
         refresh_token: res.data.data.refresh_token,
       };
+      let user: UserDetails = res.data.data;
       localStorage.setItem("access_token", tokens.access_token);
       localStorage.setItem("refresh_token", tokens.refresh_token);
+      localStorage.setItem("user", JSON.stringify(user));
       APIClient.instance.SetAuthorizationHeaders(
         "Bearer " + tokens.access_token
       );
@@ -526,12 +531,12 @@ export class APIClient {
   }
 
   public LibrarianSignup(data: SignupData): Promise<Boolean> {
-    return APIClient.axiosInstance.post("/auth/librarian/register", data)
+    return APIClient.axiosInstance
+      .post("/auth/librarian/register", data)
       .then((res) => {
-        return true ;
+        return true;
       });
   }
-
 
   //Used to set the authorization headers with the access token for the axios instant
   private SetAuthorizationHeaders(TokenHeader: String | null): void {
@@ -548,6 +553,7 @@ export class APIClient {
       .then((res) => {
         localStorage.removeItem("access_token");
         localStorage.removeItem("refresh_token");
+        localStorage.removeItem("user");
         APIClient.instance.SetAuthorizationHeaders(null);
         return true;
       });
@@ -573,7 +579,6 @@ export class APIClient {
       return true;
     });
   }
-
 
   //Used to update a given authors data
   public PutAuthor(id: string, data: AuthorDetails): Promise<Boolean> {
@@ -617,11 +622,11 @@ export class APIClient {
     return serialized;
   }
 
-  public GetMyBorrowed(): Promise<BorrowedIn[]> {
+  public GetMyBorrowed(page: number): Promise<BorrowedIn[]> {
     return new Promise((resolve, reject) => {
       let myBorrowed: BorrowedIn[];
       APIClient.axiosInstance
-        .get("/borrowed/user")
+        .get(`/borrowed/user?page_number=${page}&page_size=10`)
         .then((response) => {
           myBorrowed = response.data.data.map((borrowed: any) =>
             this.borrowedDeserialize(borrowed)
@@ -634,11 +639,11 @@ export class APIClient {
     });
   }
 
-  public GetBorrowedForUser(id: string): Promise<BorrowedIn[]> {
+  public GetBorrowedForUser(id: string, page: number): Promise<BorrowedIn[]> {
     return new Promise((resolve, reject) => {
       let myBorrowed: BorrowedIn[];
       APIClient.axiosInstance
-        .get("/borrowed/user/" + id)
+        .get(`/borrowed/user/${id}?page_number=${page}&page_size=10`)
         .then((response) => {
           myBorrowed = response.data.data.map((borrowed: any) =>
             this.borrowedDeserialize(borrowed)
@@ -675,9 +680,14 @@ export class APIClient {
     });
   }
 
-  public ReturnBorrowed(id: string, data: BorrowedOut): Promise<Boolean> {
+  public ReturnBorrowed(
+    id: string,
+    data: BorrowedOut,
+    me: boolean
+  ): Promise<Boolean> {
+    const endpoint = me ? "return_borrowed_user" : "return_borrowed_any_user";
     return APIClient.axiosInstance
-      .put("/borrowed/return_borrowed_user/" + id, data)
+      .put(`/borrowed/${endpoint}/${id}`, data)
       .then((res) => {
         return true;
       });
@@ -687,6 +697,14 @@ export class APIClient {
     return APIClient.axiosInstance.put("/borrowed/" + id, data).then((res) => {
       return true;
     });
+  }
+
+  public DeleteBorrowed(id: string): Promise<Boolean> {
+    return APIClient.axiosInstance
+      .delete("/borrowed/" + id + "/")
+      .then((res) => {
+        return true;
+      });
   }
 
   //Helper function for the axios interceptors.
@@ -771,25 +789,3 @@ export const client = APIClient.getInstance({
   // 	return response.data.data
   // }]
 });
-
-const axiosInstance = axios.create({
-  /**
-   * This is the axios instance used by the entire frontend app.
-   * When a user logs in, the Authorization details are stored here so that all future requests use them.
-   * Axios interceptors will also be added to help with refreshing the access token and error handling in the future
-   */
-  timeout: 5000,
-  headers: {
-    Authorization: localStorage.getItem("access_token")
-      ? "Bearer " + localStorage.getItem("access_token")
-      : null,
-    "Content-Type": "application/json",
-    accept: "application/json",
-  },
-  //baseURL: 'catalog/api/',
-  // transformResponse: [(response) =>{
-  // 	return response.data.data
-  // }]
-});
-
-export default axiosInstance;

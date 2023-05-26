@@ -1,19 +1,22 @@
-import React, { useState } from 'react';
+import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import { BookIn } from "../../CustomTypes";
 import LibrarianLinks from "../LibrarianLinks";
 import "../style.css"; // Import the Genres CSS file
 import ScrollView from "../Scrollview";
+import { Pagination } from "./pagination";
 
 export const BookListPresentation = (props: {
   books: BookIn[];
   url: string;
   showLinks: boolean;
+  page: number;
+  setPage: React.Dispatch<React.SetStateAction<number>>;
 }) => {
-  const [searchTerm, setSearchTerm] = useState<string>(''); // State for the search term
+  const [searchTerm, setSearchTerm] = useState<string>(""); // State for the search term
 
   // Filtered books based on search term
-  const filteredBooks = props.books.filter(book =>
+  const filteredBooks = props.books.filter((book) =>
     book.title.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
@@ -22,11 +25,17 @@ export const BookListPresentation = (props: {
   };
 
   return (
-    <div className='modal'>
-      <div style={{ display: 'flex', justifyContent: 'center' }}>
+    <>
+      <div style={{ display: "flex", justifyContent: "center" }}>
         <h1>Books</h1>
       </div>
-      <div style={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-evenly' }}>
+      <div
+        style={{
+          display: "flex",
+          flexDirection: "row",
+          justifyContent: "space-evenly",
+        }}
+      >
         <div>
           <h3>Search Book: </h3>
         </div>
@@ -43,27 +52,32 @@ export const BookListPresentation = (props: {
       <ScrollView>
         <div className="card-container">
           {filteredBooks.map((book) => (
-            <div key={book.id.toString()} className="card" data-testid={"item" + book.id.toString()}>
+            <div
+              key={book.id.toString()}
+              className="card"
+              data-testid={"item" + book.id.toString()}
+            >
               <Link to={"/books/" + book.id.toString()}>{book.title}</Link>
-              <p><b>Authors:</b></p>
               <p>
-                {
-
-                  book.authors.map((author) => {
-                    return (
-                      ` ${author.first_name} ${author.last_name}`
-                    )
-                  }).join(", ")}
+                <b>Authors:</b>
               </p>
-              <p><b>Description :</b></p>
+              <p>
+                {book.authors
+                  .map((author) => {
+                    return ` ${author.first_name} ${author.last_name}`;
+                  })
+                  .join(", ")}
+              </p>
+              <p>
+                <b>Description :</b>
+              </p>
               <p>{book.description}</p>
-             
-                  </div>
-                ))}
             </div>
+          ))}
+        </div>
       </ScrollView>
       {props.showLinks && (
-        <div style={{ display: 'flex', justifyContent: 'center' }}>
+        <div style={{ display: "flex", justifyContent: "center" }}>
           <div>
             <Link to={`${props.url}/create`} className="genre-link">
               {" "}
@@ -72,7 +86,11 @@ export const BookListPresentation = (props: {
           </div>
         </div>
       )}
-    </div>
-
+      <Pagination
+        page={props.page}
+        setPage={props.setPage}
+        showNext={props.books.length === 10}
+      />
+    </>
   );
 };

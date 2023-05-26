@@ -15,8 +15,10 @@ function ReturnBorrowed(props: Props): ReactElement {
   const [borrowed, setBorrowed] = useState<BorrowedIn | undefined>();
   const [error, setError] = useState<ErrorObject>();
   const { isLibrarian }: { isLibrarian: boolean } = useContext(AuthContext);
-  const { isAuthenticated }: { isAuthenticated: boolean } =
-    useContext(AuthContext);
+  const {
+    isAuthenticated,
+    user_id,
+  }: { isAuthenticated: boolean; user_id: number } = useContext(AuthContext);
 
   useEffect(() => {
     client
@@ -42,13 +44,18 @@ function ReturnBorrowed(props: Props): ReactElement {
   function handleReturn() {
     if (borrowed !== undefined) {
       client
-        .ReturnBorrowed(id, {
-          ...borrowed,
-          copyId: borrowed.copy.id,
-          userId: borrowed.user.id,
-        })
+        .ReturnBorrowed(
+          id,
+          {
+            ...borrowed,
+            copyId: borrowed.copy.id,
+            userId: borrowed.user.id,
+            returnDate: new Date().toISOString(),
+          },
+          borrowed.user.id === user_id
+        )
         .then((response) => {
-          history.push("/my_borrowed");
+          history.goBack();
         });
     }
   }

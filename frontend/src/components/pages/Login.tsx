@@ -25,6 +25,7 @@ function Login() {
     string,
     React.Dispatch<React.SetStateAction<string>>
   ] = useState("");
+  const [error, setError] = useState("");
 
   useEffect(() => {
     if (isAuthenticated) {
@@ -41,47 +42,64 @@ function Login() {
     const data: FormData = new FormData();
     data.append("username", userName);
     data.append("password", password);
-    client.Login(data).then((Token) => {
-      const decoded_token: DecodedToken = jwt_decode(Token.access_token);
-      //passing the decoded access token to the AuthContext to get the state variables needed to render for the
-      //current user
-      console.log(decoded_token);
-      LoginFunction(decoded_token);
-      history.push("/");
-    });
+    client
+      .Login(data)
+      .then((Token) => {
+        const decoded_token: DecodedToken = jwt_decode(Token.access_token);
+        //passing the decoded access token to the AuthContext to get the state variables needed to render for the
+        //current user
+        console.log(decoded_token);
+        LoginFunction(decoded_token);
+        history.push("/");
+      })
+      .catch((error) => {
+        // Handle error and show an error message
+        console.log(error.response);
+        if (error.response.status === 422) {
+          const errorMessage = error.response.data.detail[0].msg;
+          // Show the error message to the user (e.g., set it to a state variable to display in the UI)
+          setError(errorMessage);
+        } else {
+          const errorMessage = error.response.data.detail;
+          // Show the error message to the user (e.g., set it to a state variable to display in the UI)
+          setError(errorMessage);
+        }
+      });
   }
 
   return (
-    <div className='background-image'>
-    <div className="signup-container">
-      <form className="signup-form" onSubmit={handleSubmit}>
-      <h1>Login</h1>
-        <label className="form-group">
-          User Name
-          <input className="form-group"
-            type="text"
-            value={userName}
-            placeholder="Username"
-            onChange={(e) => setUserName(e.target.value.trim())}
-          />
-        </label>
-        <br />
-        <label className="form-group">
-          Password
-          <input className="form-group"
-            type="password"
-            value={password}
-            placeholder="Password"
-            onChange={(e) => setPassword(e.target.value)}
-          />
-        </label>
-        <br />
-        <div className="form-group">
-        <button  >Login</button>
-        </div>
-
-      </form>
-    </div>
+    <div className="background-image">
+      <div className="signup-container">
+        <form className="signup-form" onSubmit={handleSubmit}>
+          <h1>Login</h1>
+          <label className="form-group">
+            User Name
+            <input
+              className="form-group"
+              type="text"
+              value={userName}
+              placeholder="Username"
+              onChange={(e) => setUserName(e.target.value.trim())}
+            />
+          </label>
+          <br />
+          <label className="form-group">
+            Password
+            <input
+              className="form-group"
+              type="password"
+              value={password}
+              placeholder="Password"
+              onChange={(e) => setPassword(e.target.value)}
+            />
+          </label>
+          <br />
+          <div className="error-message">{error}</div>
+          <div className="form-group">
+            <button>Login</button>
+          </div>
+        </form>
+      </div>
     </div>
   );
 }

@@ -5,7 +5,7 @@ import { AuthContext } from "../../contexts/AuthContext";
 import { BookIn, ErrorObject } from "../../CustomTypes";
 import ErrorComponent from "../ErrorComponent";
 import { BookListPresentation } from "./BookListPresentation";
-import { Pagination } from './pagination';
+import { Pagination } from "./pagination";
 function GenreDetails() {
   const { id }: { id: string } = useParams();
   const genreId: number = parseInt(id);
@@ -16,7 +16,7 @@ function GenreDetails() {
   const [books, setBooks] = useState<BookIn[]>([]);
   const [genre, setGenre] = useState<string | null | undefined>("");
   const [error, setError] = useState<ErrorObject>();
-  const [page, setPage] = useState<number>(1)
+  const [page, setPage] = useState<number>(1);
   useEffect(() => {
     client
       .GetGenreDetails(genreId)
@@ -29,7 +29,7 @@ function GenreDetails() {
         setError(error);
       });
     client
-      .GetBooksForLanguages(id)
+      .GetBooksForGenre(id, page)
       .then((bookList) => {
         setBooks(bookList);
       })
@@ -62,8 +62,13 @@ function GenreDetails() {
         <h1>Genre: {genre}</h1>
         {isLibrarian === true ? librarianLinks() : null}
         <div>
-          <h3>Books</h3>
-          <BookListPresentation showLinks={false} books={books} url={url} />
+          <BookListPresentation
+            showLinks={false}
+            books={books}
+            url={url}
+            page={page}
+            setPage={setPage}
+          />
         </div>
       </div>
     </div>

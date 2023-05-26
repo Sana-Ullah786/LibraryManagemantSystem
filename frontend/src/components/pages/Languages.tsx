@@ -1,12 +1,12 @@
-import React, { useEffect, useState, useContext } from 'react';
-import { client } from '../../axios';
-import LanguageListItem from './LanguageListitem';
-import { Link, useRouteMatch } from 'react-router-dom';
-import { AuthContext } from '../../contexts/AuthContext';
-import { Language, ErrorObject } from '../../CustomTypes';
-import ErrorComponent from '../ErrorComponent';
+import React, { useEffect, useState, useContext } from "react";
+import { client } from "../../axios";
+import LanguageListItem from "./LanguageListitem";
+import { Link, useRouteMatch } from "react-router-dom";
+import { AuthContext } from "../../contexts/AuthContext";
+import { Language, ErrorObject } from "../../CustomTypes";
+import ErrorComponent from "../ErrorComponent";
 import "../style.css"; // Import the Languages CSS file
-import ScrollView from '../Scrollview';
+import ScrollView from "../Scrollview";
 
 function Languages() {
   const { isLibrarian }: { isLibrarian: boolean } = useContext(AuthContext);
@@ -17,7 +17,8 @@ function Languages() {
   const [error, setError] = useState<ErrorObject>();
 
   useEffect(() => {
-    client.GetAllLanguages()
+    client
+      .GetAllLanguages()
       .then((languageList) => {
         if (languageList) {
           setLanguageList(languageList);
@@ -29,11 +30,17 @@ function Languages() {
   }, []);
 
   function setLanguageListItemComponent(languageList: Language[]) {
-    const languageListItemComponent: JSX.Element[] = languageList.map((language) => (
-      <li className="language-list-item" key={language.id}>
-        <LanguageListItem key={language.id} item={language} linksto={`${url}/${language.id}`} />
-      </li>
-    ));
+    const languageListItemComponent: JSX.Element[] = languageList.map(
+      (language) => (
+        <div className="card" key={language.id}>
+          <LanguageListItem
+            key={language.id}
+            item={language}
+            linksto={`${url}/${language.id}`}
+          />
+        </div>
+      )
+    );
     return languageListItemComponent;
   }
 
@@ -46,22 +53,20 @@ function Languages() {
   }
 
   if (error != null) {
-    return (
-      <ErrorComponent error={error} />
-    );
+    return <ErrorComponent error={error} />;
   }
 
   return (
     <div className="background-image">
-      <div className='modal'>
-      <h1>Language List</h1>
-      <ScrollView>
-      <ul className="language-list">
-        {setLanguageListItemComponent(languageList)}
-      </ul>
-      </ScrollView> 
-      {isLibrarian ? createLanguageLink() : null}
-    </div>
+      <div className="modal">
+        <h1>Language List</h1>
+        <ScrollView>
+          <div className="card-container">
+            {setLanguageListItemComponent(languageList)}
+          </div>
+        </ScrollView>
+        {isLibrarian ? createLanguageLink() : null}
+      </div>
     </div>
   );
 }

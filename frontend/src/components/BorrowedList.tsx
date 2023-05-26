@@ -11,19 +11,25 @@ interface BorrowedListProps {
 export function BorrowedList(props: BorrowedListProps): ReactElement {
   const { isLibrarian }: { isLibrarian: boolean } = useContext(AuthContext);
   return (
-    <ul>
+    <div className="card-container">
       {props.borrowedList.map((borrowed: BorrowedIn, index: number) => (
-        <li>
+        <div className="card">
           <h3>{borrowed.copy.book.title}</h3>
           <p>Issue Date: {borrowed.issueDate.split("T").join(" ")}</p>
           <p>Due Date: {borrowed.dueDate.split("T").join(" ")}</p>
           <p>Return Date: {borrowed.returnDate?.split("T").join(" ")}</p>
           {!borrowed.returnDate && (
-            <Link to={`/borrowed/${borrowed.id}/return`}>Return</Link>
+            <Link
+              className="language-action-button"
+              style={{ color: "white" }}
+              to={`/borrowed/${borrowed.id}/return`}
+            >
+              Return
+            </Link>
           )}
           {isLibrarian && <LibrarianLinks url={`/borrowed/${borrowed.id}`} />}
-        </li>
+        </div>
       ))}
-    </ul>
+    </div>
   );
 }

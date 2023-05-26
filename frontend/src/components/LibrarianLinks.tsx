@@ -5,9 +5,8 @@ import { Link } from "react-router-dom";
  * The properties passed for this page
  */
 interface LibrarianLinksProps {
-    url: string;
+  url: string;
 }
-
 
 /**
  * This component returns the links for updating and creating books.
@@ -15,12 +14,26 @@ interface LibrarianLinksProps {
  * @returns A component containing links
  */
 function LibrarianLinks(props: LibrarianLinksProps): ReactElement {
-    return (
-        <div className="genre-list-item-buttons">
-            <Link to={`${props.url}/update`}className="genre-list-update-button"> Update </Link>
-            <Link to={`${props.url}/delete`} className="genre-list-delete-button"> Delete </Link>
-        </div>
-    )
+  return (
+    <div className="genre-list-item-buttons">
+      <Link
+        to={`${props.url}/update`}
+        className="genre-list-update-button"
+        style={{ color: "white" }}
+      >
+        {" "}
+        Update{" "}
+      </Link>
+      <Link
+        to={`${props.url}/delete`}
+        className="genre-list-delete-button"
+        style={{ color: "white" }}
+      >
+        {" "}
+        Delete{" "}
+      </Link>
+    </div>
+  );
 }
 
 export default LibrarianLinks;

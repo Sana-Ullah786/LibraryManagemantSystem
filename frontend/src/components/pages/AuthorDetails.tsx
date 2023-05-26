@@ -6,7 +6,7 @@ import { AuthContext } from "../../contexts/AuthContext";
 import { BookIn, ErrorObject } from "../../CustomTypes";
 import ErrorComponent from "../ErrorComponent";
 import { BookListPresentation } from "./BookListPresentation";
-import { Pagination } from './pagination';
+import { Pagination } from "./pagination";
 
 function AuthorDetails() {
   //Getting the id of the author from the url of the current page as a parameter
@@ -43,7 +43,7 @@ function AuthorDetails() {
         setError(error);
       });
     client
-      .GetBooksForAuthor(id)
+      .GetBooksForAuthor(id, page)
       .then((bookList) => {
         setBooks(bookList);
       })
@@ -55,10 +55,10 @@ function AuthorDetails() {
   //This creates links to the update and delete librarian pages
   function librarianLinks() {
     return (
-      <div style={{display:'flex', justifyContent:'center'}}>
+      <div style={{ display: "flex", justifyContent: "center" }}>
         <Link to={`${url}/update`} className="genre-list-update-button">
-          {' '}
-          Update{' '}
+          {" "}
+          Update{" "}
         </Link>
         <Link to={`${url}/delete`} className="genre-list-delete-button">
           Delete
@@ -71,29 +71,32 @@ function AuthorDetails() {
   //The Book Description portion is a placeholder as the api to get the books for an author has not been made yet
   if (error != null) {
     return <ErrorComponent error={error} />;
-  };
+  }
 
   return (
     <div className="background-image">
       <div className="modal">
         <h1>
-        Author: {lastName}, {firstName}
-      </h1>
-      {isLibrarian === true ? librarianLinks() : null}
-      <p>
-        ({dateOfBirth ? dateOfBirth.substring(0, 10).replace(/-/g, "/") : "-"}{" "}
-        to {dateOfDeath ? dateOfDeath.substring(0, 10).replace(/-/g, "/") : "-"}
-        )
-      </p>
-      <div>
-        <h3>Books</h3>
-        <BookListPresentation showLinks={false} books={books} url={url} />
+          Author: {lastName}, {firstName}
+        </h1>
+        {isLibrarian === true ? librarianLinks() : null}
+        <p>
+          ({dateOfBirth ? dateOfBirth.substring(0, 10).replace(/-/g, "/") : "-"}{" "}
+          to{" "}
+          {dateOfDeath ? dateOfDeath.substring(0, 10).replace(/-/g, "/") : "-"})
+        </p>
+        <div>
+          <BookListPresentation
+            showLinks={false}
+            books={books}
+            url={url}
+            page={page}
+            setPage={setPage}
+          />
         </div>
+      </div>
     </div>
-    </div>
-
   );
 }
-
 
 export default AuthorDetails;

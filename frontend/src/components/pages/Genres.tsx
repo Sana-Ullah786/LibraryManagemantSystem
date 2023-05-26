@@ -1,12 +1,13 @@
-import React, { useEffect, useState, useContext } from 'react';
-import { client } from '../../axios';
-import GenreListItem from './GenreListItem';
-import { Link, useRouteMatch } from 'react-router-dom';
-import { AuthContext } from '../../contexts/AuthContext';
-import { Genre, ErrorObject } from '../../CustomTypes';
-import ErrorComponent from '../ErrorComponent';
-import '../style.css'; // Import the Genres CSS file
-import { Pagination } from './pagination';
+import React, { useEffect, useState, useContext } from "react";
+import { client } from "../../axios";
+import GenreListItem from "./GenreListItem";
+import { Link, useRouteMatch } from "react-router-dom";
+import { AuthContext } from "../../contexts/AuthContext";
+import { Genre, ErrorObject } from "../../CustomTypes";
+import ErrorComponent from "../ErrorComponent";
+import "../style.css"; // Import the Genres CSS file
+import { Pagination } from "./pagination";
+import ScrollView from "../Scrollview";
 
 function Genres() {
   const { isLibrarian }: { isLibrarian: boolean } = useContext(AuthContext);
@@ -15,10 +16,10 @@ function Genres() {
 
   const [genreList, setGenreList] = useState<Genre[]>([]);
   const [error, setError] = useState<ErrorObject>();
-  const [page, setPage] = useState<number>(1);
 
   useEffect(() => {
-    client.GetAllGenres(page)
+    client
+      .GetAllGenres()
       .then((genreList) => {
         if (genreList) {
           setGenreList(genreList);
@@ -27,14 +28,17 @@ function Genres() {
       .catch((error) => {
         setError(error);
       });
-  }, [page]);
+  }, []);
 
   function setGenreListItemComponent(genreList: Genre[]) {
     const genreListItemComponent: JSX.Element[] = genreList.map((genre) => (
-      <li className="genre-list-item" key={genre.id}>
-        <GenreListItem key={genre.id} item={genre} linksto={`${url}/${genre.id}`} />
-      </li>
-
+      <div className="card" key={genre.id}>
+        <GenreListItem
+          key={genre.id}
+          item={genre}
+          linksto={`${url}/${genre.id}`}
+        />
+      </div>
     ));
     return genreListItemComponent;
   }
@@ -48,23 +52,20 @@ function Genres() {
   }
 
   if (error != null) {
-    return (
-      <ErrorComponent error={error} />
-    );
+    return <ErrorComponent error={error} />;
   }
 
   return (
     <div className="background-image">
-      <div className='modal'>
-      <h1>Genre List</h1>
-      <ul className="genre-list">
-        {setGenreListItemComponent(genreList)}
-      </ul>
-      {isLibrarian ? createGenreLink() : null}
-      <Pagination page={page} setPage={setPage}/>
-
-    </div>
-
+      <div className="modal">
+        <h1>Genre List</h1>
+        <ScrollView>
+          <div className="card-container">
+            {setGenreListItemComponent(genreList)}
+          </div>
+        </ScrollView>
+        {isLibrarian ? createGenreLink() : null}
+      </div>
     </div>
   );
 }

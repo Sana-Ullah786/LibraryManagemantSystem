@@ -7,7 +7,6 @@ import ErrorComponent from "../ErrorComponent";
 import { AuthContext } from "../../contexts/AuthContext";
 import { Pagination } from "./pagination";
 
-
 export const BookListContainer = () => {
   /*
    * BookListContainer is responsible for all computations and api calls to fetch the list of all books.
@@ -41,13 +40,17 @@ export const BookListContainer = () => {
     }
     return <div>Loading...</div>;
   }
-  return (  
+  return (
     <div className="background-image">
-
-      <div className="genre-list-item">
+      <div className="modal">
         {/* Book list is presented once the list of books is properly initialized */}
-        <BookListPresentation showLinks={isLibrarian} books={books} url={url} />
-        <Pagination page={page} setPage={setPage}/>
+        <BookListPresentation
+          showLinks={isLibrarian}
+          books={books}
+          url={url}
+          page={page}
+          setPage={setPage}
+        />
       </div>
     </div>
   );

@@ -6,6 +6,8 @@ import { AuthContext } from "../../contexts/AuthContext";
 import { useRouteMatch, Link } from "react-router-dom";
 import ErrorComponent from "../ErrorComponent";
 import { BorrowedList } from "../BorrowedList";
+import ScrollView from "../Scrollview";
+import { Pagination } from "./pagination";
 
 const MyBorrowed = (props: { showLinks?: boolean }) => {
   /*
@@ -25,10 +27,12 @@ const MyBorrowed = (props: { showLinks?: boolean }) => {
 
   const [error, setError] = useState<ErrorObject>();
 
+  const [page, setPage] = useState<number>(1);
+
   useEffect(() => {
     // Getting value of book from the api
     client
-      .GetMyBorrowed()
+      .GetMyBorrowed(page)
       .then(
         (newMyBorrowed: BorrowedIn[]) => {
           newMyBorrowed.sort((a, b) => (a.id > b.id ? 1 : -1));
@@ -43,22 +47,22 @@ const MyBorrowed = (props: { showLinks?: boolean }) => {
 
   console.log(myBorrowed);
 
-  if (myBorrowed.length === 0) {
-    if (error) {
-      return <ErrorComponent error={error} />;
-    }
-    return <div>Loading...</div>;
-  } else {
-    // The book details are presented once all details have been received
-    return (
-      <div className="background-image">
-        <div className="modal">
-          <h1>My Borrowed Books</h1>
+  // The book details are presented once all details have been received
+  return (
+    <div className="background-image">
+      <div className="modal">
+        <h1>My Borrowed Books</h1>
+        <ScrollView>
           <BorrowedList borrowedList={myBorrowed} />
-        </div>
+        </ScrollView>
+        <Pagination
+          page={page}
+          setPage={setPage}
+          showNext={myBorrowed.length === 10}
+        />
       </div>
-    );
-  }
+    </div>
+  );
 };
 
 // By default links are always shown if the user is a librarian

@@ -9,31 +9,25 @@ import { AuthContext } from "../../contexts/AuthContext";
 
 interface Props {}
 
-function UserUpdate(props: Props): ReactElement {
-  const { id }: { id: string } = useParams();
-  const userId: number = parseInt(id); // Parse id as a number
+function UserUpdateMe(props: Props): ReactElement {
   const history = useHistory();
 
   const [user, setUser] = useState<UserDetails | null>(null);
   const [loaded, setLoaded] = useState<boolean>(false);
   const [error, setError] = useState<ErrorObject>();
-  const { isLibrarian }: { isLibrarian: boolean } = useContext(AuthContext);
-  const { isAuthenticated }: { isAuthenticated: boolean } =
+  const {
+    isLibrarian,
+    isAuthenticated,
+  }: { isLibrarian: boolean; isAuthenticated: boolean } =
     useContext(AuthContext);
 
   useEffect(() => {
-    client
-      .GetUserDetails(id)
-      .then((userData) => {
-        if (userData) {
-          setUser(userData);
-          setLoaded(true);
-        }
-      })
-      .catch((error) => {
-        setError(error);
-      });
-  }, [userId]);
+    const user = localStorage.getItem("user");
+    if (user) {
+      setUser(JSON.parse(user));
+      setLoaded(true);
+    }
+  }, []);
 
   useEffect(() => {
     if (isAuthenticated === true) {
@@ -54,18 +48,17 @@ function UserUpdate(props: Props): ReactElement {
   }, [isAuthenticated, isLibrarian]);
 
   const onSubmit: SubmitHandler<UserDetails> = (data) => {
-    client.PutUser(id, data).then((response) => {
-      history.push("/user/" + userId);
-    });
+    client
+      .UpdateMe(data)
+      .then((response) => {
+        alert("Details updated successfully!");
+      })
+      .catch((error) => alert(error));
   };
-
-  if (error != null) {
-    return <ErrorComponent error={error} />;
-  }
 
   return (
     <div className="background-image">
-      {loaded === true ? (
+      {loaded ? (
         <UserForm user={user} onSubmit={onSubmit} />
       ) : (
         <h1>--Loading--</h1>
@@ -74,4 +67,4 @@ function UserUpdate(props: Props): ReactElement {
   );
 }
 
-export default UserUpdate;
+export default UserUpdateMe;
