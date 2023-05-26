@@ -102,7 +102,12 @@ export const BookDetailsPresentation = (
       <br></br>
       {props.isLibrarian && (
         <>
-          <Link to={`/books/${props.book.id}/copies`}>Manage Copies</Link>
+          <Link
+            className="language-action-button"
+            to={`/books/${props.book.id}/copies`}
+          >
+            Manage Copies
+          </Link>
           <br></br>
           <br></br>
         </>
