@@ -680,9 +680,14 @@ export class APIClient {
     });
   }
 
-  public ReturnBorrowed(id: string, data: BorrowedOut): Promise<Boolean> {
+  public ReturnBorrowed(
+    id: string,
+    data: BorrowedOut,
+    me: boolean
+  ): Promise<Boolean> {
+    const endpoint = me ? "return_borrowed_user" : "return_borrowed_any_user";
     return APIClient.axiosInstance
-      .put("/borrowed/return_borrowed_user/" + id, data)
+      .put(`/borrowed/${endpoint}/${id}`, data)
       .then((res) => {
         return true;
       });

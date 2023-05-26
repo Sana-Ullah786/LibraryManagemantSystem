@@ -2,6 +2,7 @@ import React, { useContext } from "react";
 import { Link, useRouteMatch } from "react-router-dom";
 import { AuthContext } from "../contexts/AuthContext";
 import { Author } from "../CustomTypes";
+import LibrarianLinks from "./LibrarianLinks";
 
 // The attributes of a single author
 
@@ -21,19 +22,6 @@ function AuthorListItem(props: AuthorListItemProps) {
   const { isLibrarian }: { isLibrarian: boolean } = useContext(AuthContext);
 
   //This function runs if the current user is a librarian. i.e has permission to edit or delete an authors details
-  function librarianLinks() {
-    return (
-      <>
-        <Link to={`${url}/${props.item.id}/update`} style={{ color: "orange" }}>
-          {" "}
-          Update{" "}
-        </Link>
-        <Link to={`${url}/${props.item.id}/delete`} style={{ color: "red" }}>
-          Delete
-        </Link>
-      </>
-    );
-  }
 
   return (
     <>
@@ -60,7 +48,9 @@ function AuthorListItem(props: AuthorListItemProps) {
       <br></br>
       <br></br>
 
-      {isLibrarian === true ? librarianLinks() : null}
+      {isLibrarian === true ? (
+        <LibrarianLinks url={`authors/${props.item.id}`} />
+      ) : null}
     </>
   );
 }

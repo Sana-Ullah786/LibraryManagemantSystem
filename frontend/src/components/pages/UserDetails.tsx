@@ -6,6 +6,7 @@ import ErrorComponent from "../ErrorComponent";
 import { BorrowedList } from "../BorrowedList";
 import { BorrowedIn } from "../../CustomTypes";
 import { Pagination } from "./pagination";
+import ScrollView from "../Scrollview";
 
 function UserDetails() {
   let { id }: { id: string } = useParams();
@@ -54,7 +55,9 @@ function UserDetails() {
           <p>Address: {user.address}</p>
         </div>
         <h2>Books borrowed by this user:</h2>
-        <BorrowedList borrowedList={borrowedList} />
+        <ScrollView>
+          <BorrowedList borrowedList={borrowedList} />
+        </ScrollView>
         <Pagination
           page={page}
           setPage={setPage}
